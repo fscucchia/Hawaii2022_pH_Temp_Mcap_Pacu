@@ -8,6 +8,7 @@
 library(tidyverse)
 library(multcomp)
 library(car)
+library(readxl)
 
 # Set working directory 
 setwd("/Users/jillashey/Desktop/PutnamLab/Repositories/Hawaii2022_pH_Temp_Mcap_Pacu/")
@@ -40,3 +41,99 @@ TukeyHSD(res.aov)
 # Check ANOVA assumptions 
 plot(res.aov, 1) 
 leveneTest(TA.Average ~ treatment, data = TA_sub)
+
+### no differences by treatment when outliers are removed 
+
+
+
+
+
+### Discrete measurements via Orion Star handheld monitor
+orion <- read_excel("Raw_data/Water_chemistry_OrionStar.xlsx")
+
+## Temperature 
+# Plot temperature values by treatment (aka tank in this dataframe)
+ggplot(orion, aes(x = tank, y = temp)) +
+  geom_boxplot() # looks like there are some outliers in control treatment 
+
+#### may need to remove outliers in control trt
+
+# Compare by one-way anova 
+res.aov <- aov(temp ~ tank, data = orion)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(temp ~ tank, data = orion) ## need to transform data 
+
+### Differences between all 3 treatments 
+
+
+## pH
+# Plot pH values by treatment (aka tank in this dataframe)
+ggplot(orion, aes(x = tank, y = pH)) +
+  geom_boxplot()
+
+#### may need to remove outliers in medium trt
+
+# Compare by one-way anova 
+res.aov <- aov(pH ~ tank, data = orion)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(pH ~ tank, data = orion)
+
+### Differences between all 3 treatments 
+
+
+## pH mV
+# Plot pH mV values by treatment (aka tank in this dataframe)
+ggplot(orion, aes(x = tank, y = `pH mV`)) +
+  geom_boxplot()
+
+#### may need to remove outliers in medium & high trts
+
+# Compare by one-way anova 
+res.aov <- aov(`pH mV` ~ tank, data = orion)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(`pH mV` ~ tank, data = orion)
+
+### Differences between all 3 treatments 
+
+
+## Salinity 
+# Plot salinity values by treatment (aka tank in this dataframe)
+ggplot(orion, aes(x = tank, y = salinity)) +
+  geom_boxplot() # outlier in medium trt
+
+#### may need to remove outlier in medium trt
+
+# Compare by one-way anova 
+res.aov <- aov(salinity ~ tank, data = orion)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(`pH mV` ~ tank, data = orion)
+
+### No differences between treatments 
+
+
+
+
