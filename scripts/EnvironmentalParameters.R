@@ -130,7 +130,7 @@ TukeyHSD(res.aov)
 
 # Check ANOVA assumptions 
 plot(res.aov, 1) 
-leveneTest(`pH mV` ~ tank, data = orion)
+leveneTest(salinity ~ tank, data = orion)
 
 ### No differences between treatments 
 
