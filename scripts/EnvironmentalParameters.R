@@ -20,19 +20,20 @@ TA <- read.csv("Raw_data/TA/TA_Metadata.csv")
 TA <- na.omit(TA)
 
 # Plot TA value by treatment 
-ggplot(TA, aes(x = treatment, y = TA.Average)) +
+ggplot(TA, aes(x = treatment, y = TA_Average)) +
   geom_boxplot()
 
 # Remove outliers 
 TA_sub <- TA %>%
-  filter(TA.Average <= 2200)
+  filter(TA_Average <= 2200) %>%
+  filter(TA_Average >=2080)
 
 # Plot TA values w/o outlier by treatment 
-ggplot(TA_sub, aes(x = treatment, y = TA.Average)) +
+ggplot(TA_sub, aes(x = treatment, y = TA_Average)) +
   geom_boxplot()
 
 # Compare by one-way anova 
-res.aov <- aov(TA.Average ~ treatment, data = TA_sub)
+res.aov <- aov(TA_Average ~ treatment, data = TA_sub)
 summary(res.aov)
 
 # See if there is any differences between specific treatments 
@@ -40,7 +41,7 @@ TukeyHSD(res.aov)
 
 # Check ANOVA assumptions 
 plot(res.aov, 1) 
-leveneTest(TA.Average ~ treatment, data = TA_sub)
+leveneTest(TA_Average ~ treatment, data = TA_sub)
 
 ### no differences by treatment when outliers are removed 
 
