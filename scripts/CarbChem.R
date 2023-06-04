@@ -2,7 +2,7 @@
 ## Author: Jill Ashey 
 ## Date created: 20230528
 
-### This script will calculate various carbonate chemistry parameters for the Hawaii 2020 experimental dataset. 
+### This script will calculate various carbonate chemistry parameters for the Hawaii 2020 experimental dataset. Using scripts from Sam Gurr (https://github.com/SamGurr/Geoduck_transgen_offspring_OA/blob/master/RAnalysis/Scripts/CarbChem.R) and Emma Strand (https://github.com/hputnam/Acclim_Dynamics/blob/master/Scripts/CarbChem.Rmd)
 
 # Load packages
 library(tidyverse)
@@ -14,6 +14,156 @@ library(cowplot)
 
 # Set working directory 
 setwd("/Users/jillashey/Desktop/PutnamLab/Repositories/Hawaii2022_pH_Temp_Mcap_Pacu/")
+
+##### DISCRETE pH CALCULATIONS #####
+path <-("Raw_data/pH_tris")
+file.names<-list.files(path = path, pattern = "csv$") #list all the file names in the folder to get only get the csv files
+pH.cals <- data.frame(matrix(NA, nrow=length(file.names), ncol=3, dimnames=list(file.names,c("Date", "Intercept", "Slope")))) #generate a 3 column dataframe with specific column names
+
+for(i in 1:length(file.names)) { # for every file in list start at the first and run this following function
+  Calib.Data <-read.table(file.path(path,file.names[i]), header=TRUE, sep=",", na.string="NA", as.is=TRUE) #reads in the data files
+  model <-lm(mVTris ~ TTris, data=Calib.Data) #runs a linear regression of mV as a function of temperature
+  coe <- coef(model) #extracts the coeffecients
+  summary(model)$r.squared
+  plot(Calib.Data$mVTris, Calib.Data$TTris)
+  pH.cals[i,2:3] <- coe #inserts them in the dataframe
+  pH.cals[i,1] <- substr(file.names[i],1,8) #stores the file name in the Date column
+}
+colnames(pH.cals) <- c("Calib.Date",  "Intercept",  "Slope") #rename columns
+pH.cals
+
+#constants for use in pH calculation 
+R <- 8.31447215 #gas constant in J mol-1 K-1 
+F <-96485.339924 #Faraday constant in coulombs mol-1
+
+# Read in daily measurements 
+daily <- read.csv("Raw_data/Water_chemistry_OrionStar_TA.csv")[,1:10]
+daily <- na.omit(daily)
+
+# Merge daily measurements with pH tris 
+SW.chem <- merge(pH.cals, daily, by = "Calib.Date")
+
+# Calculate pH total
+mvTris <- SW.chem$temp*SW.chem$Slope+SW.chem$Intercept #calculate the mV of the tris standard using the temperature mv relationships in the measured standard curves 
+STris<-34.5 #salinity of the Tris
+phTris<- (11911.08-18.2499*STris-0.039336*STris^2)*(1/(SW.chem$temp+273.15))-366.27059+ 0.53993607*STris+0.00016329*STris^2+(64.52243-0.084041*STris)*log(SW.chem$temp+273.15)-0.11149858*(SW.chem$temp+273.15) #calculate the pH of the tris (Dickson A. G., Sabine C. L. and Christian J. R., SOP 6a)
+SW.chem$pH.Total<-phTris+(mvTris/1000-SW.chem$pH_mV/1000)/(R*(SW.chem$temp+273.15)*log(10)/F) #calculate the pH on the total scale (Dickson A. G., Sabine C. L. and Christian J. R., SOP 6a)
+
+
+##### DISCRETE TA CALCULATIONS #####
+TA <- read.csv("Raw_data/TA/Cumulative_TA_Output.csv")
+TA$SampleID <- gsub("^[^_]*_", "", TA$SampleID) # remove 1_ or 2_ from sample ID
+
+# Merge calculated pH and daily measures with TA data and run seacarb
+SW.chem <- merge(SW.chem, TA, by="SampleID", all = TRUE, sort = T) #merge seawater chemistry with total alkalinity
+SW.chem <- na.omit(SW.chem)
+
+# Calculate CO2 parameters using seacarb 
+carb.output <- carb(flag=8, var1=SW.chem$pH.Total, var2=SW.chem$TA, S= SW.chem$salinity, T=SW.chem$temp, P=0, Pt=0, Sit=0, pHscale="T", kf="pf", k1k2="l", ks="d") #calculate seawater chemistry parameters using seacarb
+#carb.output$ALK <- carb.output$ALK*1000000 #convert to µmol kg-1
+#carb.output$CO2 <- carb.output$CO2*1000000 #convert to µmol kg-1
+#carb.output$HCO3 <- carb.output$HCO3*1000000 #convert to µmol kg-1
+#carb.output$CO3 <- carb.output$CO3*1000000 #convert to µmol kg-1
+#carb.output$DIC <- carb.output$DIC*1000000 #convert to µmol kg-1
+carb.output <- carb.output[,-c(1,4,5,8,10:13,19)] #subset variables of interest
+
+## for some reason, when I convert the carb chem parameters to µmol kg-1, the numbers get very large. Also pCO2 looks very strange...the numbers are either 0 or negative
+## I also need to use the data that were taken during the time that the TA was taken 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## QC plots for each environmental parameter 
+ggplot(SW.chem, aes(x = tank, y = temp)) +
+  geom_boxplot() # some outliers in all trts
+
+ggplot(SW.chem, aes(x = tank, y = salinity)) +
+  geom_boxplot() 
+
+ggplot(SW.chem, aes(x = tank, y = pH.Total)) +
+  geom_boxplot() 
+
+ggplot(SW.chem, aes(x = tank, y = pH_mV)) +
+  geom_boxplot() 
+
+
+## Separate and plot by each trt 
+control <- SW.chem %>%
+  filter(tank == "C")
+ggplot(control, aes(x = tank, y = temp)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = salinity)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = pH.Total)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = pH_mV)) +
+  geom_boxplot()
+
+mid <- SW.chem %>%
+  filter(tank == "M")
+ggplot(mid, aes(x = tank, y = temp)) +
+  geom_boxplot()
+ggplot(mid, aes(x = tank, y = salinity)) +
+  geom_boxplot()
+ggplot(mid, aes(x = tank, y = pH.Total)) +
+  geom_boxplot()
+ggplot(mid, aes(x = tank, y = pH_mV)) +
+  geom_boxplot()
+
+high <- SW.chem %>%
+  filter(tank == "H")
+ggplot(control, aes(x = tank, y = temp)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = salinity)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = pH.Total)) +
+  geom_boxplot()
+ggplot(control, aes(x = tank, y = pH_mV)) +
+  geom_boxplot()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Load TA data
 TA <- read.csv("Raw_data/TA/TA_Metadata.csv")
@@ -31,7 +181,7 @@ orion_avg <- orion %>%
   summarise_at(vars(temp, salinity, pH, `pH mV`), list(name = mean))
 
 # Merge dataframes 
-all <- full_join(TA_sub, orion_avg, by = "ID") %>% 
+all <- full_join(TA, orion_avg, by = "ID") %>% 
   na.omit()
 
 ###### NEED TO CALCULATE TOTAL PH VALUE USING TRIS CALIBRATION INFORMATION
