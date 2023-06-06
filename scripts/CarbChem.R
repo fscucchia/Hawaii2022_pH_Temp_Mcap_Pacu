@@ -361,8 +361,8 @@ AragSat_plot <- ggplot(carb.output, aes(x = Treatment, y = AragSat, fill = Treat
 AragSat_plot
 
 
-
-all_plots<-plot_grid(salinity_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, AragSat_plot, 
+# Save all plots
+all_plots<-plot_grid(sal_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, AragSat_plot, 
                      nrow=2, ncol=5, label_y=1, labels=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"), label_size=18)
 ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
 

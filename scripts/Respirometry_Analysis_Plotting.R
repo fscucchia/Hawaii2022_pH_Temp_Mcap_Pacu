@@ -199,7 +199,8 @@ TukeyHSD(PRmodel1)
 
 
 
-
+## Analysis and plotting in a different way
+# Respiration
 compare_means(R.nmol.org.min ~ Treatment, data = PRdata, method = "anova")
 my_comparisons <- list(c("Control", "Mid"), c("Control", "High"), c("Mid", "High"))
 
@@ -218,7 +219,7 @@ r_plot <- ggplot(PRdata, aes(x = Treatment, y = abs(R.nmol.org.min), fill = Trea
 r_plot
 
 
-
+# Net photosynthesis
 compare_means(P.nmol.org.min ~ Treatment, data = PRdata, method = "anova")
 my_comparisons <- list(c("Control", "Mid"), c("Control", "High"), c("Mid", "High"))
 
@@ -238,8 +239,7 @@ np_plot <- ggplot(PRdata, aes(x = Treatment, y = P.nmol.org.min, fill = Treatmen
 np_plot
 
 
-
-
+# Gross photosynthesis
 compare_means(GP.nmol.org.min ~ Treatment, data = PRdata, method = "anova")
 my_comparisons <- list(c("Control", "Mid"), c("Control", "High"), c("Mid", "High"))
 
@@ -256,3 +256,9 @@ gp_plot <- ggplot(PRdata, aes(x = Treatment, y = GP.nmol.org.min, fill = Treatme
         axis.title=element_text(size=12, color="black", face="bold")) +
   theme(legend.position = "none") 
 gp_plot
+
+
+# Save all plots
+plots<-plot_grid(r_plot, np_plot, gp_plot, nrow=1, ncol=3, label_y=1, labels=c("A", "B", "C"), label_size=18)
+ggsave(plots, file="output/Respiration/Respiration_panel.png", width=25, height=10)
+
