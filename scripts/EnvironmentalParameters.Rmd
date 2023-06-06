@@ -1,0 +1,191 @@
+---
+title: "Environmental_Analysis"
+author: "HM Putnam"
+date: "2023-06-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load packages
+```{r }
+# Load packages
+library(tidyverse)
+library(multcomp)
+library(car)
+library(readxl)
+library(ggstatsplot)
+library(dplyr)
+```
+
+#Total Alkalinity
+```{r }
+# Read in data 
+TA <- read.csv("Raw_data/TA/TA_Metadata.csv")
+
+# Remove NAs 
+TA <- na.omit(TA)
+
+#examine for outliers
+# Plot TA value by treatment 
+ggplot(TA, aes(x = treatment, y = TA_value1)) +
+  geom_boxplot()
+
+#identify outliers by Treatment groups and sample rep
+outlier.plot.1 <- ggbetweenstats(TA,treatment, TA_value1, outlier.tagging = TRUE)
+outlier.plot.1
+
+# Plot TA value by treatment 
+ggplot(TA, aes(x = treatment, y = TA_value2)) +
+  geom_boxplot()
+
+#identify outliers by Treatment groups and sample rep
+outlier.plot.2 <- ggbetweenstats(TA,treatment, TA_value2, outlier.tagging = TRUE)
+outlier.plot.2
+
+
+```
+
+#remove outliers in TA value 1
+```{r}
+
+#set quantile values
+q <- c(0.25, 0.75)
+
+# calculate quantile values by Temperature and Treatment groups
+Quants.1 <- TA %>%
+  group_by(treatment) %>%
+  summarize(quant25 = quantile(TA_value1, probs = q[1]),
+            quant75 = quantile(TA_value1, probs = q[2]),
+            IQRbyGroup=IQR(TA_value1))
+
+#Calculate Quantile upper and lower ranges 
+Quants.1$upper <-  Quants.1$quant75+1.5*Quants.1$IQRbyGroup # Upper Range  
+Quants.1$lower <- Quants.1$quant25-1.5*Quants.1$IQRbyGroup # Lower Range
+
+#Calculate STDev upper and lower ranges 
+Quants.1$upper.stdev <- mean(TA$TA_value1)+(sd(TA$TA_value1)*2) # Upper Range  
+Quants.1$lower.stdev <- mean(TA$TA_value1)-(sd(TA$TA_value1)*2) # Lower Range
+
+#join outlier cutoffs with rate data
+TAdata.1 <- left_join(TA, Quants.1)
+
+
+#remove outliers from rates
+TAdata.1 <- TAdata.1 %>%
+   filter(TA_value1 < upper) %>%
+   filter(TA_value1 > lower)
+
+# Plot TA value by treatment 
+ggplot(TAdata.1, aes(x = treatment, y = TA_value1)) +
+  geom_boxplot()
+
+#remove excess data columns
+TAdata.1 <- TAdata.1 %>% dplyr::select(c("sample.name","treatment","TA_DateAnalyzed", "TA_value1"))
+
+```
+
+#remove outliers in TA value 2
+```{r}
+
+
+# calculate quantile values by Temperature and Treatment groups
+Quants.2 <- TA %>%
+  group_by(treatment) %>%
+  summarize(quant25 = quantile(TA_value2, probs = q[1]),
+            quant75 = quantile(TA_value2, probs = q[2]),
+            IQRbyGroup=IQR(TA_value2))
+
+#Calculate Quantile upper and lower ranges 
+Quants.2$upper <-  Quants.2$quant75+1.5*Quants.2$IQRbyGroup # Upper Range  
+Quants.2$lower <- Quants.2$quant25-1.5*Quants.2$IQRbyGroup # Lower Range
+
+#Calculate STDev upper and lower ranges 
+Quants.2$upper.stdev <- mean(TA$TA_value2)+(sd(TA$TA_value2)*3) # Upper Range  
+Quants.2$lower.stdev <- mean(TA$TA_value2)-(sd(TA$TA_value2)*3) # Lower Range
+
+#join outlier cutoffs with rate data
+TAdata.2 <- left_join(TA, Quants.2)
+
+#remove outliers from rates
+TAdata.2 <- TAdata.2 %>%
+   filter(TA_value2 < upper) %>%
+   filter(TA_value2 > lower)
+
+# Plot TA value by treatment 
+ggplot(TAdata.2, aes(x = treatment, y = TA_value2)) +
+  geom_boxplot()
+
+#remove excess data columns
+TAdata.2 <- TAdata.2 %>% dplyr::select(c("sample.name", "TA_value2"))
+
+```
+Join values 1 and 2, calculate averages, plot, run ANOVA
+```{r}
+TA_sub <- left_join(TAdata.1, TAdata.2, by="sample.name")
+
+TA_sub$TA.mean <- rowMeans(subset(TA_sub, select = c("TA_value1","TA_value2")), na.rm = TRUE)
+
+# Compare by one-way anova 
+res.aov <- aov(TA.mean ~ treatment, data = TA_sub)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(TA.mean ~ treatment, data = TA_sub)
+
+# Plot TA value by treatment 
+ggplot(TA_sub, aes(x = treatment, y = TA.mean)) +
+  geom_boxplot()
+
+```
+
+# Temperature 
+```{r}
+
+envt.data <- read_excel("Raw_data/Water_chemistry_OrionStar.xlsx")
+
+
+# Plot temperature values by treatment (aka tank in this dataframe)
+ggplot(envt.data, aes(x = tank, y = temp), group=treatment) +
+  geom_boxplot() # looks like there are some outliers in control treatment 
+
+#### Need to check if control tank outlier data for the 3 points near the upper end of the whisker are real or artifact and then may need to remove outliers in control trt
+
+# Compare by one-way anova 
+res.aov <- aov(temp ~ tank, data = envt.data)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(temp ~ tank, data = envt.data) ## need to transform data 
+
+```
+
+#Salinity
+```{r}
+# Plot salinity values by treatment (aka tank in this dataframe)
+ggplot(envt.data, aes(x = tank, y = salinity)) +
+  geom_boxplot() # outlier in medium trt
+
+#### NEED to remove outlier in medium trt
+
+# Compare by one-way anova 
+res.aov <- aov(salinity ~ tank, data = envt.data)
+summary(res.aov)
+
+# See if there is any differences between specific treatments 
+TukeyHSD(res.aov)
+
+# Check ANOVA assumptions 
+plot(res.aov, 1) 
+leveneTest(salinity ~ tank, data = envt.data)
+```
