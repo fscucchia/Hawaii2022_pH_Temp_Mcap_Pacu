@@ -167,7 +167,7 @@ oxygen<-full_join(oxygen, Photo.Rates) #add photosynthesis data
 colnames(oxygen)[colnames(oxygen) == 'Intercept'] <- 'Photo.Intercept' #rename to specify P
 colnames(oxygen)[colnames(oxygen) == 'umol.L.min'] <- 'P.umol.L.min' #rename to specify P
 
-#################### MAY NEED TO REMOVE WELLS - LOOK OVER PDF OUTPUTS W/ ARIANA 
+#################### MAY NEED TO REMOVE WELLS - LOOK OVER PDF OUTPUTS W/ ARIANA. From first glance, there are no glaring outliers
 
 # Account for volume and subtract blank values. Average blank is calculated for each run for P and R phases. Display mean blank value in order of R and P phases
 #Account for chamber volume to convert from umol L-1 m-1 to umol m-1. This standardizes across water volumes (different because of coral size) and removes per Liter

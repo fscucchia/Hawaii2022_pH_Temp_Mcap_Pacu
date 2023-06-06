@@ -53,13 +53,19 @@ SW.chem$pH.Total<-phTris+(mvTris/1000-SW.chem$pH_mV/1000)/(R*(SW.chem$temp+273.1
 ##### DISCRETE TA CALCULATIONS #####
 TA <- read.csv("Raw_data/TA/Cumulative_TA_Output.csv")
 TA$SampleID <- gsub("^[^_]*_", "", TA$SampleID) # remove 1_ or 2_ from sample ID
+TA_mean <- TA %>%
+  filter(Type == "Sample") %>%
+  group_by(SampleID) %>%
+  summarise(mean_TA = mean(TA), .groups = "drop")
+
+
 
 # Merge calculated pH and daily measures with TA data and run seacarb
-SW.chem <- merge(SW.chem, TA, by="SampleID", all = TRUE, sort = T) #merge seawater chemistry with total alkalinity
+SW.chem <- merge(SW.chem, TA_mean, by="SampleID", all = TRUE, sort = T) #merge seawater chemistry with total alkalinity
 SW.chem <- na.omit(SW.chem)
 
 # Calculate CO2 parameters using seacarb 
-carb.output <- carb(flag=8, var1=SW.chem$pH.Total, var2=SW.chem$TA, S= SW.chem$salinity, T=SW.chem$temp, P=0, Pt=0, Sit=0, pHscale="T", kf="pf", k1k2="l", ks="d") #calculate seawater chemistry parameters using seacarb
+carb.output <- carb(flag=8, var1=SW.chem$pH.Total, var2=SW.chem$mean_TA, S= SW.chem$salinity, T=SW.chem$temp, P=0, Pt=0, Sit=0, pHscale="T", kf="pf", k1k2="l", ks="d") #calculate seawater chemistry parameters using seacarb
 #carb.output$ALK <- carb.output$ALK*1000000 #convert to µmol kg-1
 #carb.output$CO2 <- carb.output$CO2*1000000 #convert to µmol kg-1
 #carb.output$HCO3 <- carb.output$HCO3*1000000 #convert to µmol kg-1
@@ -68,7 +74,10 @@ carb.output <- carb(flag=8, var1=SW.chem$pH.Total, var2=SW.chem$TA, S= SW.chem$s
 carb.output <- carb.output[,-c(1,4,5,8,10:13,19)] #subset variables of interest
 
 ## for some reason, when I convert the carb chem parameters to µmol kg-1, the numbers get very large. Also pCO2 looks very strange...the numbers are either 0 or negative
-## I also need to use the data that were taken during the time that the TA was taken 
+
+# Bind SW chem information
+carb.output <- cbind(SW.chem$SampleID, SW.chem$Date, SW.chem$tank, SW.chem$squaricle, carb.output) # combine sample info with seacarb output 
+colnames(carb.output) <- c("SampleID", "Date", "Treatment", "Squarical", "Salinity", "Temperature", "pH", "CO2", "pCO2", "HCO3", "CO3", "DIC", "TA", "AragSat")
 
 
 
@@ -85,125 +94,6 @@ carb.output <- carb.output[,-c(1,4,5,8,10:13,19)] #subset variables of interest
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## QC plots for each environmental parameter 
-ggplot(SW.chem, aes(x = tank, y = temp)) +
-  geom_boxplot() # some outliers in all trts
-
-ggplot(SW.chem, aes(x = tank, y = salinity)) +
-  geom_boxplot() 
-
-ggplot(SW.chem, aes(x = tank, y = pH.Total)) +
-  geom_boxplot() 
-
-ggplot(SW.chem, aes(x = tank, y = pH_mV)) +
-  geom_boxplot() 
-
-
-## Separate and plot by each trt 
-control <- SW.chem %>%
-  filter(tank == "C")
-ggplot(control, aes(x = tank, y = temp)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = salinity)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = pH.Total)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = pH_mV)) +
-  geom_boxplot()
-
-mid <- SW.chem %>%
-  filter(tank == "M")
-ggplot(mid, aes(x = tank, y = temp)) +
-  geom_boxplot()
-ggplot(mid, aes(x = tank, y = salinity)) +
-  geom_boxplot()
-ggplot(mid, aes(x = tank, y = pH.Total)) +
-  geom_boxplot()
-ggplot(mid, aes(x = tank, y = pH_mV)) +
-  geom_boxplot()
-
-high <- SW.chem %>%
-  filter(tank == "H")
-ggplot(control, aes(x = tank, y = temp)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = salinity)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = pH.Total)) +
-  geom_boxplot()
-ggplot(control, aes(x = tank, y = pH_mV)) +
-  geom_boxplot()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Load TA data
-TA <- read.csv("Raw_data/TA/TA_Metadata.csv")
-TA <- na.omit(TA)
-TA_sub <- TA %>%
-  filter(TA_Average <= 2200) %>%
-  filter(TA_Average >=2080)
-
-# Load orion data 
-orion <- read_excel("Raw_data/Water_chemistry_OrionStar.xlsx")
-
-# Average by ID
-orion_avg <- orion %>%
-  group_by(ID) %>%
-  summarise_at(vars(temp, salinity, pH, `pH mV`), list(name = mean))
-
-# Merge dataframes 
-all <- full_join(TA, orion_avg, by = "ID") %>% 
-  na.omit()
-
-###### NEED TO CALCULATE TOTAL PH VALUE USING TRIS CALIBRATION INFORMATION
-
-## Avg dataframes by treatment 
-test <- orion %>%
-  group_by(tank) %>% 
-  summarise_at(vars(temp, salinity, pH, `pH mV`), list(name = mean))
-
-# Calculate CO2 parameters using seacarb 
-carb.output <- carb(flag=8, var1=all$pH_name, var2=all$TA_Average, S= all$salinity_name, T=all$temp_name, P=0, Pt=0, Sit=0, pHscale="T", kf="pf", k1k2="l", ks="d") #calculate seawater chemistry parameters using seacarb
-# carb.output$ALK <- carb.output$ALK*1000000 #convert to µmol kg-1
-# carb.output$CO2 <- carb.output$CO2*1000000 #convert to µmol kg-1
-# carb.output$HCO3 <- carb.output$HCO3*1000000 #convert to µmol kg-1
-# carb.output$CO3 <- carb.output$CO3*1000000 #convert to µmol kg-1
-# carb.output$DIC <- carb.output$DIC*1000000 #convert to µmol kg-1
-carb.output <- carb.output[,-c(1,4,5,8,10:13,19)] #subset variables of interest
-carb.output <- cbind(all$treatment, all$squaricle, all$ID, carb.output) # combine sample info with seacarb output 
-colnames(carb.output) <- c("Treatment", "Squarical", "ID", "Salinity", "Temperature", "pH", "CO2", "pCO2", "HCO3", "CO3", "DIC", "TA", "AragSat")
-
-# Sort treatment levels
-carb.output$Treatment <- factor(carb.output$Treatment, levels = c("control", "medium", "high"))
 
 # Run ANOVA for each parameter
 ## Test for differences in salinity by treatment with one-way ANOVA
@@ -286,107 +176,190 @@ leveneTest(AragSat ~ Treatment, data = carb.output) # Check ANOVA assumptions of
 
 
 # Plot by each parameter 
-salinity_plot <- ggplot(carb.output, aes(x = Treatment, y = Salinity, fill = Treatment)) +
-  geom_boxplot() + 
+
+# Arrange treatment order 
+carb.output$Treatment <- factor(carb.output$Treatment, levels = c("C", "M", "H"))
+
+# Salinity
+compare_means(Salinity ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
+
+sal_plot <- ggplot(carb.output, aes(x = Treatment, y = Salinity, fill = Treatment)) +
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 37.4) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("Salinity (psu)") +
+  ylab(expression(bold(paste("Salinity (psu)")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
- 
+  theme(legend.position = "none") 
+sal_plot
+
+# Temperature
+compare_means(Temperature ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
+
 temp_plot <- ggplot(carb.output, aes(x = Treatment, y = Temperature, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 34) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("Temperature (°C)") +
+  ylab(expression(bold(paste("Temperature (°C)")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
+temp_plot
+
+# pH
+compare_means(pH ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 pH_plot <- ggplot(carb.output, aes(x = Treatment, y = pH, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 8.2) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("pH") +
+  ylab(expression(bold(paste("pH (Total scale)")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
   theme(legend.position = "none") 
+pH_plot
+
+# CO2
+compare_means(CO2 ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 CO2_plot <- ggplot(carb.output, aes(x = Treatment, y = CO2, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 54) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("CO2 (µmol kg-1)") +
+  ylab(expression(bold(paste("CO2 (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
   theme(legend.position = "none") 
+CO2_plot
 
-carb.output_sub <- carb.output[-c(15,16,21,60,68),] # remove outlier 
-pCO2_plot <- ggplot(carb.output_sub, aes(x = Treatment, y = pCO2, fill = Treatment)) +
-  geom_boxplot() + 
+# pCO2
+compare_means(pCO2 ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
+
+pCO2_plot <- ggplot(carb.output, aes(x = Treatment, y = pCO2, fill = Treatment)) +
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova") +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("pCO2 (µmol kg-1)") +
+  ylab(expression(bold(paste("pCO2 (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
-## need to remove outlier
+  theme(legend.position = "none") 
+pCO2_plot
+
+# HCO3
+compare_means(HCO3 ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 HCO3_plot <- ggplot(carb.output, aes(x = Treatment, y = HCO3, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 2150) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("HCO3 (µmol kg-1)") +
+  ylab(expression(bold(paste("HCO3 (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
   theme(legend.position = "none") 
+HCO3_plot
+
+# CO3
+compare_means(CO3 ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 CO3_plot <- ggplot(carb.output, aes(x = Treatment, y = CO3, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 275) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("CO3 (µmol kg-1)") +
+  ylab(expression(bold(paste("CO3 (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
+CO3_plot
+
+# DIC
+compare_means(DIC ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 DIC_plot <- ggplot(carb.output, aes(x = Treatment, y = DIC, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 2250) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("Dissolved Inorganic Carbon (µmol kg-1)") +
+  ylab(expression(bold(paste("DIC (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
+DIC_plot
+
+# TA
+compare_means(TA ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 TA_plot <- ggplot(carb.output, aes(x = Treatment, y = TA, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 2450) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("Total Alkalinity (µmol kg-1)") +
+  ylab(expression(bold(paste("Total alkalinity (mol", " kg"^-1, ")")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
+TA_plot
+
+# Aragonite saturation
+compare_means(AragSat ~ Treatment, data = carb.output, method = "anova")
+my_comparisons <- list(c("C", "M"), c("C", "H"), c("M", "H"))
 
 AragSat_plot <- ggplot(carb.output, aes(x = Treatment, y = AragSat, fill = Treatment)) +
-  geom_boxplot() + 
+  #geom_hline(yintercept=0, linetype="dashed", color="black", size=0.75)+
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label.y = 2450) +
+  stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  ylab("Aragonite Saturation (µmol kg-1)") +
+  ylab(expression(bold(paste("Aragonite Saturation")))) +
   xlab("") +
   theme_classic() + 
   theme(axis.text = element_text(size=12, color="black"), 
         axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") 
+AragSat_plot
+
 
 
 all_plots<-plot_grid(salinity_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, AragSat_plot, 
@@ -394,10 +367,8 @@ all_plots<-plot_grid(salinity_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO
 ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
 
 
-### Once I have all the data, I will run stats for all environmental variables by treatment. 
-### I will also make tables for the manuscript 
+### Need to look into removing outliers and whats going on w/ units for pCO2 and aragonite saturation
 
 
 
-## Plot different way 
 
