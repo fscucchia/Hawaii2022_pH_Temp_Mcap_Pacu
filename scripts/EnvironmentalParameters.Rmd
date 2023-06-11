@@ -122,6 +122,7 @@ ggplot(TAdata.2, aes(x = treatment, y = TA_value2)) +
 TAdata.2 <- TAdata.2 %>% dplyr::select(c("sample.name", "TA_value2"))
 
 ```
+
 Join values 1 and 2, calculate averages, plot, run ANOVA
 ```{r}
 TA_sub <- left_join(TAdata.1, TAdata.2, by="sample.name")
