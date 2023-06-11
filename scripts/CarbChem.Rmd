@@ -5,7 +5,7 @@ date: "2023-06-09"
 output: html_document
 ---
 
-This script will calculate various carbonate chemistry parameters for the Hawaii 2020 experimental dataset. Using scripts from [Sam Gurr](https://github.com/SamGurr/Geoduck_transgen_offspring_OA/blob/master/RAnalysis/Scripts/CarbChem.R) and [Emma Strand](https://github.com/hputnam/Acclim_Dynamics/blob/master/Scripts/CarbChem.Rmd)
+This script will calculate various carbonate chemistry parameters for the Hawaii 2022 experimental dataset. Using scripts from [Sam Gurr](https://github.com/SamGurr/Geoduck_transgen_offspring_OA/blob/master/RAnalysis/Scripts/CarbChem.R) and [Emma Strand](https://github.com/hputnam/Acclim_Dynamics/blob/master/Scripts/CarbChem.Rmd)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
