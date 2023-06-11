@@ -587,6 +587,10 @@ all_plots<-plot_grid(sal_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plo
 ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
 ```
 
+## Save carb chem values in csv
+```{r}
+write.csv(carb.output, "output/CarbChem/CarbChem.csv")
+```
 
 
 
