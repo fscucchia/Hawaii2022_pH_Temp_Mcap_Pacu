@@ -1,0 +1,12 @@
+ExtractionDate,Treatment,Type,Species,Lifestage,TubeID,Type,Kit,ElutionVolume_uL,RIN,Concentration1_ng/uL,Concentration2_ng/uL,Avg_Concentration,ng in 30µl,µg in 30µl,Volume µl
+20220724,control,RNA,Pocillopora acuta,Spat,B,rna,high sensitivity ,100,9,21,20.8,20.9,627,0.627,30
+20220724,control,RNA,Pocillopora acuta,Spat,C,rna,high sensitivity ,100,5,5.2,5.18,5.19,155.7,0.1557,90
+20220725,control,RNA,Pocillopora acuta,Spat,E,rna,high sensitivity ,100,8.4,16.8,15.9,16.35,490.5,0.4905,60
+20220725,control,RNA,Pocillopora acuta,Spat,G,rna,high sensitivity ,100,9.2,25.6,24,24.8,744,0.744,30
+20220724,high,RNA,Pocillopora acuta,Spat,A,rna,high sensitivity ,100,8.9,37.2,34.6,35.9,1077,1.077,30
+20220726,high,RNA,Pocillopora acuta,Spat,L,rna,high sensitivity ,100,8.1,26.6,25,25.8,774,0.774,30
+20220726,high,RNA,Pocillopora acuta,Spat,N,rna,high sensitivity ,100,4.3,25,23.6,24.3,729,0.729,30
+20220724,medium,RNA,Pocillopora acuta,Spat,D,rna,high sensitivity ,100,6.5,6.86,6.71,6.785,203.55,0.20355,90
+20220725,medium,RNA,Pocillopora acuta,Spat,F,rna,high sensitivity ,100,8.3,17.4,16.8,17.1,513,0.513,30
+20220725,medium,RNA,Pocillopora acuta,Spat,H,rna,high sensitivity ,100,8.8,58.2,55.6,56.9,1707,1.707,30
+20220726,medium,RNA,Pocillopora acuta,Spat,M,rna,high sensitivity ,100,9.1,31.8,31.4,31.6,948,0.948,30
