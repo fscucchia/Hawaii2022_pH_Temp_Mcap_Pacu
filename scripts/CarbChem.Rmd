@@ -22,6 +22,9 @@ library(cowplot)
 library(dplyr)
 library(ggpubr)
 library(ggstatsplot)
+library(wesanderson)
+library(ggsignif)
+library(dunn.test)
 ```
 
 # Discrete pH calculations
@@ -291,6 +294,7 @@ summary(res.aov)
 TukeyHSD(res.aov) # See if there is any differences between specific treatments 
 plot(res.aov, 1) # Check ANOVA assumptions of normality 
 leveneTest(Salinity ~ Treatment, data = carb.output) # Check ANOVA assumptions of homogenity of variance 
+
 ## Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(Temperature ~ Treatment, data = carb.output)
 summary(res.aov)
@@ -595,5 +599,603 @@ write.csv(carb.output, "output/CarbChem/CarbChem.csv")
 
 
 
+## Remake figures for publication 
+
+Read in data 
+```{r}
+data <- read.csv("../output/CarbChem/CarbChem.csv")
+data <- data[,-1]
+
+# Change C = Control, M = Mid, H = High
+data <- data %>%
+  mutate(Treatment = ifelse(Treatment == "C", "Control", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "M", "Mid", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "H", "High", Treatment))
+
+# Set variables as factors 
+data$Treatment <- factor(data$Treatment, levels = c("Control", "Mid", "High"))
+```
+
+Plot data and do stats for all parameters
+
+Temperature 
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, Temperature, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(Temperature ~ Treatment, data = carb.output)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(Temperature ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot
+temp_plot <- ggplot(data, aes(x = Treatment, y = Temperature, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  ylab(expression(bold(paste("Temperature (°C)")))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  #theme(axis.text.x = element_blank()) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(30, 30)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(32, 32)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(31.5, 31.5)); temp_plot
+```
+
+Salinity 
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, Salinity, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(Salinity ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov) # no significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(Salinity ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
+
+# Transform data with log
+res.aov <- aov(log(Salinity) ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(log(Salinity) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
+
+
+# Transform data with sqrt
+res.aov <- aov(sqrt(Salinity) ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(sqrt(Salinity) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
+
+
+# Transform data with inverse
+res.aov <- aov((1/Salinity) ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest((1/Salinity) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
+
+# Conduct non-parametric test 
+kruskal.test(Salinity ~ Treatment, data = data) # no significance 
+
+# Plot
+sal_plot <- ggplot(data, aes(x = Treatment, y = Salinity, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  ylab(expression(bold(paste("Salinity (psu)")))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  #theme(axis.text.x = element_blank()) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = -0.5, y_position = c(35.8, 35.8)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = -0.5, y_position = c(36, 36)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = -0.5, y_position = c(36.3, 36.3)); sal_plot
+```
+
+pH total 
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, pH.Total, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(pH.Total ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(pH.Total ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot
+pH_plot <- ggplot(data, aes(x = Treatment, y = pH.Total, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  ylab(expression(bold(paste("pH (Total)")))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  #theme(axis.text.x = element_blank()) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(8,8)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(8.2,8.2)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(8.1, 8.1)); pH_plot
+```
+
+CO2
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, CO2, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(CO2 ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(CO2 ~ Treatment, data = data) # pvalue < 0.05, variance is NOT homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Transform data with log
+res.aov <- aov(log(CO2) ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(log(CO2) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, distribution is normal
+
+# Move forward with log(CO2), as it meets anova assumptions 
+data$CO2_log <- log(data$CO2)
+
+# Plot
+CO2_plot <- ggplot(data, aes(x = Treatment, y = CO2, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("CO"[2] ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  #theme(axis.text.x = element_blank()) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(30,30)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(46.5,46.5)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(44.7,44.7)); CO2_plot
+
+# Do I include the log value in the plot or the original value?
+```
+
+pCO2
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, pCO2, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(pCO2 ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(pCO2 ~ Treatment, data = data) # pvalue < 0.05, variance is NOT homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Transform data with log
+res.aov <- aov(log(pCO2) ~ Treatment, data = data)
+summary(res.aov) # no significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(log(pCO2) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, distribution is normal
+
+# Move forward with log(pCO2), as it meets anova assumptions 
+data$pCO2_log <- log(data$pCO2)
+
+# Plot data 
+pCO2_plot <- ggplot(data, aes(x = Treatment, y = pCO2, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("pCO"[2] ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  #theme(axis.text.x = element_blank()) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(1100,1100)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(1950,1950)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(1850,1850)); pCO2_plot
+```
+
+HCO3
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, HCO3, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(HCO3 ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(HCO3 ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot data 
+HCO3_plot <- ggplot(data, aes(x = Treatment, y = HCO3, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("HCO"[3] ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(1935,1935)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2040,2040)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2015,2015)); HCO3_plot
+```
+
+CO3
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, CO3, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(CO3 ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(CO3 ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot data 
+CO3_plot <- ggplot(data, aes(x = Treatment, y = CO3, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("CO"[3] ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(185,185)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(195,195)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(140,140)); CO3_plot
+```
+
+DIC
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, DIC, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(DIC ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(DIC ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot data 
+DIC_plot <- ggplot(data, aes(x = Treatment, y = DIC, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("DIC" ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2075,2075)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2150,2150)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2130,2130)); DIC_plot
+```
+
+DIC
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, DIC, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(DIC ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(DIC ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot data 
+DIC_plot <- ggplot(data, aes(x = Treatment, y = DIC, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("DIC" ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2075,2075)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2150,2150)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2130,2130)); DIC_plot
+```
+
+TA
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, TA, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(TA ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences between high and control/mid treatment 
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(TA ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is NOT normal 
+
+# Transform data with log
+res.aov <- aov(log(TA) ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(log(TA) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05,distribution is NOT normal
+
+# Transform data with sqrt
+res.aov <- aov(sqrt(TA) ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(sqrt(TA) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05,distribution is NOT normal
+
+# Transform data with inverse
+res.aov <- aov((1/TA) ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov)
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(sqrt(1/TA) ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue < 0.05,distribution is NOT normal
+
+# Conduct non-parametric test
+kruskal.test(TA ~ Treatment, data = data) # significant differences between treatments 
+dunn.test(data$TA, g = data$Treatment, method = "bonferroni") # I specified the Bonferroni method, otherwise the default method  is no adjustment for multiple comparisons
+
+# Plot data 
+TA_plot <- ggplot(data, aes(x = Treatment, y = TA, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("Total Alkalinity" ~(μmol ~ kg^-1)))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=T, vjust = -0.5, y_position = c(2205,2205), annotations = "NS.") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2225,2225), annotations = "**") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2220,2220), annotations = "**"); TA_plot
+```
+
+Aragonite saturation
+```{r}
+# Check for outliers
+outlier.plot <- ggbetweenstats(data, Treatment, AragSat, outlier.tagging = TRUE); outlier.plot # no major outliers 
+
+# Test for differences in temperature by treatment with one-way ANOVA
+res.aov <- aov(AragSat ~ Treatment, data = data)
+summary(res.aov) # significant differences between treatments
+TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+
+## Check ANOVA assumption of homogeneity of variance 
+plot(res.aov, 1) 
+leveneTest(AragSat ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
+
+## Check ANOVA assumption of normally distributed
+plot(res.aov, 2)
+aov_residuals <- residuals(object = res.aov)
+shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
+
+# Plot data 
+Arag_plot <- ggplot(data, aes(x = Treatment, y = AragSat, fill = Treatment)) +
+  geom_boxplot() +
+  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
+  #stat_compare_means(method = "anova", label.y = 32) +
+  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
+  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
+  ylab(expression(bold("Ω"[Aragonite]))) +
+  xlab("") +
+  theme_classic() + 
+  theme(axis.text = element_text(size=12, color="black"), 
+        axis.title=element_text(size=12, color="black", face="bold")) +
+  theme(legend.position = "none") +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(3,3)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(3.2,3.2)) +
+  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2.3,2.3)); Arag_plot
+```
+
+Save plots
+```{r}
+all_plots<-plot_grid(temp_plot, sal_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, Arag_plot, nrow=2, ncol=5, label_y=1, labels=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"), label_size=15); all_plots
+
+ggsave(all_plots, file="../output/CarbChem/CarbChem_panel.png", width=25, height=10)
+ggsave(all_plots, file="../output/CarbChem/CarbChem_panel.pdf", width=25, height=10)
+```
+
+Summarize data
+```{r}
+summary_data <- data %>%
+  group_by(Treatment) %>%
+  summarise(across(c(Salinity, Temperature, pH.Total, CO2, pCO2, HCO3, CO3, DIC, TA, AragSat, ), 
+                   list(mean = mean, std_err = ~sd(.)/sqrt(length(.)))))
+summary_data
+
+write.csv(summary_data, "../output/CarbChem/CarbChem_summary.csv")
+```
 
 
