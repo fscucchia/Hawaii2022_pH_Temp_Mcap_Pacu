@@ -16,6 +16,7 @@ library(pheatmap)
 library(lme4)
 library(tidyverse)
 library(car)
+library(gplots)
 ```
 
 Load data. I'm going to use the transcript count matrix first, as that one appears to have most of the info from the gff (whereas the gene count matrix has STRG gene ids)
@@ -63,7 +64,7 @@ filt_outrm_poa <- matrix[filt_outrm_poa,] #keep only rows that passed filter
 
 all(rownames(meta$ID) %in% colnames(filt_outrm_poa)) # must come out TRUE
 
-write.csv(filt_outrm_poa, file = "../output/filtered_counts.csv")
+write.csv(filt_outrm_poa, file = "../output/DEG/filtered_counts.csv")
 ```
 
 Put data and metadata in DESeq2 matrix 
@@ -92,54 +93,173 @@ DEG.int <- DESeq(data) #run differential expression test by group using the wald
 resultsNames(DEG.int)
 ```
 
-Look at control v mid contrast
+Look at mid v control contrast
 ```{r}
-c_v_m <- results(DEG.int, contrast = c("Treatment", "Control", "Mid"))
-head(c_v_m)
-plotMA(c_v_m)
-sum(c_v_m$padj <0.05, na.rm=T)
-```
-
-Look at control v high contrast
-```{r}
-c_v_h <- results(DEG.int, contrast = c("Treatment", "Control", "High"))
-head(c_v_h)
-plotMA(c_v_h)
-sum(c_v_h$padj <0.05, na.rm=T)
-c_v_h.sig <- subset(c_v_h, padj<0.05,) #identify signficant pvalues with 5%FDR
-sum(c_v_h.sig$log2FoldChange <0, na.rm=T) # 372 genes are downregulated in control relative to high
-sum(c_v_h.sig$log2FoldChange >0, na.rm=T) # 249 genes are upregulated in control relative to high
-```
-
-Look at mid v high contrast
-```{r}
-m_v_h <- results(DEG.int, contrast = c("Treatment", "Mid", "High"))
-head(m_v_h)
-plotMA(m_v_h)
-sum(m_v_h$padj <0.05, na.rm=T)
-m_v_h.sig <- subset(m_v_h, padj<0.05,) #identify signficant pvalues with 5%FDR
-sum(m_v_h.sig$log2FoldChange <0, na.rm=T) # 329 genes are downregulated in mid relative to high
-sum(m_v_h.sig$log2FoldChange >0, na.rm=T) # 263 genes are upregulated in mid relative to high
-m_v_h.sig.list <- data[which(rownames(DEG.int) %in% rownames(m_v_h.sig)),] #subset list of sig transcripts from original count data
-
-m_v_h.rsig <- rlog(m_v_h.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
-pca_plot <- plotPCA(m_v_h.rsig, intgroup = c("Treatment")); pca_plot #Plot PCA of all samples for DEG only
-mat <- assay(m_v_h.rsig) #make an expression object
+m_v_c <- results(DEG.int, contrast = c("Treatment", "Mid", "Control"))
+head(m_v_c)
+ma_plot <- plotMA(m_v_c); ma_plot
+sum(m_v_c$padj <0.05, na.rm = T)
+m_v_c.sig <- subset(m_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
+head(m_v_c.sig)
+sum(m_v_c.sig$log2FoldChange <0, na.rm=T) # 1 gene is downregulated in mid relative to control
+sum(m_v_c.sig$log2FoldChange >0, na.rm=T) # 3 gene are upregulated in mid relative to control
+#plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g3840.t1", intgroup="Treatment")
+m_v_c.sig.list <- data[which(rownames(DEG.int) %in% rownames(m_v_c.sig)),] #subset list of sig transcripts from original count data
+m_v_c.rsig <- rlog(m_v_c.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+pca_plot <- plotPCA(m_v_c.rsig, intgroup = c("Treatment")); pca_plot #Plot PCA of all samples for DEG only
+mat <- assay(m_v_c.rsig) #make an expression object
 col.order <- c( "B", "C", "E", "G", # Control samples
-                "D", "F", "H", "M", # Mid samples 
-                "A", "L", "N") # High samples 
+                "D", "F", "H", "M", # Mid samples
+                "A", "L", "N") # High samples
 mat <- mat[,col.order]
-df <- as.data.frame(colData(m_v_h.rsig)[,c("Treatment")]) #make dataframe
+df <- as.data.frame(colData(m_v_c.rsig)[,c("Treatment")])
 colnames(df) <- "Treatment"
-df <- df[order(df),]
+rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
+df <- df[col.order, , drop = FALSE]
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
 
+## Save plots 
+ggsave("../output/DEG/ma_plot_mid_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_mid_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_mid_v_control_DEG.pdf", heatmap, width = 8, height = 10)
 
+# Save info with pvalues and LFC
+m_v_c.sig <- as.data.frame(m_v_c.sig)
+m_v_c.sig.list <- as.data.frame(counts(m_v_c.sig.list))
+m_v_c.sig.list.full <- cbind(m_v_c.sig, m_v_c.sig.list)
+write.csv(m_v_c.sig.list.full, file = "../output/DEG/Mid_v_Control_DEGs.csv")
+```
 
-heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=FALSE, cluster_rows=TRUE, show_colnames =TRUE); heatmap #plot heatmap of all DEG by group
+Look at high v control contrast
+```{r}
+h_v_c <- results(DEG.int, contrast = c("Treatment", "High", "Control"))
+head(h_v_c)
+ma_plot <- plotMA(h_v_c); ma_plot
+sum(h_v_c$padj <0.05, na.rm=T)
+h_v_c.sig <- subset(h_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
+sum(h_v_c.sig$log2FoldChange <0, na.rm=T) # 249 genes are downregulated in high relative to control
+sum(h_v_c.sig$log2FoldChange >0, na.rm=T) # 372 genes are upregulated in high relative to control
+#plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g3840.t1", intgroup="Treatment")
+h_v_c.sig.list <- data[which(rownames(DEG.int) %in% rownames(h_v_c.sig)),] #subset list of sig transcripts from original count data
+h_v_c.rsig <- rlog(h_v_c.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+pca_plot <- plotPCA(h_v_c.rsig, intgroup = c("Treatment")); pca_plot #Plot PCA of all samples for DEG only
+mat <- assay(h_v_c.rsig) #make an expression object
+col.order <- c( "B", "C", "E", "G", # Control samples
+                "D", "F", "H", "M", # Mid samples
+                "A", "L", "N") # High samples
+mat <- mat[,col.order]
+df <- as.data.frame(colData(h_v_c.rsig)[,c("Treatment")])
+colnames(df) <- "Treatment"
+rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
+df <- df[col.order, , drop = FALSE]
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
+
+## Save plots 
+ggsave("../output/DEG/ma_plot_high_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_high_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_high_v_control_DEG.pdf", heatmap, width = 8, height = 10)
+
+# Save info with pvalues and LFC
+h_v_c.sig <- as.data.frame(h_v_c.sig)
+h_v_c.sig.list <- as.data.frame(counts(h_v_c.sig.list))
+h_v_c.sig.list.full <- cbind(h_v_c.sig, h_v_c.sig.list)
+write.csv(h_v_c.sig.list.full, file = "../output/DEG/High_v_Control_DEGs.csv")
+```
+
+Look at high v mid contrast
+```{r}
+h_v_m <- results(DEG.int, contrast = c("Treatment", "High", "Mid"))
+head(h_v_m)
+plotMA(h_v_m)
+sum(h_v_m$padj <0.05, na.rm=T)
+h_v_m.sig <- subset(h_v_m, padj<0.05,) #identify signficant pvalues with 5%FDR
+head(h_v_m.sig)
+sum(h_v_m.sig$log2FoldChange <0, na.rm=T) # 263 genes are downregulated in high relative to mid
+sum(h_v_m.sig$log2FoldChange >0, na.rm=T) # 329 genes are upregulated in high relative to mid
+#plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g16321.t1", intgroup="Treatment")
+h_v_m.sig.list <- data[which(rownames(DEG.int) %in% rownames(h_v_m.sig)),] #subset list of sig transcripts from original count data
+write.csv(counts(h_v_m.sig.list), file = "../output/DEG/High_v_Mid_DEGs.csv")
+h_v_m.rsig <- rlog(h_v_m.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+pca_plot <- plotPCA(h_v_m.rsig, intgroup = c("Treatment")); pca_plot #Plot PCA of all samples for DEG only
+mat <- assay(h_v_m.rsig) #make an expression object
+col.order <- c( "B", "C", "E", "G", # Control samples
+                "D", "F", "H", "M", # Mid samples
+                "A", "L", "N") # High samples
+mat <- mat[,col.order]
+df <- as.data.frame(colData(h_v_m.rsig)[,c("Treatment")])
+colnames(df) <- "Treatment"
+rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
+df <- df[col.order, , drop = FALSE]
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
+
+## Save plots 
+ggsave("../output/DEG/ma_plot_high_v_mid_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_high_v_mid_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_high_v_mid_DEG.pdf", heatmap, width = 8, height = 10)
+
+# Save info with pvalues and LFC
+h_v_m.sig <- as.data.frame(h_v_m.sig)
+h_v_m.sig.list <- as.data.frame(counts(h_v_m.sig.list))
+h_v_m.sig.list.full <- cbind(h_v_m.sig, h_v_m.sig.list)
+write.csv(h_v_m.sig.list.full, file = "../output/DEG/High_v_Mid_DEGs.csv")
+```
+
+The high treatment has some clear expression pattern differences compared to mid and control. 
+
+Look at the unique genes 
+```{r}
+m_v_c.DEGs <- as.data.frame(row.names(m_v_c.sig.list))
+colnames(m_v_c.DEGs) <- "DEGs"
+length(t(unique(m_v_c.DEGs)))
+
+h_v_c.DEGs <- as.data.frame(row.names(h_v_c.sig.list))
+colnames(h_v_c.DEGs) <- "DEGs"
+length(t(unique(h_v_c.DEGs)))
+
+h_v_m.DEGs <- as.data.frame(row.names(h_v_m.sig.list))
+colnames(h_v_m.DEGs) <- "DEGs"
+length(t(unique(h_v_m.DEGs)))
+
+my_list <- list(m_v_c.DEGs, h_v_c.DEGs, h_v_m.DEGs)
+venn(my_list)
+Intersect <- venn(my_list, intersection=TRUE)
+isect <- attr(Intersect, "intersection")
+str(isect)
+```
+
+There is the most overlap between control vs high and mid vs high, suggesting that the high treatment had very different gene expression patterns compared to control and mid. 
+
+Bind the unique genes from all contrasts
+```{r}
+DEGs.all <- rbind(m_v_c.DEGs, h_v_c.DEGs, h_v_m.DEGs)
+DEGs.all <- unique(DEGs.all)
+length(unique(DEGs.all$DEGs))
+
+Unique.sig.list <- data[which(rownames(data) %in% DEGs.all$DEGs),] #subset list of sig transcripts from original count data
+Unique.rsig <- rlog(Unique.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+write.csv(counts(Unique.sig.list), file="../output/DEG/Unique_DEGs.csv")
+```
+
+Visualize the DEGs
+
+PCA with DEGs
+```{r}
+pca_plot <- plotPCA(Unique.rsig, intgroup = c("Treatment")); pca_plot
+```
+
+Heatmap with DEGs
+```{r}
+mat <- assay(Unique.rsig) #make an expression object
+df <- as.data.frame(colData(Unique.rsig)[,c("Treatment")]) #make dataframe
+colnames(df) <- "Treatment"
+rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
+
 
 ```
 
-JA left off here in 1/21/24. 
+
+
+
 
 
 
