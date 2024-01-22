@@ -1,0 +1,145 @@
+---
+title: "DESeq2"
+author: "Jill Ashey"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This script will analyze the DEGs from the Pacuta 2022 HI experiment. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(genefilter)
+library(DESeq2)
+library(pheatmap)
+library(lme4)
+library(tidyverse)
+library(car)
+```
+
+Load data. I'm going to use the transcript count matrix first, as that one appears to have most of the info from the gff (whereas the gene count matrix has STRG gene ids)
+```{r}
+matrix <- read_csv("../output/Pacuta_transcript_count_matrix.csv")
+matrix <- as.data.frame(matrix)
+rownames(matrix) <- matrix[,1] #set first column that contains gene names as rownames
+matrix <- matrix[,-1] # remove column w/ gene names 
+```
+
+Remove extraneous info from sample names 
+```{r}
+colnames(matrix) <- sub("_R1_001.bam.gtf", "", colnames(matrix))
+```
+
+Read in metadata 
+```{r}
+meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
+  select(Treatment, Species, Lifestage, TubeID) %>%
+  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
+  rename(ID = TubeID) %>%
+  arrange(ID)
+```
+
+Set variables as factors 
+```{r}
+meta$Treatment <- factor(meta$Treatment, levels = c("Control", "Mid", "High"))
+```
+
+Data sanity check!
+```{r}
+meta$ID %in% colnames(matrix) #are all of the sample names (rows) in the metadata df in the gene count matrix? Should be TRUE. 
+all(rownames(meta$ID) == colnames(matrix)) #are they the same in the same order? Should be TRUE
+```
+
+Filter reads by proportion of samples containing cutoff value 
+```{r}
+ffun<-filterfun(pOverA(0.75,5))  #set up filtering parameters--LOOK INTO FILTERING PARAMETERS
+filt_outrm_poa <- genefilter((matrix), ffun) #apply filter
+sum(filt_outrm_poa) #count number of genes left
+
+filt_outrm_poa <- matrix[filt_outrm_poa,] #keep only rows that passed filter
+
+all(rownames(meta$ID) %in% colnames(filt_outrm_poa)) # must come out TRUE
+
+write.csv(filt_outrm_poa, file = "../output/filtered_counts.csv")
+```
+
+Put data and metadata in DESeq2 matrix 
+```{r}
+data <- DESeqDataSetFromMatrix(countData = filt_outrm_poa, colData = meta, design = ~Treatment)
+```
+
+Visualize expression
+```{r}
+rld <- rlog(data, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+head(assay(rld), 3) #view data
+sampleDists <- dist(t(assay(rld))) #calculate distance matix
+sampleDistMatrix <- as.matrix(sampleDists) #distance matrix
+rownames(sampleDistMatrix) <- colnames(rld) #assign row names
+colnames(sampleDistMatrix) <- NULL #assign col names
+pheatmap(sampleDistMatrix, #plot matrix of expression similarity
+         clustering_distance_rows=sampleDists, #cluster rows
+         clustering_distance_cols=sampleDists) #cluster columns
+
+plotPCA(rld, intgroup = c("Treatment")) #plot PCA of samples with all data
+```
+
+Run differential gene expression analysis 
+```{r}
+DEG.int <- DESeq(data) #run differential expression test by group using the wald test 
+resultsNames(DEG.int)
+```
+
+Look at control v mid contrast
+```{r}
+c_v_m <- results(DEG.int, contrast = c("Treatment", "Control", "Mid"))
+head(c_v_m)
+plotMA(c_v_m)
+sum(c_v_m$padj <0.05, na.rm=T)
+```
+
+Look at control v high contrast
+```{r}
+c_v_h <- results(DEG.int, contrast = c("Treatment", "Control", "High"))
+head(c_v_h)
+plotMA(c_v_h)
+sum(c_v_h$padj <0.05, na.rm=T)
+c_v_h.sig <- subset(c_v_h, padj<0.05,) #identify signficant pvalues with 5%FDR
+sum(c_v_h.sig$log2FoldChange <0, na.rm=T) # 372 genes are downregulated in control relative to high
+sum(c_v_h.sig$log2FoldChange >0, na.rm=T) # 249 genes are upregulated in control relative to high
+```
+
+Look at mid v high contrast
+```{r}
+m_v_h <- results(DEG.int, contrast = c("Treatment", "Mid", "High"))
+head(m_v_h)
+plotMA(m_v_h)
+sum(m_v_h$padj <0.05, na.rm=T)
+m_v_h.sig <- subset(m_v_h, padj<0.05,) #identify signficant pvalues with 5%FDR
+sum(m_v_h.sig$log2FoldChange <0, na.rm=T) # 329 genes are downregulated in mid relative to high
+sum(m_v_h.sig$log2FoldChange >0, na.rm=T) # 263 genes are upregulated in mid relative to high
+m_v_h.sig.list <- data[which(rownames(DEG.int) %in% rownames(m_v_h.sig)),] #subset list of sig transcripts from original count data
+
+m_v_h.rsig <- rlog(m_v_h.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+pca_plot <- plotPCA(m_v_h.rsig, intgroup = c("Treatment")); pca_plot #Plot PCA of all samples for DEG only
+mat <- assay(m_v_h.rsig) #make an expression object
+col.order <- c( "B", "C", "E", "G", # Control samples
+                "D", "F", "H", "M", # Mid samples 
+                "A", "L", "N") # High samples 
+mat <- mat[,col.order]
+df <- as.data.frame(colData(m_v_h.rsig)[,c("Treatment")]) #make dataframe
+colnames(df) <- "Treatment"
+df <- df[order(df),]
+
+
+
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=FALSE, cluster_rows=TRUE, show_colnames =TRUE); heatmap #plot heatmap of all DEG by group
+
+```
+
+JA left off here in 1/21/24. 
+
+
+
