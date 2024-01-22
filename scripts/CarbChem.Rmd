@@ -31,7 +31,7 @@ library(dunn.test)
 
 ## Read in tris calibration information and calculate slope and intercept 
 ```{r}
-path <-("Raw_data/pH_tris")
+path <-("../Raw_data/pH_tris")
 file.names<-list.files(path = path, pattern = "csv$") #list all the file names in the folder to get only get the csv files
 pH.cals <- data.frame(matrix(NA, nrow=length(file.names), ncol=3, dimnames=list(file.names,c("Date", "Intercept", "Slope")))) #generate a 3 column dataframe with specific column names
 
@@ -54,7 +54,7 @@ F <-96485.339924 #Faraday constant in coulombs mol-1
 
 ## Read in daily measurements
 ```{r}
-daily <- read.csv("Raw_data/Water_chemistry_OrionStar_TA.csv")[,1:10]
+daily <- read.csv("../Raw_data/Water_chemistry_OrionStar_TA.csv")[,1:10]
 daily <- na.omit(daily)
 ```
 
@@ -73,7 +73,7 @@ SW.chem$pH.Total<-phTris+(mvTris/1000-SW.chem$pH_mV/1000)/(R*(SW.chem$temp+273.1
 
 # Discrete TA calculations
 ```{r}
-TA <- read.csv("Raw_data/TA/Cumulative_TA_Output.csv")
+TA <- read.csv("../Raw_data/TA/Cumulative_TA_Output.csv")
 TA$SampleID <- gsub("^[^_]*_", "", TA$SampleID) # remove 1_ or 2_ from sample ID
 TA <- TA %>%
   filter(Type == "Sample") %>%
@@ -586,14 +586,18 @@ outlier.plot
 
 Save plots
 ```{r}
-all_plots<-plot_grid(sal_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, AragSat_plot, nrow=2, ncol=5, label_y=1, labels=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"), label_size=18)
+#all_plots<-plot_grid(sal_plot, temp_plot, pH_plot, CO2_plot, pCO2_plot, HCO3_plot, CO3_plot, DIC_plot, TA_plot, AragSat_plot, nrow=2, ncol=5, label_y=1, labels=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J"), label_size=18)
 
-ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
+#ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
 ```
 
 ## Save carb chem values in csv
 ```{r}
-write.csv(carb.output, "output/CarbChem/CarbChem.csv")
+```
+
+
+```{r}
+#write.csv(carb.output, "output/CarbChem/CarbChem.csv")
 ```
 
 
@@ -639,7 +643,7 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot
 temp_plot <- ggplot(data, aes(x = Treatment, y = Temperature, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -725,7 +729,7 @@ kruskal.test(Salinity ~ Treatment, data = data) # no significance
 
 # Plot
 sal_plot <- ggplot(data, aes(x = Treatment, y = Salinity, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -764,9 +768,8 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot
 pH_plot <- ggplot(data, aes(x = Treatment, y = pH.Total, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
-
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
   #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
@@ -821,7 +824,7 @@ data$CO2_log <- log(data$CO2)
 
 # Plot
 CO2_plot <- ggplot(data, aes(x = Treatment, y = CO2, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -880,7 +883,7 @@ data$pCO2_log <- log(data$pCO2)
 
 # Plot data 
 pCO2_plot <- ggplot(data, aes(x = Treatment, y = pCO2, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -920,7 +923,7 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot data 
 HCO3_plot <- ggplot(data, aes(x = Treatment, y = HCO3, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -959,7 +962,7 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot data 
 CO3_plot <- ggplot(data, aes(x = Treatment, y = CO3, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -998,46 +1001,7 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot data 
 DIC_plot <- ggplot(data, aes(x = Treatment, y = DIC, fill = Treatment)) +
-  geom_boxplot() +
-  #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
-  #stat_compare_means(method = "anova", label.y = 32) +
-  #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
-  #scale_fill_manual(values = c("lightblue", "lightgreen", "pink")) +
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #ylab(expression("Cell Density" ~(cells ~cm^-2))) +
-  ylab(expression(bold("DIC" ~(μmol ~ kg^-1)))) +
-  xlab("") +
-  theme_classic() + 
-  theme(axis.text = element_text(size=12, color="black"), 
-        axis.title=element_text(size=12, color="black", face="bold")) +
-  theme(legend.position = "none") +
-  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "Mid")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2075,2075)) +
-  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Control", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2150,2150)) +
-  geom_signif(stat = "signif", position = "identity", comparisons = list(c("Mid", "High")), map_signif_level=TRUE, vjust = 0.5, y_position = c(2130,2130)); DIC_plot
-```
-
-DIC
-```{r}
-# Check for outliers
-outlier.plot <- ggbetweenstats(data, Treatment, DIC, outlier.tagging = TRUE); outlier.plot # no major outliers 
-
-# Test for differences in temperature by treatment with one-way ANOVA
-res.aov <- aov(DIC ~ Treatment, data = data)
-summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
-
-## Check ANOVA assumption of homogeneity of variance 
-plot(res.aov, 1) 
-leveneTest(DIC ~ Treatment, data = data) # pvalue > 0.05, variance is homogeneous 
-
-## Check ANOVA assumption of normally distributed
-plot(res.aov, 2)
-aov_residuals <- residuals(object = res.aov)
-shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution 
-
-# Plot data 
-DIC_plot <- ggplot(data, aes(x = Treatment, y = DIC, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -1122,7 +1086,7 @@ dunn.test(data$TA, g = data$Treatment, method = "bonferroni") # I specified the 
 
 # Plot data 
 TA_plot <- ggplot(data, aes(x = Treatment, y = TA, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
@@ -1161,7 +1125,7 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 
 # Plot data 
 Arag_plot <- ggplot(data, aes(x = Treatment, y = AragSat, fill = Treatment)) +
-  geom_boxplot() +
+  geom_boxplot(color = "black") +
   #geom_point(aes(fill=Treatment, group=Treatment), colour="black", pch = 21, size=4, position = position_jitterdodge(0.3), alpha=0.9) + 
   #stat_compare_means(method = "anova", label.y = 32) +
   #stat_compare_means(comparisons = my_comparisons, method = "t.test") +
