@@ -1,0 +1,114 @@
+---
+title: "WGCNA"
+author: "Jill Ashey"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+WGCNA analysis of gene expression of Pacuta spat from HI 2022 pCO2xtemperature experiment. This script is based off of A. Hufmyer's WGCNA [code](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/1_WGCNA_Mcap_V3.Rmd) from her Mcap 2020 dataset.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# The following setting is important, do not omit.
+options(stringsAsFactors = FALSE) #Set Strings to character
+```
+
+Load required libraries.  
+
+```{r}
+install.packages("BiocManager")
+library("BiocManager")
+BiocManager::install("impute", type = "source")
+BiocManager::install("WGCNA",force = TRUE)
+BiocManager::install("vsn")
+
+
+if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
+if ("genefilter" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("genefilter") 
+if ("DESeq2" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('DESeq2') 
+if ("RColorBrewer" %in% rownames(installed.packages()) == 'FALSE') install.packages('RColorBrewer') 
+if ("WGCNA" %in% rownames(installed.packages()) == 'FALSE') install.packages('WGCNA') 
+if ("flashClust" %in% rownames(installed.packages()) == 'FALSE') install.packages('flashClust') 
+if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages('gridExtra') 
+if ("ComplexHeatmap" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('ComplexHeatmap') 
+if ("goseq" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('goseq')
+if ("dplyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('dplyr') 
+if ("clusterProfiler" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('clusterProfiler') 
+if ("pheatmap" %in% rownames(installed.packages()) == 'FALSE') install.packages('pheatmap') 
+if ("magrittr" %in% rownames(installed.packages()) == 'FALSE') install.packages('magrittr') 
+if ("vegan" %in% rownames(installed.packages()) == 'FALSE') install.packages('vegan') 
+if ("factoextra" %in% rownames(installed.packages()) == 'FALSE') install.packages('factoextra') 
+
+library("tidyverse")
+library("genefilter")
+library("DESeq2")
+library("RColorBrewer")
+library("WGCNA")
+library("flashClust")
+library("gridExtra")
+library("ComplexHeatmap")
+library("goseq")
+library("dplyr")
+library("clusterProfiler")
+library("pheatmap")
+library("magrittr")
+library("vegan")
+library("factoextra")
+library("dplyr")
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("impute")
+
+BiocManager::install("preprocessCore")
+BiocManager::install("WGCNA")
+```
+
+## Data input and filtering 
+
+Load gene count data. I'm going to use the transcript count matrix first, as that one appears to have most of the info from the gff (whereas the gene count matrix has STRG gene ids)
+```{r}
+gcount <- read.csv("../output/DEG/Pacuta_transcript_count_matrix.csv")
+gcount <- as.data.frame(gcount)
+rownames(gcount) <- gcount[,1] #set first column that contains gene names as rownames
+gcount <- gcount[,-1] # remove column w/ gene names 
+```
+
+Remove extraneous info from sample names 
+```{r}
+colnames(gcount) <- sub("_R1_001.bam.gtf", "", colnames(gcount))
+```
+
+Read in metadata 
+```{r}
+meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
+  select(Treatment, Species, Lifestage, TubeID) %>%
+  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
+  rename(ID = TubeID) %>%
+  arrange(ID)
+```
+
+Remove genes with 0 counts across all samples 
+```{r}
+nrow(gcount)
+gcount<-gcount %>%
+     mutate(Total = rowSums(.[, 1:38]))%>%
+    filter(!Total==0)%>%
+    dplyr::select(!Total)
+nrow(gcount)
+```
+
+We had XXXXX genes, which was filtered down to XXXX by removing genes with row sums of 0 (those not detected in our sequences).  
+
+Conduct data filtering
+
+
+
+
+
+
+
