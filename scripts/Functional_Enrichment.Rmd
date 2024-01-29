@@ -1,0 +1,138 @@
+---
+title: "Enrichment analysis"
+author: "Jill Ashey"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This script will perform functional enrichment analysis with GO and KEGG terms using the [identified DEGs](https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/blob/main/scripts/DESeq2.Rmd) from the Pacuta 2022 HI experiment. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Load libraries
+library("DESeq2")
+library("tidyverse")
+library("dplyr")
+library("pheatmap")
+library("RColorBrewer")
+library("genefilter")
+library("ggplot2")
+library("gplots")
+library("limma")
+library("spdep") 
+library("adegenet") 
+library("goseq")
+library("gridExtra")
+library("clusterProfiler")
+library("DataCombine")
+library("VennDiagram")
+```
+
+Read in all expressed genes (poverA = 0.75, 5)
+```{r}
+filt_counts <- read.csv("output/DEG/filtered_counts.csv")
+colnames(filt_counts)[1] <- "gene_id"
+```
+
+Read in DEGs
+```{r}
+degs <- read.csv("output/DEG/Unique_DEGs.csv")
+colnames(degs)[1] <- "gene_id"
+```
+
+Calculate read lengths from Pacuta V2 [cds file](http://cyanophora.rutgers.edu/Pocillopora_acuta/). I did this on my local computer using the code below. 
+```{bash}
+cd /Users/jillashey/Desktop/GFFs/pacuta/V2
+
+awk 'BEGIN{FS="[> ]"} /^>/{val=$2;next}  {print val,length($0)}' Pocillopora_acuta_HIv2.genes.cds.fna > gene_length.txt
+```
+
+Read in gene lengths 
+```{r}
+length <- read.csv("output/DEG/gene_length.txt", header = F)
+
+length <- length %>%
+  separate(V1, into = c("gene_id", "length"), sep = " ", remove = FALSE) %>%
+  select(-V1)
+```
+
+Merge length data with filtered count data
+```{r}
+length_merge <- merge(length, filt_counts, by = "gene_id")
+```
+
+GOseq requires a vector of all genes, all differentially expressed genes, and gene lengths. Make vectors 
+```{r}
+# Make DEG vector
+DEG <- length_merge[length_merge$gene_id %in% degs$gene_id, ]
+DEG_names <- as.vector(DEG$gene_id)
+gene_vector <- as.integer(length_merge$gene_id%in%DEG_names)
+names(gene_vector) <- length_merge$gene_id
+
+# Make ID vector
+ID_vector <- length_merge$gene_id
+
+# Make length vector
+length_vector <- as.numeric(length_merge$length)
+```
+
+Calculate probability weighting function 
+```{r}
+DEG.pwf <- nullp(gene_vector, ID_vector, bias.data = length_vector)
+```
+
+Code above giving me this warning: Warning: initial point very close to some inequality constraintsWarning: collapsing to unique 'x' values
+
+Read in GO annotation information
+```{r}
+annot <- read.delim("Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T)
+```
+
+This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going to start analyzing the GO terms first.
+
+Select GO columns and split so that there is only one GO term per row
+```{r}
+annot_GO <- annot %>%
+  select(X.query, GOs) %>%
+  mutate_all(~if_else(. == "-", NA_character_, .)) %>%
+  separate_rows(GOs, sep = ",") %>%
+  rename(gene_id = X.query,
+         GO.ID = GOs)
+
+# Remove leading and trailing whitespaces
+annot_GO$GO.ID <- trimws(annot_GO$GO.ID)
+
+# Replace NAs with unknown
+annot_GO$GO.ID <- replace_na(annot_GO$GO.ID, "unknown")
+
+# Set gene and go ids as factors 
+annot_GO$gene_id <- as.factor(annot_GO$gene_id)
+annot_GO$GO.ID <- as.factor(annot_GO$GO.ID)
+
+# Select only unique rows
+annot_GO <- unique(annot_GO)
+
+# Look at unique gene and go ids 
+length(unique(annot_GO$gene_id))
+length(unique(annot_GO$GO.ID))
+
+# Remove rows with unknowns
+annot_GO <- annot_GO %>%
+  filter(GO.ID != "unknown")
+```
+
+Perform GOSeq
+```{r}
+GO.wall<-goseq(DEG.pwf, ID_vector, gene2cat=annot_GO, method="Wallenius", use_genes_without_cat=T)
+```
+
+Getting this error - Error: C stack usage  7970448 is too close to the limit. I think R doesn't have enough memory?? Need to troubleshoot this further. 
+
+
+
+
+
+
+
+
