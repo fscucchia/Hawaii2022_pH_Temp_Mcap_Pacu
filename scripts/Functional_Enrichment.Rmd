@@ -129,6 +129,7 @@ GO.wall<-goseq(DEG.pwf, ID_vector, gene2cat=annot_GO, method="Wallenius", use_ge
 
 Getting this error - Error: C stack usage  7970448 is too close to the limit. I think R doesn't have enough memory?? Need to troubleshoot this further. 
 
+https://stackoverflow.com/questions/14719349/error-c-stack-usage-is-too-close-to-the-limit 
 
 
 
