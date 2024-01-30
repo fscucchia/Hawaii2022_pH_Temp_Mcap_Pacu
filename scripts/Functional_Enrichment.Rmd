@@ -28,8 +28,10 @@ library("clusterProfiler")
 library("DataCombine")
 library("VennDiagram")
 
-devtools::install_github("krlmlr/ulimit")
-library(ulimit)
+#devtools::install_github("krlmlr/ulimit")
+#library(ulimit)
+
+#ulimit::memory_limit(7970592)
 ```
 
 Read in all expressed genes (poverA = 0.75, 5)
@@ -97,11 +99,11 @@ This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going 
 Select GO columns and split so that there is only one GO term per row
 ```{r}
 annot_GO <- annot %>%
-  select(X.query, KEGG_ko) %>%
+  select(X.query, GOs) %>%
   mutate_all(~if_else(. == "-", NA_character_, .)) %>%
-  separate_rows(KEGG_ko, sep = ",") %>%
+  separate_rows(GOs, sep = ",") %>%
   rename(gene_id = X.query,
-         GO.ID = KEGG_ko)
+         GO.ID = GOs)
 
 # Remove leading and trailing whitespaces
 annot_GO$GO.ID <- trimws(annot_GO$GO.ID)
