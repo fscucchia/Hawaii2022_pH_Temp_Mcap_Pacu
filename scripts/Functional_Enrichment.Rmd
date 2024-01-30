@@ -27,17 +27,20 @@ library("gridExtra")
 library("clusterProfiler")
 library("DataCombine")
 library("VennDiagram")
+
+devtools::install_github("krlmlr/ulimit")
+library(ulimit)
 ```
 
 Read in all expressed genes (poverA = 0.75, 5)
 ```{r}
-filt_counts <- read.csv("output/DEG/filtered_counts.csv")
+filt_counts <- read.csv("../output/DEG/filtered_counts.csv")
 colnames(filt_counts)[1] <- "gene_id"
 ```
 
 Read in DEGs
 ```{r}
-degs <- read.csv("output/DEG/Unique_DEGs.csv")
+degs <- read.csv("../output/DEG/Unique_DEGs.csv")
 colnames(degs)[1] <- "gene_id"
 ```
 
@@ -50,7 +53,7 @@ awk 'BEGIN{FS="[> ]"} /^>/{val=$2;next}  {print val,length($0)}' Pocillopora_acu
 
 Read in gene lengths 
 ```{r}
-length <- read.csv("output/DEG/gene_length.txt", header = F)
+length <- read.csv("../output/DEG/gene_length.txt", header = F)
 
 length <- length %>%
   separate(V1, into = c("gene_id", "length"), sep = " ", remove = FALSE) %>%
@@ -86,7 +89,7 @@ Code above giving me this warning: Warning: initial point very close to some ine
 
 Read in GO annotation information
 ```{r}
-annot <- read.delim("Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T)
+annot <- read.delim("../Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T)
 ```
 
 This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going to start analyzing the GO terms first.
@@ -94,11 +97,11 @@ This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going 
 Select GO columns and split so that there is only one GO term per row
 ```{r}
 annot_GO <- annot %>%
-  select(X.query, GOs) %>%
+  select(X.query, KEGG_ko) %>%
   mutate_all(~if_else(. == "-", NA_character_, .)) %>%
-  separate_rows(GOs, sep = ",") %>%
+  separate_rows(KEGG_ko, sep = ",") %>%
   rename(gene_id = X.query,
-         GO.ID = GOs)
+         GO.ID = KEGG_ko)
 
 # Remove leading and trailing whitespaces
 annot_GO$GO.ID <- trimws(annot_GO$GO.ID)
@@ -118,19 +121,40 @@ length(unique(annot_GO$gene_id))
 length(unique(annot_GO$GO.ID))
 
 # Remove rows with unknowns
-annot_GO <- annot_GO %>%
-  filter(GO.ID != "unknown")
+# annot_GO <- annot_GO %>%
+#   filter(GO.ID != "unknown")
 ```
+
+Remove the annotation information for genes not present in our data 
+```{r}
+filt_annot_GO <- subset(annot_GO, gene_id %in% filt_counts$gene_id)
+```
+
 
 Perform GOSeq
 ```{r}
-GO.wall<-goseq(DEG.pwf, ID_vector, gene2cat=annot_GO, method="Wallenius", use_genes_without_cat=T)
+GO.wall<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_GO, method="Wallenius", use_genes_without_cat=T)
 ```
 
-Getting this error - Error: C stack usage  7970448 is too close to the limit. I think R doesn't have enough memory?? Need to troubleshoot this further. 
+Getting this error - Error: C stack usage  7970448 is too close to the limit. I think goseq is trying to run some iterative function and it is maxing out R?? But not sure if its a memory issue or something else. Need to troubleshoot this further. 
 
 https://stackoverflow.com/questions/14719349/error-c-stack-usage-is-too-close-to-the-limit 
+https://support.posit.co/hc/en-us/articles/15137303824279-C-Stack-usage-limit 
 
+The "C stack usage is too close to the limit" error occurs when running R code that is deeply recursive. `Cstack_info()` in R will output the stack size and current usage (in bytes instead of kbs)
+```{r}
+Cstack_info()
+   #    size    current  direction eval_depth 
+   # 7969177      15552          1          2 
+```
+
+Apparently, I can increase the stack size if the recursive function is not infinite, but has a great depth (I believe this is what I should do, as the goseq function will not run infinitely but just has a lot of GO terms (ie over 1,000,000) to assess). 
+
+```{r}
+ulimit::memory_limit(1000)
+```
+
+Tried to set memory using ulimit in both Rstudio and terminal in R. Neither worked. Even when I use the kegg terms and subset the files so the annotations are only the ones that are expressed in my dataset, I got the same C stack error 
 
 
 
