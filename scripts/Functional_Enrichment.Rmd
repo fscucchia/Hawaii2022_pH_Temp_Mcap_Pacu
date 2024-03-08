@@ -27,6 +27,11 @@ library("gridExtra")
 library("clusterProfiler")
 library("DataCombine")
 library("VennDiagram")
+library(rtracklayer)
+#library(rrvgo)
+library(GO.db)
+library(tidyr)
+library(forcats)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -38,12 +43,16 @@ Read in all expressed genes (poverA = 0.75, 5)
 ```{r}
 filt_counts <- read.csv("../output/DEG/filtered_counts.csv")
 colnames(filt_counts)[1] <- "gene_id"
+
+str(filt_counts)
 ```
 
 Read in DEGs
 ```{r}
 degs <- read.csv("../output/DEG/Unique_DEGs.csv")
 colnames(degs)[1] <- "gene_id"
+
+str(degs)
 ```
 
 Calculate read lengths from Pacuta V2 [cds file](http://cyanophora.rutgers.edu/Pocillopora_acuta/). I did this on my local computer using the code below. 
@@ -60,11 +69,15 @@ length <- read.csv("../output/DEG/gene_length.txt", header = F)
 length <- length %>%
   separate(V1, into = c("gene_id", "length"), sep = " ", remove = FALSE) %>%
   select(-V1)
+
+str(length)
 ```
 
 Merge length data with filtered count data
 ```{r}
 length_merge <- merge(length, filt_counts, by = "gene_id")
+
+str(length_merge)
 ```
 
 GOseq requires a vector of all genes, all differentially expressed genes, and gene lengths. Make vectors 
@@ -76,7 +89,7 @@ gene_vector <- as.integer(length_merge$gene_id%in%DEG_names)
 names(gene_vector) <- length_merge$gene_id
 
 # Make ID vector
-ID_vector <- length_merge$gene_id
+ID_vector <- as.vector(length_merge$gene_id)
 
 # Make length vector
 length_vector <- as.numeric(length_merge$length)
@@ -85,6 +98,8 @@ length_vector <- as.numeric(length_merge$length)
 Calculate probability weighting function 
 ```{r}
 DEG.pwf <- nullp(gene_vector, ID_vector, bias.data = length_vector)
+
+str(DEG.pwf)
 ```
 
 Code above giving me this warning: Warning: initial point very close to some inequality constraintsWarning: collapsing to unique 'x' values
@@ -130,33 +145,68 @@ length(unique(annot_GO$GO.ID))
 Remove the annotation information for genes not present in our data 
 ```{r}
 filt_annot_GO <- subset(annot_GO, gene_id %in% filt_counts$gene_id)
+
+str(filt_annot_GO)
+
+# Convert filt_annot_GO from tibble to df 
+filt_annot_GO <-as.data.frame(filt_annot_GO)
 ```
 
 
 Perform GOSeq
 ```{r}
 GO.wall<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_GO, method="Wallenius", use_genes_without_cat=T)
+
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
+
+class(GO.wall)
+head(GO.wall)
+tail(GO.wall)
+nrow(GO.wall)
 ```
 
-Getting this error - Error: C stack usage  7970448 is too close to the limit. I think goseq is trying to run some iterative function and it is maxing out R?? But not sure if its a memory issue or something else. Need to troubleshoot this further. 
+Worked! 
 
-https://stackoverflow.com/questions/14719349/error-c-stack-usage-is-too-close-to-the-limit 
-https://support.posit.co/hc/en-us/articles/15137303824279-C-Stack-usage-limit 
-
-The "C stack usage is too close to the limit" error occurs when running R code that is deeply recursive. `Cstack_info()` in R will output the stack size and current usage (in bytes instead of kbs)
+Filter by significantly enriched GO terms (p < 0.05)
 ```{r}
-Cstack_info()
-   #    size    current  direction eval_depth 
-   # 7969177      15552          1          2 
+GO_05 <- GO %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
+
+write.csv(GO_05, file = "../output/functional_enrichment/GOSeq_GO_05.csv")
 ```
 
-Apparently, I can increase the stack size if the recursive function is not infinite, but has a great depth (I believe this is what I should do, as the goseq function will not run infinitely but just has a lot of GO terms (ie over 1,000,000) to assess). 
-
+Plot all ontologies (BP, CC, MF) and order by p-value 
 ```{r}
-ulimit::memory_limit(1000)
+GO_05_plot <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()); GO_05_plot #Set the plot background #set title attributes
+
+ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot)
 ```
 
-Tried to set memory using ulimit in both Rstudio and terminal in R. Neither worked. Even when I use the kegg terms and subset the files so the annotations are only the ones that are expressed in my dataset, I got the same C stack error 
+
+
 
 
 
