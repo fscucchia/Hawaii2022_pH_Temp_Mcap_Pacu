@@ -68,7 +68,7 @@ length <- read.csv("../output/DEG/gene_length.txt", header = F)
 
 length <- length %>%
   separate(V1, into = c("gene_id", "length"), sep = " ", remove = FALSE) %>%
-  select(-V1)
+  dplyr::select(-V1)
 
 str(length)
 ```
@@ -114,7 +114,7 @@ This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going 
 Select GO columns and split so that there is only one GO term per row
 ```{r}
 annot_GO <- annot %>%
-  select(X.query, GOs) %>%
+  dplyr::select(X.query, GOs) %>%
   mutate_all(~if_else(. == "-", NA_character_, .)) %>%
   separate_rows(GOs, sep = ",") %>%
   rename(gene_id = X.query,
@@ -202,14 +202,267 @@ GO_05_plot <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, nu
         plot.background=element_blank()); GO_05_plot #Set the plot background #set title attributes
 
 ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot)
+ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot, width = 20, height = 10)
 ```
 
+Plot ontologies (BP, CC, MF) separately and order by p-value 
+```{r}
+## BP 
+GO_05_plot_BP <- GO_05 %>% 
+  drop_na(ontology) %>% 
+  filter(ontology == "BP") %>%
+  mutate(term = fct_reorder(term, numDEInCat)) %>%
+  #mutate(term = fct_reorder(term)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()); GO_05_plot_BP #Set the plot background #set title attributes
 
+ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.pdf", GO_05_plot_BP, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.png", GO_05_plot_BP, width = 30, height = 10)
 
+## CC
+GO_05_plot_CC <- GO_05 %>% 
+  drop_na(ontology) %>% 
+  filter(ontology == "CC") %>%
+  mutate(term = fct_reorder(term, numDEInCat)) %>%
+  #mutate(term = fct_reorder(term)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()); GO_05_plot_CC #Set the plot background #set title attributes
 
+ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.pdf", GO_05_plot_CC, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.png", GO_05_plot_CC, width = 30, height = 10)
 
+## MF
+GO_05_plot_MF <- GO_05 %>% 
+  drop_na(ontology) %>% 
+  filter(ontology == "MF") %>%
+  mutate(term = fct_reorder(term, numDEInCat)) %>%
+  #mutate(term = fct_reorder(term)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()); GO_05_plot_MF #Set the plot background #set title attributes
 
+ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.pdf", GO_05_plot_MF, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, width = 30, height = 10)
+```
 
+Merge significant GO terms and annot list together 
+```{r}
+GO_genes <- annot_GO %>%
+  inner_join(GO_05, by = c("GO.ID" = "category"))
+
+length(unique(GO_genes$gene_id)) # 3786 genes with over-represented GO terms 
+```
+
+Read in DEGs and merge that data with significant GO terms 
+```{r}
+deg <- read.csv("../output/DEG/Unique_DEGs.csv") %>%
+  rename("gene_id" = "X")
+
+# Merge DEGs and biomin gene information
+GO_deg <- GO_genes %>%
+  inner_join(deg, by = "gene_id")
+
+length(unique(GO_deg$gene_id)) # 178 DEGs with over-represented GO terms 
+
+write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
+```
+
+How does this relate to our DEG comparisons? Merge high v control DEGs with GO information
+```{r}
+## High vs control treatment comparison 
+h_v_c <- read.csv("../output/DEG/High_v_Control_DEGs.csv") %>%
+  rename("gene_id" = "X")
+
+# Merge DEGs and GO information and remove extra columns
+GO_h_v_c <- h_v_c %>%
+  inner_join(GO_deg, by = "gene_id") %>%
+  dplyr::select(-c("A.y", "B.y", "C.y", "D.y", "E.y", "F.y", "G.y", "H.y", "L.y", "M.y", "N.y"))
+
+length(unique(GO_h_v_c$gene_id))
+
+write.csv(GO_h_v_c, file = "../output/functional_enrichment/High_v_Control_GO.csv")
+```
+
+Merge Mid v control DEGs with GO information
+```{r}
+## Mid vs control treatment comparison 
+m_v_c <- read.csv("../output/DEG/Mid_v_Control_DEGs.csv") %>%
+  rename("gene_id" = "X")
+
+# Merge DEGs and GO information and remove extra columns
+GO_m_v_c <- m_v_c %>%
+  inner_join(GO_deg, by = "gene_id") %>%
+  dplyr::select(-c("A.y", "B.y", "C.y", "D.y", "E.y", "F.y", "G.y", "H.y", "L.y", "M.y", "N.y"))
+
+length(unique(GO_m_v_c$gene_id))
+
+write.csv(GO_m_v_c, file = "../output/functional_enrichment/Mid_v_Control_GO.csv")
+```
+
+Merge high v mid DEGs with GO information
+```{r}
+## High vs mid treatment comparison 
+h_v_m <- read.csv("../output/DEG/High_v_Mid_DEGs.csv") %>%
+  rename("gene_id" = "X")
+
+# Merge DEGs and GO information and remove extra columns
+GO_h_v_m <- h_v_m %>%
+  inner_join(GO_deg, by = "gene_id") %>%
+  dplyr::select(-c("A.y", "B.y", "C.y", "D.y", "E.y", "F.y", "G.y", "H.y", "L.y", "M.y", "N.y"))
+
+length(unique(GO_h_v_m$gene_id))
+
+write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
+```
+
+Still need to look at these results more closely. 
+
+I can also run GOSeq on the eggNOG, KEGG and PFAM terms. There are several columns for KEGG information in the `annot` file (KEGG_ko, KEGG_Pathway, KEGG_Module, KEGG_Reaction, KEGG_rclass, KEGG_TC) and I'm not sure what they all mean or which one to use in the analysis. There is also a BRITE column that looks like there is KEGG information in it. 
+
+Select PFAM columns and split so that there is only one PFAM term per row
+```{r}
+annot_pfam <- annot %>%
+  dplyr::select(X.query, PFAMs) %>%
+  mutate_all(~if_else(. == "-", NA_character_, .)) %>%
+  separate_rows(PFAMs, sep = ",") %>%
+  rename(gene_id = X.query,
+         PFAM.ID = PFAMs)
+
+# Remove leading and trailing whitespaces
+annot_pfam$PFAM.ID <- trimws(annot_pfam$PFAM.ID)
+
+# Replace NAs with unknown
+annot_pfam$PFAM.ID <- replace_na(annot_pfam$PFAM.ID, "unknown")
+
+# Set gene and go ids as factors 
+annot_pfam$gene_id <- as.factor(annot_pfam$gene_id)
+annot_pfam$PFAM.ID <- as.factor(annot_pfam$PFAM.ID)
+
+# Select only unique rows
+annot_pfam <- unique(annot_pfam)
+
+# Look at unique gene and go ids 
+length(unique(annot_pfam$gene_id))
+length(unique(annot_pfam$PFAM.ID))
+
+# Remove rows with unknowns
+# annot_GO <- annot_GO %>%
+#   filter(GO.ID != "unknown")
+```
+
+Remove the annotation information for genes not present in our data 
+```{r}
+filt_annot_pfam <- subset(annot_pfam, gene_id %in% filt_counts$gene_id)
+
+str(filt_annot_pfam)
+
+# Convert filt_annot_GO from tibble to df 
+filt_annot_pfam <-as.data.frame(filt_annot_pfam)
+```
+
+Perform GOSeq
+```{r}
+GO.wall_pfam<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_pfam, method="Wallenius", use_genes_without_cat=T)
+
+pfam <- GO.wall_pfam[order(GO.wall_pfam$over_represented_pvalue),]
+write.csv(pfam, file = "../output/functional_enrichment/GOSeq_PFAM_all.csv")
+
+class(GO.wall_pfam)
+head(GO.wall_pfam)
+tail(GO.wall_pfam)
+nrow(GO.wall_pfam)
+```
+
+Filter by significantly enriched PFAM terms (p < 0.05)
+```{r}
+pfam_05 <- pfam %>%
+  dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., over_represented_pvalue)
+
+write.csv(pfam_05, file = "../output/functional_enrichment/GOSeq_PFAM_05.csv")
+```
+
+Plot and order by p-value
+```{r}
+pfam_05_plot <- pfam_05 %>% 
+  #drop_na(ontology) %>% 
+  #filter(ontology == "MF") %>%
+  mutate(category = fct_reorder(category, numDEInCat)) %>%
+  #mutate(term = fct_reorder(term)) %>%
+  ggplot( aes(x=category, y=numDEInCat) ) +
+  geom_segment( aes(x=category ,xend=category, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1) +
+  coord_flip() +
+  ylim(0,55) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()); pfam_05_plot #Set the plot background #set title attributes
+
+ggsave("../output/functional_enrichment/GOSeq_PFAM_05.pdf", pfam_05_plot, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_PFAM_05.png", pfam_05_plot, width = 30, height = 10)
+```
+
+Still need to look at DEGs in the context of PFAM results and run goseq for KEGG and eggNOG annotation terms
 
 
