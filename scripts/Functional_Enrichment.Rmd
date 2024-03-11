@@ -32,6 +32,7 @@ library(rtracklayer)
 library(GO.db)
 library(tidyr)
 library(forcats)
+library(wesanderson)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -365,8 +366,374 @@ length(unique(GO_h_v_m$gene_id))
 write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
 ```
 
-Still need to look at these results more closely. 
+There is only 1 gene that has GO terms between Mid v Control corals (	
+Pocillopora_acuta_HIv2___TS.g21597.t2). On the other hand, there are 137 and 114 genes with significant GO terms between H v C and H v M corals, respectively. 
 
+Let's visualize these data. First, High v Control. Positive LFC means that the genes are upregulated in the high treatment. 
+```{r}
+GO_BP_High_v_Control <- GO_h_v_c %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "BP") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Control
+ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.pdf", GO_BP_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.png", GO_BP_High_v_Control, width = 30, height = 10)
+
+GO_CC_High_v_Control <- GO_h_v_c %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "CC") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Control
+ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.pdf", GO_CC_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.png", GO_CC_High_v_Control, width = 30, height = 10)
+
+GO_MF_High_v_Control <- GO_h_v_c %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "MF") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=log2FoldChange, 
+               size=pvalue)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Control
+ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", GO_MF_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
+```
+
+Mid v Control. Positive LFC means that the genes are upregulated in the mid treatment. Mid v Control only shares 1 gene with GO terms and all GO terms are BP. 
+```{r}
+GO_BP_Mid_v_Control <- GO_m_v_c %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "BP") %>%
+    #dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_Mid_v_Control
+ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.pdf", GO_BP_Mid_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.png", GO_BP_Mid_v_Control, width = 30, height = 10)
+```
+
+High v Mid Positive LFC means that the genes are upregulated in the high treatment. 
+```{r}
+GO_BP_High_v_Mid <- GO_h_v_m %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "BP") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Mid
+ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.pdf", GO_BP_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.png", GO_BP_High_v_Mid, width = 30, height = 10)
+
+GO_CC_High_v_Mid <- GO_h_v_m %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "CC") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Mid
+ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.pdf", GO_CC_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.png", GO_CC_High_v_Mid, width = 30, height = 10)
+
+GO_MF_High_v_Mid <- GO_h_v_m %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "MF") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=pvalue, 
+               size=log2FoldChange)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Mid
+ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.pdf", GO_MF_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.png", GO_MF_High_v_Mid, width = 30, height = 10)
+```
+
+Join the GO High v Control df and GO High v Mid df by gene
+```{r}
+# Remove extra info
+# GO_h_v_c <- GO_h_v_c %>%
+#     dplyr::select(-c("baseMean", "lfcSE", "stat", "A.x", "B.x", "C.x", "D.x", "E.x", "F.x", "G.x", "H.x", "L.x", "M.x", "N.x", "under_represented_pvalue")) %>%
+#     rename_with(~ paste0("h_v_c_", .), everything())
+# 
+# 
+# GO_h_v_m <- GO_h_v_m %>%
+#     dplyr::select(-c("baseMean", "lfcSE", "stat", "A.x", "B.x", "C.x", "D.x", "E.x", "F.x", "G.x", "H.x", "L.x", "M.x", "N.x", "under_represented_pvalue")) %>%
+#     rename_with(~ paste0("h_v_m_", .), everything())
+# 
+# 
+# test <- GO_h_v_c %>%
+#   inner_join(GO_h_v_m, by = c("h_v_c_gene_id" = "h_v_m_gene_id"))
+```
+
+Getting this warming: Warning: Detected an unexpected many-to-many relationship between `x` and `y`.
+. How can a gene have different enriched GO terms depending on the treatment?? 
+
+Manual comparisons for GO High v Control df and GO High v Mid df
+```{r}
+GO_h_v_c <- GO_h_v_c %>%
+  na.omit() %>%
+  dplyr::arrange(log2FoldChange) %>%
+  print()
+
+GO_h_v_m <- GO_h_v_m %>%
+  na.omit() %>%
+  dplyr::arrange(log2FoldChange) %>%
+  print()
+```
+
+Since there are so issues when joining the files, I'm going to look at the gene ids shared between these two treatment comparisons 
+```{r}
+my_list <- list(unique(GO_h_v_c$gene_id), unique(GO_h_v_m$gene_id))
+venn(my_list)
+Intersect <- venn(my_list, intersection=TRUE)
+isect <- attr(Intersect, "intersection")
+str(isect)
+isect$`A:B`
+```
+
+There are 64 genes that are only present in H v C comparison, 41 genes that are only present in the H v M comparison and 73 genes shared between both comparisons. Filter the GO dfs so that we only have the shared genes. 
+
+```{r}
+GO_h_v_c_filt <- GO_h_v_c %>%
+  dplyr::filter(gene_id %in% isect$`A:B`)
+
+GO_h_v_m_filt <- GO_h_v_m %>%
+  dplyr::filter(gene_id %in% isect$`A:B`)
+
+# Check to see if gene_id columns are identical
+identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not 
+```
+
+*NOTE*: the genes below are only those that are shared between h v c and h v m comparisons 
+
+The top 5 genes that are downregulated in the high treatment compared to the control treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.663960)
+- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.153118)
+- Pocillopora_acuta_HIv2___TS.g25049.t1 (LFC -2.854903)
+- Pocillopora_acuta_HIv2___RNAseq.g9799.t1 (LFC -1.640748)
+- Pocillopora_acuta_HIv2___TS.g8000.t1 (LFC -1.557406)
+
+The top 5 genes that are upregulated in the high treatment compared to the control treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.555041)
+- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.660517)
+- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 3.510781)
+- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 3.006764)
+- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 2.853978)
+
+The top 5 genes that are downregulated in the high treatment compared to the mid treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.548878)
+- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.387855)
+- Pocillopora_acuta_HIv2___TS.g25049.t1 (LFC -2.895585)
+- Pocillopora_acuta_HIv2___TS.g8000.t1 (LFC -2.070186)
+- Pocillopora_acuta_HIv2___TS.g30183.t1 (LFC -1.955101)
+
+The top 5 genes that are upregulated in the high treatment compared to the mid treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.715193)
+- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 4.283870)
+- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.605581)
+- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 3.378883)
+- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 2.899640)
+
+There is some high overlap between the top 5 genes (top 5 in terms of LFC) of down and upregulation in high v control and mid. I think we should investigate these genes more explicitly, given that the largest expression changes are happening in these genes. 
+
+Shared downregulated genes and general functions: 
+- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 - protein heterodimerization activity
+- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 - DNA binding, transcription regulation, protein heterodimerization activity
+- Pocillopora_acuta_HIv2___TS.g25049.t1 - metabolic processes (amine, ethanolamine-containing compound, ammonium ion), oxidoreductase activity
+- Pocillopora_acuta_HIv2___TS.g8000.t1 metabolic processes (organic acid, arachidonic acid, carboxylic acid, unsaturated fatty acid, oxoacid), biosynthetic processes (small molecule, carboxylic acid, icosanoid), oxidoreductase activity
+
+Shared upregulated genes and general functions: 
+- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 - DNA binding, transcription regulation 
+- Pocillopora_acuta_HIv2___TS.g23786.t1 - DNA binding
+- Pocillopora_acuta_HIv2___TS.g26760.t1 - DNA topoisomerase/isomerase activity 
+- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 - protein serine/threonine phosphatase activity, peptidyl-serine dephosphorylation
+
+Let's plot some of these genes! 
+
+Read in the unique DEGs file, as that has the normalized counts, and the metadata file
+```{r}
+degs <- read.csv("../output/DEG/Unique_DEGs.csv")
+
+meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
+  dplyr::select(Treatment, Species, Lifestage, TubeID) %>%
+  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
+  rename(ID = TubeID) %>%
+  arrange(ID)
+```
+
+Pivot the counts data, join with treatment column, and calculate mean + sd
+```{r}
+deg_means <- degs %>%
+  pivot_longer(cols = -X, names_to = "Treatment", values_to = "Count") %>%
+  left_join(meta, by = c("Treatment" = "ID")) %>%
+  group_by(X, Treatment.y) %>%
+  summarize(mean_count = mean(Count), sd_count = sd(Count))
+```
+
+Make a list of downregulated DEGs of interest and filter the df means by that list. Plot downregulated genes
+```{r}
+down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
+
+# Select genes of interest 
+down_filt <- deg_means %>% 
+  filter(X %in% down) %>%
+  rename("gene_id" = "X") %>%
+  rename("Treatment" = "Treatment.y")  
+
+# Arrange treatment order
+down_filt$Treatment <- factor(down_filt$Treatment, levels = c("Control", "Mid", "High"))
+
+# Plot 
+shared_down <- ggplot(down_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  # geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+  #               width = 0.2,  # Adjust width as needed
+  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_down
+ggsave("../output/functional_enrichment/Downregulated_shared_genes.pdf", shared_down)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes.png", shared_down)
+
+# Plot w/ error bars
+shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+   geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+                 width = 0.2,  # Adjust width as needed
+                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_down_error
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error)
+```
+
+The error bars are massive for these counts, so the plots look weird with the error bars. I have a feeling that a reviewer will want to see them though. 
+
+Make a list of upregulated DEGs of interest and filter the df means by that list. Plot upregulated genes
+```{r}
+up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
+
+# Select genes of interest 
+up_filt <- deg_means %>% 
+  filter(X %in% up) %>%
+  rename("gene_id" = "X") %>%
+  rename("Treatment" = "Treatment.y")  
+
+# Arrange treatment order
+up_filt$Treatment <- factor(up_filt$Treatment, levels = c("Control", "Mid", "High"))
+
+# Plot 
+shared_up <- ggplot(up_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  # geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+  #               width = 0.2,  # Adjust width as needed
+  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_up
+ggsave("../output/functional_enrichment/Upregulated_shared_genes.pdf", shared_up)
+ggsave("../output/functional_enrichment/Upregulated_shared_genes.png", shared_up)
+
+# Plot w/ error bars
+shared_up_error <- ggplot(up_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+   geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+                 width = 0.2,  # Adjust width as needed
+                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_up_error
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.pdf", shared_up_error)
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error)
+```
+
+Error bars for upregulated genes are not as extreme as downregulated genes. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Optional, need to discuss w/ co-authors: 
 I can also run GOSeq on the eggNOG, KEGG and PFAM terms. There are several columns for KEGG information in the `annot` file (KEGG_ko, KEGG_Pathway, KEGG_Module, KEGG_Reaction, KEGG_rclass, KEGG_TC) and I'm not sure what they all mean or which one to use in the analysis. There is also a BRITE column that looks like there is KEGG information in it. 
 
 Select PFAM columns and split so that there is only one PFAM term per row
