@@ -152,8 +152,83 @@ These Pacuta genes are differentially expressed between high and mid treatments 
 
 Similar to the high v control comparison, corals in high treatment are downregulating a collagen related gene (Pocillopora_acuta_HIv2___TS.g23498.t1) compared to mid corals (LFC = -2.99). Corals in high treatment are also downregulating sacsin (LFC = -1.56) and flagellar-associated protein (LFC = -0.83) compared to mid corals. 
 
-High v control and high v mid also had differential expression in Pocillopora_acuta_HIv2___RNAseq.g7668.t1, an uncharacterized protein. 
+These Pacuta biomin genes were shared between high v control and high v mid DEG comparisons: 
 
+- Pocillopora_acuta_HIv2___TS.g23498.t1 - α-Collagen, coadhesion, clone g810 alpha collagen-like protein gene
+- Pocillopora_acuta_HIv2___RNAseq.g7668.t1 - uncharacterized protein
 
+Let's plot these genes!
+
+Read in the unique DEGs file, as that has the normalized counts, and the metadata file
+```{r}
+degs <- read.csv("../output/DEG/Unique_DEGs.csv")
+
+meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
+  dplyr::select(Treatment, Species, Lifestage, TubeID) %>%
+  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
+  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
+  rename(ID = TubeID) %>%
+  arrange(ID)
+```
+
+Pivot the counts data, join with treatment column, and calculate mean + sd
+```{r}
+deg_means <- degs %>%
+  pivot_longer(cols = -X, names_to = "Treatment", values_to = "Count") %>%
+  left_join(meta, by = c("Treatment" = "ID")) %>%
+  group_by(X, Treatment.y) %>%
+  summarize(mean_count = mean(Count), sd_count = sd(Count))
+```
+
+Make a list of DEGs of interest and filter the df means by that list. Plot counts for DEGs of interest 
+```{r}
+genes <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
+
+# Select genes of interest 
+filt <- deg_means %>% 
+  filter(X %in% genes) %>%
+  rename("gene_id" = "X") %>%
+  rename("Treatment" = "Treatment.y")  
+
+# Arrange treatment order
+filt$Treatment <- factor(filt$Treatment, levels = c("Control", "Mid", "High"))
+
+# Plot 
+shared_biomin <- ggplot(filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  # geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+  #               width = 0.2,  # Adjust width as needed
+  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_biomin
+ggsave("../output/functional_enrichment/Biomin_shared_DEGs.pdf", shared_biomin)
+ggsave("../output/functional_enrichment/Biomin_shared_DEGs.png", shared_biomin)
+
+# Plot w/ error bars
+shared_biomin_error <- ggplot(filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+   geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+                 width = 0.2,  # Adjust width as needed
+                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
+  facet_wrap(~gene_id, scales = "free",) +
+  labs(y = "Mean Normalized Counts", x = "") +
+  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #theme_minimal() +
+  theme_bw() +
+  theme(legend.position = "none") +
+  theme(axis.text = element_text(size = 10, color="black"),
+        axis.title=element_text(size=12, color="black", face="bold")); shared_biomin_error
+ggsave("../output/functional_enrichment/Biomin_shared_DEGs_WithErrorBars.pdf", shared_biomin_error)
+ggsave("../output/functional_enrichment/Biomin_shared_DEGs_WithErrorBars.png", shared_biomin_error)
+```
+
+Error bars are pretty extreme in certain treatments. 
 
 
