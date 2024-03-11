@@ -154,15 +154,6 @@ Similar to the high v control comparison, corals in high treatment are downregul
 
 High v control and high v mid also had differential expression in Pocillopora_acuta_HIv2___RNAseq.g7668.t1, an uncharacterized protein. 
 
-Interestingly, not many of the biomin genes of interest are annotated in the Pacuta genome so I'm unable to match them to any GO terms based on the annotation file. Here are the two biomin related genes that are shared between DEGs of HvC and HvM: 
-
-I am BLASTing these two sequences against the NCBI blast database. I did this online since it was only two sequences. 
-
-From the NCBI db, Pocillopora_acuta_HIv2___TS.g23498.t1 was similar to coadhesion proteins from Pdam, Pverrocosa, Spistillata, and Ofav and also has similarities to collagen alpha proteins in Spistillata. This isn't surprising since we already had this information about the protein. 
-
-The other sequence was too large to blast online, the CPU usage limit was exceeded. I'll need to do it on the server. 
-
-
 
 
 
