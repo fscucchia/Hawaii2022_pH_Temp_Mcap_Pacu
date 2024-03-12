@@ -159,7 +159,7 @@ Perform GOSeq
 GO.wall<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_GO, method="Wallenius", use_genes_without_cat=T)
 
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
+#write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
 
 class(GO.wall)
 head(GO.wall)
@@ -175,7 +175,7 @@ GO_05 <- GO %>%
   dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-write.csv(GO_05, file = "../output/functional_enrichment/GOSeq_GO_05.csv")
+#write.csv(GO_05, file = "../output/functional_enrichment/GOSeq_GO_05.csv")
 ```
 
 Plot all ontologies (BP, CC, MF) and order by p-value 
@@ -202,8 +202,8 @@ GO_05_plot <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, nu
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot #Set the plot background #set title attributes
 
-ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot, width = 20, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot, width = 20, height = 10)
 ```
 
 Plot ontologies (BP, CC, MF) separately and order by p-value 
@@ -234,8 +234,8 @@ GO_05_plot_BP <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_BP #Set the plot background #set title attributes
 
-ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.pdf", GO_05_plot_BP, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.png", GO_05_plot_BP, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.pdf", GO_05_plot_BP, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.png", GO_05_plot_BP, width = 30, height = 10)
 
 ## CC
 GO_05_plot_CC <- GO_05 %>% 
@@ -263,8 +263,8 @@ GO_05_plot_CC <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_CC #Set the plot background #set title attributes
 
-ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.pdf", GO_05_plot_CC, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.png", GO_05_plot_CC, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.pdf", GO_05_plot_CC, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.png", GO_05_plot_CC, width = 30, height = 10)
 
 ## MF
 GO_05_plot_MF <- GO_05 %>% 
@@ -292,8 +292,8 @@ GO_05_plot_MF <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_MF #Set the plot background #set title attributes
 
-ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.pdf", GO_05_plot_MF, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.pdf", GO_05_plot_MF, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, width = 30, height = 10)
 ```
 
 Merge significant GO terms and annot list together 
@@ -315,7 +315,7 @@ GO_deg <- GO_genes %>%
 
 length(unique(GO_deg$gene_id)) # 178 DEGs with over-represented GO terms 
 
-write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
+#write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
 ```
 
 How does this relate to our DEG comparisons? Merge high v control DEGs with GO information
@@ -331,7 +331,7 @@ GO_h_v_c <- h_v_c %>%
 
 length(unique(GO_h_v_c$gene_id))
 
-write.csv(GO_h_v_c, file = "../output/functional_enrichment/High_v_Control_GO.csv")
+#write.csv(GO_h_v_c, file = "../output/functional_enrichment/High_v_Control_GO.csv")
 ```
 
 Merge Mid v control DEGs with GO information
@@ -347,7 +347,7 @@ GO_m_v_c <- m_v_c %>%
 
 length(unique(GO_m_v_c$gene_id))
 
-write.csv(GO_m_v_c, file = "../output/functional_enrichment/Mid_v_Control_GO.csv")
+#write.csv(GO_m_v_c, file = "../output/functional_enrichment/Mid_v_Control_GO.csv")
 ```
 
 Merge high v mid DEGs with GO information
@@ -363,7 +363,7 @@ GO_h_v_m <- h_v_m %>%
 
 length(unique(GO_h_v_m$gene_id))
 
-write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
+#write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
 ```
 
 There is only 1 gene that has GO terms between Mid v Control corals (	
@@ -383,8 +383,8 @@ GO_BP_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Control
-ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.pdf", GO_BP_High_v_Control, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.png", GO_BP_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.pdf", GO_BP_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.png", GO_BP_High_v_Control, width = 30, height = 10)
 
 GO_CC_High_v_Control <- GO_h_v_c %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -398,8 +398,8 @@ GO_CC_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Control
-ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.pdf", GO_CC_High_v_Control, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.png", GO_CC_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.pdf", GO_CC_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.png", GO_CC_High_v_Control, width = 30, height = 10)
 
 GO_MF_High_v_Control <- GO_h_v_c %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -413,8 +413,8 @@ GO_MF_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Control
-ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", GO_MF_High_v_Control, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", GO_MF_High_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
 ```
 
 Mid v Control. Positive LFC means that the genes are upregulated in the mid treatment. Mid v Control only shares 1 gene with GO terms and all GO terms are BP. 
@@ -431,8 +431,8 @@ GO_BP_Mid_v_Control <- GO_m_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_Mid_v_Control
-ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.pdf", GO_BP_Mid_v_Control, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.png", GO_BP_Mid_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.pdf", GO_BP_Mid_v_Control, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.png", GO_BP_Mid_v_Control, width = 30, height = 10)
 ```
 
 High v Mid Positive LFC means that the genes are upregulated in the high treatment. 
@@ -449,8 +449,8 @@ GO_BP_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Mid
-ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.pdf", GO_BP_High_v_Mid, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.png", GO_BP_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.pdf", GO_BP_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.png", GO_BP_High_v_Mid, width = 30, height = 10)
 
 GO_CC_High_v_Mid <- GO_h_v_m %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -464,8 +464,8 @@ GO_CC_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Mid
-ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.pdf", GO_CC_High_v_Mid, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.png", GO_CC_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.pdf", GO_CC_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.png", GO_CC_High_v_Mid, width = 30, height = 10)
 
 GO_MF_High_v_Mid <- GO_h_v_m %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -479,8 +479,8 @@ GO_MF_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Mid
-ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.pdf", GO_MF_High_v_Mid, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.png", GO_MF_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.pdf", GO_MF_High_v_Mid, width = 30, height = 10)
+#ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.png", GO_MF_High_v_Mid, width = 30, height = 10)
 ```
 
 Join the GO High v Control df and GO High v Mid df by gene
@@ -607,8 +607,9 @@ Pivot the counts data, join with treatment column, and calculate mean + sd
 deg_means <- degs %>%
   pivot_longer(cols = -X, names_to = "Treatment", values_to = "Count") %>%
   left_join(meta, by = c("Treatment" = "ID")) %>%
+  mutate(log_Count = log(Count)) %>%
   group_by(X, Treatment.y) %>%
-  summarize(mean_count = mean(Count), sd_count = sd(Count))
+  summarize(mean_log_count = mean(log_Count), sd_log_count = sd(log_Count))
 ```
 
 Make a list of downregulated DEGs of interest and filter the df means by that list. Plot downregulated genes
@@ -625,13 +626,13 @@ down_filt <- deg_means %>%
 down_filt$Treatment <- factor(down_filt$Treatment, levels = c("Control", "Mid", "High"))
 
 # Plot 
-shared_down <- ggplot(down_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+shared_down <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  # geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+  # geom_errorbar(aes(ymin = mean_log_count - sd_count, ymax = mean_log_count + sd_count),
   #               width = 0.2,  # Adjust width as needed
   #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
-  labs(y = "Mean Normalized Counts", x = "") +
+  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
@@ -642,13 +643,13 @@ ggsave("../output/functional_enrichment/Downregulated_shared_genes.pdf", shared_
 ggsave("../output/functional_enrichment/Downregulated_shared_genes.png", shared_down)
 
 # Plot w/ error bars
-shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-   geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+   geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
                  width = 0.2,  # Adjust width as needed
                  position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
-  labs(y = "Mean Normalized Counts", x = "") +
+  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
@@ -658,8 +659,6 @@ shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_count, fill =
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error)
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error)
 ```
-
-The error bars are massive for these counts, so the plots look weird with the error bars. I have a feeling that a reviewer will want to see them though. 
 
 Make a list of upregulated DEGs of interest and filter the df means by that list. Plot upregulated genes
 ```{r}
@@ -675,13 +674,13 @@ up_filt <- deg_means %>%
 up_filt$Treatment <- factor(up_filt$Treatment, levels = c("Control", "Mid", "High"))
 
 # Plot 
-shared_up <- ggplot(up_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+shared_up <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  # geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+  # geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
   #               width = 0.2,  # Adjust width as needed
   #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
-  labs(y = "Mean Normalized Counts", x = "") +
+  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
@@ -692,13 +691,13 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes.pdf", shared_up
 ggsave("../output/functional_enrichment/Upregulated_shared_genes.png", shared_up)
 
 # Plot w/ error bars
-shared_up_error <- ggplot(up_filt, aes(x = Treatment, y = mean_count, fill = Treatment)) +
+shared_up_error <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-   geom_errorbar(aes(ymin = mean_count - sd_count, ymax = mean_count + sd_count),
+   geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
                  width = 0.2,  # Adjust width as needed
                  position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
-  labs(y = "Mean Normalized Counts", x = "") +
+  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
@@ -709,7 +708,6 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.p
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error)
 ```
 
-Error bars for upregulated genes are not as extreme as downregulated genes. 
 
 
 
