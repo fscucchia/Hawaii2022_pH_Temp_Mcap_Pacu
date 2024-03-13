@@ -644,20 +644,23 @@ ggsave("../output/functional_enrichment/Downregulated_shared_genes.png", shared_
 
 # Plot w/ error bars
 shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  geom_bar(stat = "identity", position = "identity", color = "black") +
    geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
                  width = 0.2,  # Adjust width as needed
                  position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
   labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
   theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 10, color="black"),
-        axis.title=element_text(size=12, color="black", face="bold")); shared_down_error
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error)
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error)
+  theme(axis.text = element_text(size = 20, color="black"),
+        axis.title=element_text(size=25, color="black", face="bold"),
+        #axis.line = element_line(colour = 'black', size = 1),
+        strip.text = element_text(size = 17, color = "black")); shared_down_error
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error, width = 15, height = 14)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error, width = 15, height = 14)
 ```
 
 Make a list of upregulated DEGs of interest and filter the df means by that list. Plot upregulated genes
@@ -684,7 +687,7 @@ shared_up <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treat
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
-  theme(legend.position = "none") +
+  theme(legend.position = "none") + 
   theme(axis.text = element_text(size = 10, color="black"),
         axis.title=element_text(size=12, color="black", face="bold")); shared_up
 ggsave("../output/functional_enrichment/Upregulated_shared_genes.pdf", shared_up)
@@ -692,20 +695,23 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes.png", shared_up
 
 # Plot w/ error bars
 shared_up_error <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  geom_bar(stat = "identity", position = "identity", color = "black") +
    geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
                  width = 0.2,  # Adjust width as needed
                  position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
   facet_wrap(~gene_id, scales = "free",) +
   labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #theme_minimal() +
   theme_bw() +
   theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 10, color="black"),
-        axis.title=element_text(size=12, color="black", face="bold")); shared_up_error
-ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.pdf", shared_up_error)
-ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error)
+  theme(axis.text = element_text(size = 20, color="black"),
+        axis.title=element_text(size=25, color="black", face="bold"),
+        #axis.line = element_line(colour = 'black', size = 1),
+        strip.text = element_text(size = 17, color = "black")); shared_up_error
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.pdf", shared_up_error, width = 15, height = 14)
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error, width = 15, height = 14)
 ```
 
 

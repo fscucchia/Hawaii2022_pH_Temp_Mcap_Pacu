@@ -25,6 +25,9 @@ library(ggstatsplot)
 library(wesanderson)
 library(ggsignif)
 library(dunn.test)
+library(kableExtra)
+library(webshot2)
+library(magick)
 ```
 
 # Discrete pH calculations
@@ -1162,4 +1165,88 @@ summary_data
 write.csv(summary_data, "../output/CarbChem/CarbChem_summary.csv")
 ```
 
+Make summary table for manuscript. Read data in 
+```{r}
+df <- read.csv("../output/CarbChem/CarbChem_summary.csv")
+```
+
+Round data so there is only 2 decimal points
+```{r}
+df <- df %>%
+  mutate(across(contains("_mean") | contains("_std_err"), ~ round(., 2))) #%>%
+  #mutate(across(contains("_mean"), ~ paste0(., "±")))
+```
+
+Concatenate "_std_err" values to corresponding "_mean" columns
+```{r}
+mean_columns <- grep("_mean", names(df), value = TRUE)
+std_err_columns <- grep("_std_err", names(df), value = TRUE)
+
+for (std_err_col in std_err_columns) {
+  mean_col <- str_replace(std_err_col, "_std_err", "_mean")
+  df[[mean_col]] <- paste0(df[[mean_col]], " ± ", df[[std_err_col]])
+}
+```
+
+Drop columns with "_std_err" in their names
+```{r}
+df <- df %>%
+  dplyr::select(-contains("_std_err")) %>%
+  dplyr::select(-X)
+```
+
+Edit column names so they are appropriate for manuscript table 
+```{r}
+colnames(df)
+
+df <- df %>%
+  rename("Salinity (psu)" = "Salinity_mean",
+         "Temperature (°C)" = "Temperature_mean",
+         "Total pH" = "pH.Total_mean",
+         "CO2 (μmol kg-1)" = "CO2_mean",
+         "pCO2 (μmol kg-1)" = "CO2_mean",
+         "HCO3 (μmol kg-1)" = "HCO3_mean",
+         "CO3 (μmol kg-1)" = "CO3_mean",
+         "DIC (μmol kg-1)" = "DIC_mean",
+         "Total Alkalinity (μmol kg-1)" = "TA_mean",
+         "Aragonite Saturation State" = "AragSat_mean"
+         )
+
+df <- df %>%
+  rename(
+    "Salinity (psu)" = Salinity_mean,
+    "Temperature (\u00B0C)" = Temperature_mean,  # Using Unicode escape sequence for degree symbol
+    "Total pH" = pH.Total_mean,
+    "CO\u2082 (μmol kg\u207B\u00B9)" = CO2_mean,  # Using Unicode escape sequences for subscript 2 and superscript -1
+    "pCO\u2082 (μmol kg\u207B\u00B9)" = pCO2_mean,  # Using Unicode escape sequences for subscript 2 and superscript -1
+    "HCO\u2083 (μmol kg\u207B\u00B9)" = HCO3_mean,  # Using Unicode escape sequences for subscript 3 and superscript -1
+    "CO\u2083 (μmol kg\u207B\u00B9)" = CO3_mean,  # Using Unicode escape sequences for subscript 3 and superscript -1
+    "DIC (μmol kg\u207B\u00B9)" = DIC_mean,  # Using Unicode escape sequence for superscript -1
+    "Total Alkalinity (μmol kg\u207B\u00B9)" = TA_mean,  # Using Unicode escape sequence for superscript -1
+    "Aragonite Saturation State" = AragSat_mean
+  )
+```
+
+Make table
+```{r}
+wes_palette = c("#F1BB7B", "#FD6467", "#5B1A18")
+
+kbl(df) %>%
+  kable_styling(full_width = F, position = "left") %>%
+  #kable_classic(full_width = F, html_font = "Cambria") %>%
+  column_spec(1, bold = T) %>%
+  row_spec(0, bold = T)
+
+kbl(df) %>%
+  kable_styling(full_width = F, position = "left") %>%
+  #kable_classic(full_width = F, html_font = "Cambria") %>%
+  column_spec(1, bold = T) %>%
+  row_spec(0, bold = T) %>% 
+  # row_spec(1, background = wes_palette[1]) %>% 
+  # row_spec(2, background = wes_palette[2]) %>% 
+  # row_spec(3, background = wes_palette[3])
+  save_kable("../output/CarbChem/CarbonateChemistryTable.png")
+```
+
+The output png file still looks very bad. Need to figure out how to save in higher quality. 
 

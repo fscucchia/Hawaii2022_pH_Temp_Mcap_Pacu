@@ -24,7 +24,7 @@ library(gridExtra)
 
 Load data. I'm going to use the transcript count matrix first, as that one appears to have most of the info from the gff (whereas the gene count matrix has STRG gene ids)
 ```{r}
-matrix <- read_csv("../output/Pacuta_transcript_count_matrix.csv")
+matrix <- read_csv("../output/DEG/Pacuta_transcript_count_matrix.csv")
 matrix <- as.data.frame(matrix)
 rownames(matrix) <- matrix[,1] #set first column that contains gene names as rownames
 matrix <- matrix[,-1] # remove column w/ gene names 
@@ -38,11 +38,11 @@ colnames(matrix) <- sub("_R1_001.bam.gtf", "", colnames(matrix))
 Read in metadata 
 ```{r}
 meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
-  select(Treatment, Species, Lifestage, TubeID) %>%
+  dplyr::select(Treatment, Species, Lifestage, TubeID) %>%
   mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
   mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
   mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
-  rename(ID = TubeID) %>%
+  dplyr::rename(ID = TubeID) %>%
   arrange(ID)
 ```
 
@@ -67,7 +67,7 @@ filt_outrm_poa <- matrix[filt_outrm_poa,] #keep only rows that passed filter
 
 all(rownames(meta$ID) %in% colnames(filt_outrm_poa)) # must come out TRUE
 
-write.csv(filt_outrm_poa, file = "../output/DEG/filtered_counts.csv")
+#write.csv(filt_outrm_poa, file = "../output/DEG/filtered_counts.csv")
 ```
 
 Put data and metadata in DESeq2 matrix 
@@ -122,15 +122,15 @@ df <- df[col.order, , drop = FALSE]
 heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-ggsave("../output/DEG/ma_plot_mid_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
-ggsave("../output/DEG/pca_mid_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
-ggsave("../output/DEG/heatmap_mid_v_control_DEG.pdf", heatmap, width = 8, height = 10)
+# ggsave("../output/DEG/ma_plot_mid_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+# ggsave("../output/DEG/pca_mid_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+# ggsave("../output/DEG/heatmap_mid_v_control_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 m_v_c.sig <- as.data.frame(m_v_c.sig)
 m_v_c.sig.list <- as.data.frame(counts(m_v_c.sig.list))
 m_v_c.sig.list.full <- cbind(m_v_c.sig, m_v_c.sig.list)
-write.csv(m_v_c.sig.list.full, file = "../output/DEG/Mid_v_Control_DEGs.csv")
+#write.csv(m_v_c.sig.list.full, file = "../output/DEG/Mid_v_Control_DEGs.csv")
 ```
 
 Look at high v control contrast
@@ -158,15 +158,15 @@ df <- df[col.order, , drop = FALSE]
 heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-ggsave("../output/DEG/ma_plot_high_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
-ggsave("../output/DEG/pca_high_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
-ggsave("../output/DEG/heatmap_high_v_control_DEG.pdf", heatmap, width = 8, height = 10)
+# ggsave("../output/DEG/ma_plot_high_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+# ggsave("../output/DEG/pca_high_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+# ggsave("../output/DEG/heatmap_high_v_control_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 h_v_c.sig <- as.data.frame(h_v_c.sig)
 h_v_c.sig.list <- as.data.frame(counts(h_v_c.sig.list))
 h_v_c.sig.list.full <- cbind(h_v_c.sig, h_v_c.sig.list)
-write.csv(h_v_c.sig.list.full, file = "../output/DEG/High_v_Control_DEGs.csv")
+# write.csv(h_v_c.sig.list.full, file = "../output/DEG/High_v_Control_DEGs.csv")
 ```
 
 Look at high v mid contrast
@@ -196,15 +196,15 @@ df <- df[col.order, , drop = FALSE]
 heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-ggsave("../output/DEG/ma_plot_high_v_mid_DEG.pdf", ma_plot, width = 10, height = 8)
-ggsave("../output/DEG/pca_high_v_mid_DEG.pdf", pca_plot, width = 10, height = 8)
-ggsave("../output/DEG/heatmap_high_v_mid_DEG.pdf", heatmap, width = 8, height = 10)
+# ggsave("../output/DEG/ma_plot_high_v_mid_DEG.pdf", ma_plot, width = 10, height = 8)
+# ggsave("../output/DEG/pca_high_v_mid_DEG.pdf", pca_plot, width = 10, height = 8)
+# ggsave("../output/DEG/heatmap_high_v_mid_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 h_v_m.sig <- as.data.frame(h_v_m.sig)
 h_v_m.sig.list <- as.data.frame(counts(h_v_m.sig.list))
 h_v_m.sig.list.full <- cbind(h_v_m.sig, h_v_m.sig.list)
-write.csv(h_v_m.sig.list.full, file = "../output/DEG/High_v_Mid_DEGs.csv")
+# write.csv(h_v_m.sig.list.full, file = "../output/DEG/High_v_Mid_DEGs.csv")
 ```
 
 The high treatment has some clear expression pattern differences compared to mid and control. 
@@ -225,6 +225,8 @@ length(t(unique(h_v_m.DEGs)))
 
 my_list <- list(m_v_c.DEGs, h_v_c.DEGs, h_v_m.DEGs)
 venn(my_list)
+# A = Mid v Control; B = High v Control; C = High v Mid
+
 Intersect <- venn(my_list, intersection=TRUE)
 isect <- attr(Intersect, "intersection")
 str(isect)
