@@ -33,6 +33,7 @@ library(GO.db)
 library(tidyr)
 library(forcats)
 library(wesanderson)
+library(GSEABase)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -714,12 +715,133 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.p
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error, width = 15, height = 14)
 ```
 
+Plot the DEGs of interest with the GO information. First, read in DEG and GO information.
+```{r}
+deg_go <- read.csv("../output/functional_enrichment/DEG_GO.csv")
+```
 
+Filter by downregulated genes of interest 
+```{r}
+down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
 
+# Select genes of interest 
+down_filt <- deg_go %>% 
+  filter(gene_id %in% down) %>%
+  na.omit()
+```
 
+Plot GO term information for downregulated genes of interest 
+```{r}
+down_deg_go <- down_filt %>% 
+    mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    na.omit() %>%
+    #dplyr::filter(ontology == "BP") %>%
+    #dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    #top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               #colour=pvalue, 
+               color=over_represented_pvalue)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", size="pvalue"); down_deg_go
+```
 
+Filter by upregulated genes of interest 
+```{r}
+up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
 
+# Select genes of interest 
+up_filt <- deg_go %>% 
+  filter(gene_id %in% up) %>%
+  na.omit()
+```
 
+Plot GO term information for downregulated genes of interest 
+```{r}
+up_deg_go <- up_filt %>% 
+    mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    na.omit() %>%
+    #dplyr::filter(ontology == "BP") %>%
+    #dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    #top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               #colour=pvalue, 
+               color=over_represented_pvalue)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", size="pvalue"); up_deg_go
+```
+
+Add slim terms to dataset 
+```{r}
+GOslim <- read_csv("~/Desktop/PutnamLab/Repositories/SedimentStress/SedimentStress/Output/GOSeq/GO-GOslim.csv")
+```
+
+Plot downregulated GO slim information
+```{r}
+down_filt_slim <- down_filt %>%
+  inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
+
+down_filt_slim_plot <- down_filt_slim %>%
+      ggplot(aes(x=over_represented_pvalue, 
+               y=term.x)) +
+               #colour=ontology)) +
+        geom_point(size = 20) +
+        expand_limits(x=0) +
+        #labs(x="Number of DEGs", y="GO term", color="pvalue") %>%
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      #xlab("Number of DEGs") +
+      #ylab("") +
+      labs(x="Over-represented p-value", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
+        axis.text = element_text(size = 32, colour = "black"),
+        axis.title.x = element_text(size = 35, colour = "black"),
+        legend.text=element_text(size = 22),
+        legend.title = element_text(size = 24)
+        #panel.border  = element_line(colour = "black"),
+        #panel.grid.major = element_line(colour = "black"),
+        #panel.grid.minor = element_line(colour = "black")
+      ); down_filt_slim_plot
+
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.pdf", down_filt_slim_plot, width = 35, height = 25)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.png", down_filt_slim_plot, width = 35, height = 25)
+```
+
+Plot upregulated GO slim information
+```{r}
+up_filt_slim <- up_filt %>%
+  inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
+
+up_filt_slim_plot <- up_filt_slim %>%
+      ggplot(aes(x=over_represented_pvalue, 
+               y=term.x)) +
+               #colour=ontology)) +
+        geom_point(size = 20) +
+        expand_limits(x=0) +
+        #labs(x="Number of DEGs", y="GO term", color="pvalue") %>%
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      #xlab("Number of DEGs") +
+      #ylab("") +
+      labs(x="Over-represented p-value", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
+        axis.text = element_text(size = 32, colour = "black"),
+        axis.title.x = element_text(size = 35, colour = "black"),
+        legend.text=element_text(size = 22),
+        legend.title = element_text(size = 24)
+        #panel.border  = element_line(colour = "black"),
+        #panel.grid.major = element_line(colour = "black"),
+        #panel.grid.minor = element_line(colour = "black")
+      ); down_filt_slim_plot
+
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.pdf", up_filt_slim_plot, width = 35, height = 25)
+ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up_filt_slim_plot, width = 35, height = 25)
+```
 
 
 
