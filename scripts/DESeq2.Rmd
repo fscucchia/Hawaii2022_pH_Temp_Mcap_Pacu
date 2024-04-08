@@ -242,7 +242,7 @@ length(unique(DEGs.all$DEGs))
 
 Unique.sig.list <- data[which(rownames(data) %in% DEGs.all$DEGs),] #subset list of sig transcripts from original count data
 Unique.rsig <- rlog(Unique.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
-write.csv(counts(Unique.sig.list), file="../output/DEG/Unique_DEGs.csv")
+#write.csv(counts(Unique.sig.list), file="../output/DEG/Unique_DEGs.csv")
 ```
 
 Visualize the DEGs
@@ -253,19 +253,19 @@ pca_plot <- plotPCA(Unique.rsig, intgroup = c("Treatment"), returnData = TRUE); 
 percentVar_pca <- round(100*attr(pca_plot, "percentVar")) #plot PCA of samples with all data
 
 pca_plot_degs <- ggplot(pca_plot, aes(PC1, PC2, color = Treatment)) + 
-  geom_point(size=10) +
+  geom_point(size=15) +
   xlab(paste0("PC1: ",percentVar_pca[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar_pca[2],"% variance")) +
   scale_color_manual(values = wes_palette("GrandBudapest1", n=3)) +
   #ggtitle(label = "M. capitata") +
   theme_bw() + #Set background color
-  theme(legend.text = element_text(size=13), 
+  theme(legend.text = element_text(size=18), 
         #legend.position="none",
         plot.background = element_blank(),
-        legend.title = element_text(size=18, face="bold"), 
+        legend.title = element_text(size=22, face="bold"), 
         #legend.title=element_blank(),
-        axis.text = element_text(size=13), 
-        axis.title = element_text(size=15,  face="bold"), 
+        axis.text = element_text(size=18, colour = "black"), 
+        axis.title = element_text(size=20,  face="bold"), 
         axis.title.y = element_text(vjust=-1.5),
         plot.title = element_text(size = 20, face = "italic", hjust = 0.5)) +
   coord_equal(ratio = 2); pca_plot_degs
@@ -290,7 +290,66 @@ df <- df[col.order, , drop = FALSE]
 
 heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =F,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =F, color = my_color_palette, annotation_legend = F, annotation_names_col = F, annotation_colors = list(Treatment = c("Control" = my_colors[1], "Mid" = my_colors[2], "High" = my_colors[3]))); heatmap #plot heatmap of all DEG by group
 
-ggsave("../output/DEG/heatmap_DEGs.pdf", heatmap, width = 8, height = 10)
-ggsave("../output/DEG/heatmap_DEGs.png", heatmap, width = 8, height = 10)
+#ggsave("../output/DEG/heatmap_DEGs.pdf", heatmap, width = 8, height = 10)
+#ggsave("../output/DEG/heatmap_DEGs.png", heatmap, width = 8, height = 10)
+```
+
+Visualize the biomineralization DEGs of interest (identified in [this script](https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/blob/main/scripts/Biomineralization_Toolkit.Rmd)).
+```{r}
+# Define the list of gene IDs
+gene_ids <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
+
+# Create a dataframe
+genes <- data.frame(gene_id = unlist(gene_ids))
+
+genes <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
+genes <- as.data.frame(genes)
+
+Unique.sig.list.biomin <- data[which(rownames(data) %in% genes$gene_id),] #subset list of sig transcripts from original count data
+Unique.rsig.biom <- rlog(Unique.sig.list.biomin, blind=FALSE, fitType = "mean") #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
+```
+
+PCA with biomin DEGs 
+```{r}
+pca_plot <- plotPCA(Unique.rsig.biom, intgroup = c("Treatment"), returnData = TRUE); pca_plot
+percentVar_pca <- round(100*attr(pca_plot, "percentVar")) #plot PCA of samples with all data
+
+pca_plot_degs <- ggplot(pca_plot, aes(PC1, PC2, color = Treatment)) + 
+  geom_point(size=10) +
+  xlab(paste0("PC1: ",percentVar_pca[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar_pca[2],"% variance")) +
+  scale_color_manual(values = wes_palette("GrandBudapest1", n=3)) +
+  #ggtitle(label = "M. capitata") +
+  theme_bw() + #Set background color
+  theme(legend.text = element_text(size=13), 
+        #legend.position="none",
+        plot.background = element_blank(),
+        legend.title = element_text(size=18, face="bold"), 
+        #legend.title=element_blank(),
+        axis.text = element_text(size=13), 
+        axis.title = element_text(size=15,  face="bold"), 
+        axis.title.y = element_text(vjust=-1.5),
+        plot.title = element_text(size = 20, face = "italic", hjust = 0.5)) +
+  coord_equal(ratio = 2); pca_plot_degs
+```
+
+Heatmap with biomin DEGs
+```{r}
+my_colors <- wes_palette("GrandBudapest1", n=3)
+
+mat <- assay(Unique.rsig.biom) #make an expression object
+col.order <- c( "B", "C", "E", "G", # Control samples
+                "D", "F", "H", "M", # Mid samples
+                "A", "L", "N") # High samples
+mat <- mat[,col.order]
+df <- as.data.frame(colData(Unique.rsig.biom)[,c("Treatment")]) #make dataframe
+colnames(df) <- "Treatment"
+rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
+df <- df[col.order, , drop = FALSE]
+
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =T,fontsize_row = 8, cluster_cols=T, cluster_rows=TRUE, show_colnames =F, annotation_legend = T, annotation_names_col = F, annotation_colors = list(Treatment = c("Control" = my_colors[1], "Mid" = my_colors[2], "High" = my_colors[3]))); heatmap #plot heatmap of all DEG by group
+
+ggsave("../output/Biomineralization_Toolkit/heatmap_biomin_DEGs.pdf", heatmap, width = 8, height = 10)
+ggsave("../output/Biomineralization_Toolkit/heatmap_biomin_DEGs.png", heatmap, width = 8, height = 10)
 ```
 

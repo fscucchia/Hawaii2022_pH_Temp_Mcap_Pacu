@@ -14,6 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
 library(readxl)
+library(DESeq2)
+library(wesanderson)
+library(factoextra)
+library(reshape2)
 ```
 
 See [code](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-03-11-BLAST-Pacuta-Hawaii-2022.md) for BLAST information.  
@@ -172,6 +176,26 @@ meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
   arrange(ID)
 ```
 
+Make PCA and heatmap for the genes of interest
+
+```{r}
+# Filter genes of interest 
+genes <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
+
+filt <- degs %>% 
+  filter(X %in% genes) %>%
+  rename("gene_id" = "X") #%>%
+  #rename("Treatment" = "Treatment.y")  
+
+pca_plot <- plotPCA(filt[,2:12], intgroup = c("Treatment"))
+
+```
+
+
+
+
+
+
 Pivot the counts data, join with treatment column, and calculate mean + sd
 ```{r}
 deg_means <- degs %>%
@@ -232,5 +256,10 @@ shared_biomin_error <- ggplot(filt, aes(x = Treatment, y = mean_log_count, fill 
 ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs_WithErrorBars.pdf", shared_biomin_error, width = 14, height = 11)
 ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs_WithErrorBars.png", shared_biomin_error, width = 14, height = 11)
 ```
+
+
+
+
+
 
 

@@ -649,7 +649,7 @@ shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fi
    geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
                  width = 0.2,  # Adjust width as needed
                  position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
+  facet_wrap(~gene_id, scales = "free", nrow = 1) +
   labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
   scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
@@ -660,8 +660,8 @@ shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fi
         axis.title=element_text(size=25, color="black", face="bold"),
         #axis.line = element_line(colour = 'black', size = 1),
         strip.text = element_text(size = 17, color = "black")); shared_down_error
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error, width = 15, height = 14)
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error, width = 15, height = 14)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error, width = 20, height = 14)
+ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error, width = 20, height = 14)
 ```
 
 Make a list of upregulated DEGs of interest and filter the df means by that list. Plot upregulated genes
