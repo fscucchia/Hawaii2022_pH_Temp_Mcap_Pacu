@@ -34,6 +34,7 @@ library(tidyr)
 library(forcats)
 library(wesanderson)
 library(GSEABase)
+library(directlabels)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -842,6 +843,249 @@ up_filt_slim_plot <- up_filt_slim %>%
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.pdf", up_filt_slim_plot, width = 35, height = 25)
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up_filt_slim_plot, width = 35, height = 25)
 ```
+
+I want to make a plot similar to one that Hollie made (see [here](https://github.com/hputnam/Poc_RAPID/blob/main/RAnalysis/figures/DEG_LFC_Larvae_Temperature.jpg)). It plots LFC on the x-axis, GO term on the y-axis, and p-value as color. I am going to make it for the 4 up/down regulated genes of interest. 
+
+Read in High v Control DEG and GO information 
+```{r}
+h_v_c_deg_go <- read.csv("../output/functional_enrichment/High_v_Control_GO.csv")
+h_v_c_deg_go$comparison <- "High_v_Control"
+```
+
+Read in High v Mid DEG and GO information 
+```{r}
+h_v_m_deg_go <- read.csv("../output/functional_enrichment/High_v_Mid_GO.csv")
+h_v_m_deg_go$comparison <- "High_v_Mid"
+```
+
+Filter by downregulated genes of interest 
+```{r}
+down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
+
+# Select genes of interest for High v Control 
+h_v_c_down_filt <- h_v_c_deg_go %>% 
+  filter(gene_id %in% down) %>%
+  na.omit() %>%
+  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
+
+length(unique(h_v_c_down_filt$gene_id))
+
+# Select genes of interest for High v Mid 
+h_v_m_down_filt <- h_v_m_deg_go %>% 
+  filter(gene_id %in% down) %>%
+  na.omit() %>%
+  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
+
+length(unique(h_v_m_down_filt$gene_id))
+```
+
+There are some repeated terms (as some of the terms are assigned to multiple genes). This is giving me some plotting issues. I'm going to remove repeated terms and only keep the one with the lowest padj value for each term. 
+```{r}
+# Reduce the High and Control df 
+h_v_c_down_filt <- h_v_c_down_filt %>%
+  group_by(term) %>%
+  filter(padj == min(padj)) 
+
+h_v_c_down_filt <- h_v_c_down_filt%>% 
+  arrange(log2FoldChange)
+
+# Reduce the High and Mid df 
+h_v_m_down_filt <- h_v_m_down_filt %>%
+  group_by(term) %>%
+  filter(padj == min(padj))
+
+h_v_m_down_filt <- h_v_m_down_filt%>% 
+  arrange(log2FoldChange)
+```
+
+Plot so that LFC is on x-axis, terms are on the y-axis, color is padj value for each comparison. 
+```{r}
+ggplot(h_v_c_down_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() +
+  theme(legend.position = c(0.8, 0.45),
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        strip.text.y = element_text(angle = 0, hjust = 1))
+
+ggplot(h_v_m_down_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() +
+  theme(legend.position = c(0.8, 0.45),
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        strip.text.y = element_text(angle = 0, hjust = 1))
+```
+
+Still not ordering by LFC...not sure why?
+
+Filter by upregulated genes of interest 
+```{r}
+up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
+
+# Select genes of interest for High v Control 
+h_v_c_up_filt <- h_v_c_deg_go %>% 
+  filter(gene_id %in% up) %>%
+  na.omit() %>%
+  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
+
+length(unique(h_v_c_up_filt$gene_id))
+
+# Select genes of interest for High v Mid 
+h_v_m_up_filt <- h_v_m_deg_go %>% 
+  filter(gene_id %in% up) %>%
+  na.omit() %>%
+  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
+
+length(unique(h_v_m_up_filt$gene_id))
+```
+
+There are some repeated terms (as some of the terms are assigned to multiple genes). This is giving me some plotting issues. I'm going to remove repeated terms and only keep the one with the lowest padj value for each term. 
+```{r}
+# Reduce the High and Control df 
+h_v_c_up_filt <- h_v_c_up_filt %>%
+  group_by(term) %>%
+  filter(padj == min(padj)) 
+
+h_v_c_up_filt <- h_v_c_up_filt%>% 
+  arrange(log2FoldChange)
+
+# Reduce the High and Mid df 
+h_v_m_up_filt <- h_v_m_up_filt %>%
+  group_by(term) %>%
+  filter(padj == min(padj))
+
+h_v_m_up_filt <- h_v_m_up_filt%>% 
+  arrange(log2FoldChange)
+```
+
+Plot so that LFC is on x-axis, terms are on the y-axis, color is padj value for each comparison. 
+```{r}
+ggplot(h_v_c_up_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() 
+  # theme(legend.position = c(0.8, 0.45),
+  #       axis.title.y = element_blank(),
+  #       axis.title.x = element_text(size = 14, face = "bold"),
+  #       strip.text.y = element_text(angle = 0, hjust = 1))
+
+ggplot(h_v_m_up_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() 
+  # theme(legend.position = c(0.8, 0.45),
+  #       axis.title.y = element_blank(),
+  #       axis.title.x = element_text(size = 14, face = "bold"),
+  #       strip.text.y = element_text(angle = 0, hjust = 1))
+```
+
+Combine up and down terms for both comparisons and plot
+```{r}
+test <- rbind(h_v_c_up_filt, h_v_c_down_filt)
+
+ggplot(test, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() 
+  # theme(legend.position = c(0.8, 0.45),
+  #       axis.title.y = element_blank(),
+  #       axis.title.x = element_text(size = 14, face = "bold"),
+  #       strip.text.y = element_text(angle = 0, hjust = 1))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Plot attempts 
+```{r}
+ggplot(h_v_c_down_filt, aes(x=term, y=log2FoldChange, colour=padj, group = gene_id)) +
+  ylim(-16,16)+
+  geom_point(size=2)+
+  #scale_colour_gradientn(colours = colorspace::heat_hcl(7))+
+  geom_segment(aes(x=term, xend=term, y=0, yend=log2FoldChange)) +
+  # geom_vline(xintercept = 12 + 0.5, linetype = "dashed") + # Add vertical line
+  # geom_text(data = data2.labels, aes(x = x, y = y, label = text.lab), color="black",size=5)+
+  # geom_text(data = data.GOBP.labels, aes(x = x, y = y, label = text.lab), color="black",size=2.8)+
+  # geom_text(data = data.GOMF.labels, aes(x = x, y = y, label = text.lab), color="blue",size=2.8)+
+  coord_flip()+
+  theme_classic() +
+  theme(legend.position = c(0.8, 0.45),
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size = 14, face = "bold"))
+
+ggplot(test, aes(x = term, y = log2FoldChange, colour = padj)) +
+  ylim(-6, 6) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
+  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
+  coord_flip() +
+  theme_classic() +
+  theme(legend.position = c(0.8, 0.45),
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size = 14, face = "bold"),
+        strip.text.y = element_text(angle = 0, hjust = 1))
+
+# Create a new variable combining term and gene id
+h_v_c_down_filt$term_padj <- paste(h_v_c_down_filt$term, "(",h_v_c_down_filt$gene_id,")")
+h_v_c_down_filt$term_padj <- as.character(h_v_c_down_filt$term_padj)
+
+# Plot with the new variable on the y-axis
+ggplot(h_v_c_down_filt, aes(x = log2FoldChange, y = term_padj, colour = padj)) +
+  #ylim(-16, 16) +
+  geom_point(size = 2) +
+  geom_segment(aes(x = term_padj, xend = term_padj, y = 0, yend = log2FoldChange)) +
+  coord_flip() +
+  theme_classic() +
+  theme(legend.position = c(0.8, 0.45),
+        axis.title.y = element_blank(),
+        axis.title.x = element_text(size = 14, face = "bold"))
+```
+
+Combine up and down terms for both comparisons and plot
+```{r}
+test <- rbind(h_v_c_up_filt, h_v_c_up_filt)
+
+
+```
+
+
+
+
+
+
+
 
 
 
