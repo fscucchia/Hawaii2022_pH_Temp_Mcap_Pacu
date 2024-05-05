@@ -1,0 +1,24 @@
+Object IDs and corresponding URLs:
+
+41218547: https://www.ncbi.nlm.nih.gov/sra/41218547
+41218548: https://www.ncbi.nlm.nih.gov/sra/41218548
+41218549: https://www.ncbi.nlm.nih.gov/sra/41218549
+41218550: https://www.ncbi.nlm.nih.gov/sra/41218550
+41218551: https://www.ncbi.nlm.nih.gov/sra/41218551
+41218552: https://www.ncbi.nlm.nih.gov/sra/41218552
+41218553: https://www.ncbi.nlm.nih.gov/sra/41218553
+41218554: https://www.ncbi.nlm.nih.gov/sra/41218554
+41218555: https://www.ncbi.nlm.nih.gov/sra/41218555
+41218556: https://www.ncbi.nlm.nih.gov/sra/41218556
+41218557: https://www.ncbi.nlm.nih.gov/sra/41218557
+41218547: https://www.ncbi.nlm.nih.gov/sra/41218547
+41218548: https://www.ncbi.nlm.nih.gov/sra/41218548
+41218549: https://www.ncbi.nlm.nih.gov/sra/41218549
+41218550: https://www.ncbi.nlm.nih.gov/sra/41218550
+41218551: https://www.ncbi.nlm.nih.gov/sra/41218551
+41218552: https://www.ncbi.nlm.nih.gov/sra/41218552
+41218553: https://www.ncbi.nlm.nih.gov/sra/41218553
+41218554: https://www.ncbi.nlm.nih.gov/sra/41218554
+41218555: https://www.ncbi.nlm.nih.gov/sra/41218555
+41218556: https://www.ncbi.nlm.nih.gov/sra/41218556
+41218557: https://www.ncbi.nlm.nih.gov/sra/41218557

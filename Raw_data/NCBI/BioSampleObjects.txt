@@ -1,0 +1,12 @@
+Accession	Sample Name	SPUID	Organism	Tax ID	Breed	Isolate	
+SAMN41218547	A	A	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218548	B	B	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218549	C	C	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218550	D	D	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218551	E	E	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218552	F	F	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218553	G	G	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218554	H	H	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218555	L	L	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218556	M	M	Pocillopora acuta	1491507	Not applicable	Coral host	
+SAMN41218557	N	N	Pocillopora acuta	1491507	Not applicable	Coral host	
