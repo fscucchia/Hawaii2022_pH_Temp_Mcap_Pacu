@@ -35,6 +35,7 @@ library(forcats)
 library(wesanderson)
 library(GSEABase)
 library(directlabels)
+library(ggrepel)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -844,362 +845,58 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.pdf", up
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up_filt_slim_plot, width = 35, height = 25)
 ```
 
-I want to make a plot similar to one that Hollie made (see [here](https://github.com/hputnam/Poc_RAPID/blob/main/RAnalysis/figures/DEG_LFC_Larvae_Temperature.jpg)). It plots LFC on the x-axis, GO term on the y-axis, and p-value as color. I am going to make it for the 4 up/down regulated genes of interest. 
+I want to make a volcano plot for High v Control and High v Mid that labels the 4 upregulated and 4 downregulated genes of interest. 
 
-Read in High v Control DEG and GO information 
+Read in High v Control DEG information. Don't include the GO information here, as not all of the DEGs had go information. 
 ```{r}
-h_v_c_deg_go <- read.csv("../output/functional_enrichment/High_v_Control_GO.csv")
-h_v_c_deg_go$comparison <- "High_v_Control"
+h_v_c_deg <- read.csv("../output/DEG/High_v_Control_DEGs.csv")
+length(unique(h_v_c_deg$X))
 ```
 
-Read in High v Mid DEG and GO information 
+Add a column to the df that says if the gene is up or down regulated
 ```{r}
-h_v_m_deg_go <- read.csv("../output/functional_enrichment/High_v_Mid_GO.csv")
-h_v_m_deg_go$comparison <- "High_v_Mid"
+# Add a column to the data frame to specify if they are UP- or DOWN- regulated (log2fc respectively positive or negative)
+h_v_c_deg$diffexpressed <- "NO"
+
+# if log2Foldchange > 1 and adj pvalue < 0.05, set as "UP"
+h_v_c_deg$diffexpressed[h_v_c_deg$log2FoldChange > 1.0 & h_v_c_deg$padj < 0.05] <- "UP"
+
+# if log2Foldchange < -1 and adj pvalue < 0.05, set as "UP"
+h_v_c_deg$diffexpressed[h_v_c_deg$log2FoldChange < -1.0 & h_v_c_deg$padj < 0.05] <- "DOWN"
 ```
 
-Filter by downregulated genes of interest 
+Add a column that says which genes to label on plot 
 ```{r}
-down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
+gene_interest <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1", "Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
 
-# Select genes of interest for High v Control 
-h_v_c_down_filt <- h_v_c_deg_go %>% 
-  filter(gene_id %in% down) %>%
-  na.omit() %>%
-  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
+h_v_c_deg$delabel <- ifelse(h_v_c_deg$X %in% gene_interest, h_v_c_deg$X, NA)
 
-length(unique(h_v_c_down_filt$gene_id))
-
-# Select genes of interest for High v Mid 
-h_v_m_down_filt <- h_v_m_deg_go %>% 
-  filter(gene_id %in% down) %>%
-  na.omit() %>%
-  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
-
-length(unique(h_v_m_down_filt$gene_id))
+# Remove extra gene name information. This will help with the label on the volcano plot
+h_v_c_deg$delabel <- sub("Pocillopora_acuta_HIv2___RNAseq.", "", h_v_c_deg$delabel)
+h_v_c_deg$delabel <- sub("Pocillopora_acuta_HIv2___TS.", "", h_v_c_deg$delabel)
 ```
 
-There are some repeated terms (as some of the terms are assigned to multiple genes). This is giving me some plotting issues. I'm going to remove repeated terms and only keep the one with the lowest padj value for each term. 
+
+Make a volcano plot where LFC is on the x-axis and adj pvalue is on the y-axis for the high v control comparison.
 ```{r}
-# Reduce the High and Control df 
-h_v_c_down_filt <- h_v_c_down_filt %>%
-  group_by(term) %>%
-  filter(padj == min(padj)) 
-
-h_v_c_down_filt <- h_v_c_down_filt%>% 
-  arrange(log2FoldChange)
-
-# Reduce the High and Mid df 
-h_v_m_down_filt <- h_v_m_down_filt %>%
-  group_by(term) %>%
-  filter(padj == min(padj))
-
-h_v_m_down_filt <- h_v_m_down_filt%>% 
-  arrange(log2FoldChange)
-```
-
-Plot so that LFC is on x-axis, terms are on the y-axis, color is padj value for each comparison. 
-```{r}
-ggplot(h_v_c_down_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
+ggplot(h_v_c_deg, aes(x = log2FoldChange, y = -log10(padj), color = diffexpressed, label = delabel)) + 
   geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
+  geom_hline(yintercept = -log10(0.05), col = "black", linetype = 'dashed') +
+  geom_vline(xintercept = c(-1.0, 1.0), col = "black", linetype = 'dashed') +
+###ADD LABEL REPEL 
+  
+  #geom_text_repel(max.overlaps = Inf, hjust = ifelse(h_v_c_deg$log2FoldChange > 0, 0, 1)) + # To show all labels 
+  scale_color_manual(values = c("blue", "grey", "red"), 
+                     labels = c("Downregulated", "Not significant", "Upregulated")) +
+    scale_fill_manual(values = c("red", "grey", "blue"),  # Match fill colors to diffexpressed
+                    labels = c("Downregulated", "Not significant", "Upregulated"),
+                    guide = "none") +  # Hide legend for arrow fill colors
+  labs(color = 'High v. Control', #legend_title, 
+       x = expression("log"[2]*"FC"), y = expression("-log"[10]*"p-value")) + 
   theme_classic() +
-  theme(legend.position = c(0.8, 0.45),
-        axis.title.y = element_blank(),
-        axis.title.x = element_text(size = 14, face = "bold"),
-        strip.text.y = element_text(angle = 0, hjust = 1))
-
-ggplot(h_v_m_down_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
-  theme_classic() +
-  theme(legend.position = c(0.8, 0.45),
-        axis.title.y = element_blank(),
-        axis.title.x = element_text(size = 14, face = "bold"),
-        strip.text.y = element_text(angle = 0, hjust = 1))
+  theme(axis.title.y = element_text(face = "bold", margin = margin(0,20,0,0), size = rel(1.1), color = 'black'),
+        axis.title.x = element_text(hjust = 0.5, face = "bold", margin = margin(20,0,0,0), size = rel(1.1), color = 'black'))
 ```
 
-Still not ordering by LFC...not sure why?
-
-Filter by upregulated genes of interest 
-```{r}
-up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
-
-# Select genes of interest for High v Control 
-h_v_c_up_filt <- h_v_c_deg_go %>% 
-  filter(gene_id %in% up) %>%
-  na.omit() %>%
-  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
-
-length(unique(h_v_c_up_filt$gene_id))
-
-# Select genes of interest for High v Mid 
-h_v_m_up_filt <- h_v_m_deg_go %>% 
-  filter(gene_id %in% up) %>%
-  na.omit() %>%
-  dplyr::select(gene_id, log2FoldChange, padj, GO.ID, numDEInCat, term, ontology, comparison)
-
-length(unique(h_v_m_up_filt$gene_id))
-```
-
-There are some repeated terms (as some of the terms are assigned to multiple genes). This is giving me some plotting issues. I'm going to remove repeated terms and only keep the one with the lowest padj value for each term. 
-```{r}
-# Reduce the High and Control df 
-h_v_c_up_filt <- h_v_c_up_filt %>%
-  group_by(term) %>%
-  filter(padj == min(padj)) 
-
-h_v_c_up_filt <- h_v_c_up_filt%>% 
-  arrange(log2FoldChange)
-
-# Reduce the High and Mid df 
-h_v_m_up_filt <- h_v_m_up_filt %>%
-  group_by(term) %>%
-  filter(padj == min(padj))
-
-h_v_m_up_filt <- h_v_m_up_filt%>% 
-  arrange(log2FoldChange)
-```
-
-Plot so that LFC is on x-axis, terms are on the y-axis, color is padj value for each comparison. 
-```{r}
-ggplot(h_v_c_up_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
-  theme_classic() 
-  # theme(legend.position = c(0.8, 0.45),
-  #       axis.title.y = element_blank(),
-  #       axis.title.x = element_text(size = 14, face = "bold"),
-  #       strip.text.y = element_text(angle = 0, hjust = 1))
-
-ggplot(h_v_m_up_filt, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
-  theme_classic() 
-  # theme(legend.position = c(0.8, 0.45),
-  #       axis.title.y = element_blank(),
-  #       axis.title.x = element_text(size = 14, face = "bold"),
-  #       strip.text.y = element_text(angle = 0, hjust = 1))
-```
-
-Combine up and down terms for both comparisons and plot
-```{r}
-test <- rbind(h_v_c_up_filt, h_v_c_down_filt)
-
-ggplot(test, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
-  theme_classic() 
-  # theme(legend.position = c(0.8, 0.45),
-  #       axis.title.y = element_blank(),
-  #       axis.title.x = element_text(size = 14, face = "bold"),
-  #       strip.text.y = element_text(angle = 0, hjust = 1))
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Plot attempts 
-```{r}
-ggplot(h_v_c_down_filt, aes(x=term, y=log2FoldChange, colour=padj, group = gene_id)) +
-  ylim(-16,16)+
-  geom_point(size=2)+
-  #scale_colour_gradientn(colours = colorspace::heat_hcl(7))+
-  geom_segment(aes(x=term, xend=term, y=0, yend=log2FoldChange)) +
-  # geom_vline(xintercept = 12 + 0.5, linetype = "dashed") + # Add vertical line
-  # geom_text(data = data2.labels, aes(x = x, y = y, label = text.lab), color="black",size=5)+
-  # geom_text(data = data.GOBP.labels, aes(x = x, y = y, label = text.lab), color="black",size=2.8)+
-  # geom_text(data = data.GOMF.labels, aes(x = x, y = y, label = text.lab), color="blue",size=2.8)+
-  coord_flip()+
-  theme_classic() +
-  theme(legend.position = c(0.8, 0.45),
-        axis.title.y = element_blank(),
-        axis.title.x = element_text(size = 14, face = "bold"))
-
-ggplot(test, aes(x = term, y = log2FoldChange, colour = padj)) +
-  ylim(-6, 6) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term, xend = term, y = 0, yend = log2FoldChange)) +
-  #facet_wrap(~ ontology, ncol = 1, scales = "free_y") +
-  coord_flip() +
-  theme_classic() +
-  theme(legend.position = c(0.8, 0.45),
-        axis.title.y = element_blank(),
-        axis.title.x = element_text(size = 14, face = "bold"),
-        strip.text.y = element_text(angle = 0, hjust = 1))
-
-# Create a new variable combining term and gene id
-h_v_c_down_filt$term_padj <- paste(h_v_c_down_filt$term, "(",h_v_c_down_filt$gene_id,")")
-h_v_c_down_filt$term_padj <- as.character(h_v_c_down_filt$term_padj)
-
-# Plot with the new variable on the y-axis
-ggplot(h_v_c_down_filt, aes(x = log2FoldChange, y = term_padj, colour = padj)) +
-  #ylim(-16, 16) +
-  geom_point(size = 2) +
-  geom_segment(aes(x = term_padj, xend = term_padj, y = 0, yend = log2FoldChange)) +
-  coord_flip() +
-  theme_classic() +
-  theme(legend.position = c(0.8, 0.45),
-        axis.title.y = element_blank(),
-        axis.title.x = element_text(size = 14, face = "bold"))
-```
-
-Combine up and down terms for both comparisons and plot
-```{r}
-test <- rbind(h_v_c_up_filt, h_v_c_up_filt)
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Optional, need to discuss w/ co-authors: 
-I can also run GOSeq on the eggNOG, KEGG and PFAM terms. There are several columns for KEGG information in the `annot` file (KEGG_ko, KEGG_Pathway, KEGG_Module, KEGG_Reaction, KEGG_rclass, KEGG_TC) and I'm not sure what they all mean or which one to use in the analysis. There is also a BRITE column that looks like there is KEGG information in it. 
-
-Select PFAM columns and split so that there is only one PFAM term per row
-```{r}
-annot_pfam <- annot %>%
-  dplyr::select(X.query, PFAMs) %>%
-  mutate_all(~if_else(. == "-", NA_character_, .)) %>%
-  separate_rows(PFAMs, sep = ",") %>%
-  rename(gene_id = X.query,
-         PFAM.ID = PFAMs)
-
-# Remove leading and trailing whitespaces
-annot_pfam$PFAM.ID <- trimws(annot_pfam$PFAM.ID)
-
-# Replace NAs with unknown
-annot_pfam$PFAM.ID <- replace_na(annot_pfam$PFAM.ID, "unknown")
-
-# Set gene and go ids as factors 
-annot_pfam$gene_id <- as.factor(annot_pfam$gene_id)
-annot_pfam$PFAM.ID <- as.factor(annot_pfam$PFAM.ID)
-
-# Select only unique rows
-annot_pfam <- unique(annot_pfam)
-
-# Look at unique gene and go ids 
-length(unique(annot_pfam$gene_id))
-length(unique(annot_pfam$PFAM.ID))
-
-# Remove rows with unknowns
-# annot_GO <- annot_GO %>%
-#   filter(GO.ID != "unknown")
-```
-
-Remove the annotation information for genes not present in our data 
-```{r}
-filt_annot_pfam <- subset(annot_pfam, gene_id %in% filt_counts$gene_id)
-
-str(filt_annot_pfam)
-
-# Convert filt_annot_GO from tibble to df 
-filt_annot_pfam <-as.data.frame(filt_annot_pfam)
-```
-
-Perform GOSeq
-```{r}
-GO.wall_pfam<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_pfam, method="Wallenius", use_genes_without_cat=T)
-
-pfam <- GO.wall_pfam[order(GO.wall_pfam$over_represented_pvalue),]
-write.csv(pfam, file = "../output/functional_enrichment/GOSeq_PFAM_all.csv")
-
-class(GO.wall_pfam)
-head(GO.wall_pfam)
-tail(GO.wall_pfam)
-nrow(GO.wall_pfam)
-```
-
-Filter by significantly enriched PFAM terms (p < 0.05)
-```{r}
-pfam_05 <- pfam %>%
-  dplyr::filter(over_represented_pvalue<0.05) %>%
-        dplyr::arrange(., over_represented_pvalue)
-
-write.csv(pfam_05, file = "../output/functional_enrichment/GOSeq_PFAM_05.csv")
-```
-
-Plot and order by p-value
-```{r}
-pfam_05_plot <- pfam_05 %>% 
-  #drop_na(ontology) %>% 
-  #filter(ontology == "MF") %>%
-  mutate(category = fct_reorder(category, numDEInCat)) %>%
-  #mutate(term = fct_reorder(term)) %>%
-  ggplot( aes(x=category, y=numDEInCat) ) +
-  geom_segment( aes(x=category ,xend=category, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1) +
-  coord_flip() +
-  ylim(0,55) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()); pfam_05_plot #Set the plot background #set title attributes
-
-ggsave("../output/functional_enrichment/GOSeq_PFAM_05.pdf", pfam_05_plot, width = 30, height = 10)
-ggsave("../output/functional_enrichment/GOSeq_PFAM_05.png", pfam_05_plot, width = 30, height = 10)
-```
-
-Still need to look at DEGs in the context of PFAM results and run goseq for KEGG and eggNOG annotation terms
 
 

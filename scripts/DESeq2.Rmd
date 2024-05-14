@@ -20,6 +20,7 @@ library(gplots)
 library(wesanderson)
 library(cowplot)
 library(gridExtra)
+library(grid)
 ```
 
 Load data. I'm going to use the transcript count matrix first, as that one appears to have most of the info from the gff (whereas the gene count matrix has STRG gene ids)
@@ -204,7 +205,7 @@ heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale
 h_v_m.sig <- as.data.frame(h_v_m.sig)
 h_v_m.sig.list <- as.data.frame(counts(h_v_m.sig.list))
 h_v_m.sig.list.full <- cbind(h_v_m.sig, h_v_m.sig.list)
-# write.csv(h_v_m.sig.list.full, file = "../output/DEG/High_v_Mid_DEGs.csv")
+write.csv(h_v_m.sig.list.full, file = "../output/DEG/High_v_Mid_DEGs.csv")
 ```
 
 The high treatment has some clear expression pattern differences compared to mid and control. 
@@ -270,13 +271,14 @@ pca_plot_degs <- ggplot(pca_plot, aes(PC1, PC2, color = Treatment)) +
         plot.title = element_text(size = 20, face = "italic", hjust = 0.5)) +
   coord_equal(ratio = 2); pca_plot_degs
 
-ggsave("../output/DEG/pca_DEGs.pdf", pca_plot_degs, width = 10, height = 8)
-ggsave("../output/DEG/pca_DEGs.png", pca_plot_degs, width = 10, height = 8)
+#ggsave("../output/DEG/pca_DEGs.pdf", pca_plot_degs, width = 10, height = 8)
+#ggsave("../output/DEG/pca_DEGs.png", pca_plot_degs, width = 10, height = 8)
 ```
 
 Heatmap with DEGs
 ```{r}
 my_colors <- wes_palette("GrandBudapest1", n=3)
+red_blue_palette <- colorRampPalette(c("red", "white", "blue"))
 
 mat <- assay(Unique.rsig) #make an expression object
 col.order <- c( "B", "C", "E", "G", # Control samples
@@ -288,11 +290,84 @@ colnames(df) <- "Treatment"
 rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
 df <- df[col.order, , drop = FALSE]
 
-heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =F,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =F, color = my_color_palette, annotation_legend = F, annotation_names_col = F, annotation_colors = list(Treatment = c("Control" = my_colors[1], "Mid" = my_colors[2], "High" = my_colors[3]))); heatmap #plot heatmap of all DEG by group
+heatmap_degs <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =F,fontsize_row = 2, fontsize = 15, cluster_cols=T, cluster_rows=TRUE, show_colnames =F, annotation_legend = F, annotation_names_col = F, annotation_colors = list(Treatment = c("Control" = my_colors[1], "Mid" = my_colors[2], "High" = my_colors[3]))); heatmap_degs #plot heatmap of all DEG by group
 
-#ggsave("../output/DEG/heatmap_DEGs.pdf", heatmap, width = 8, height = 10)
-#ggsave("../output/DEG/heatmap_DEGs.png", heatmap, width = 8, height = 10)
+ggsave("../output/DEG/heatmap_DEGs.pdf", heatmap_degs, width = 8, height = 10)
+ggsave("../output/DEG/heatmap_DEGs.png", heatmap_degs, width = 8, height = 10)
 ```
+
+Volcano plots? Include?
+
+HIGH v CONTROL
+Add a column to the df that says if the gene is up or down regulated
+```{r}
+# Add a column to the data frame to specify if they are UP- or DOWN- regulated (log2fc respectively positive or negative)
+h_v_c.sig.list.full$diffexpressed <- "NO"
+
+# if log2Foldchange > 1 and adj pvalue < 0.05, set as "UP"
+h_v_c.sig.list.full$diffexpressed[h_v_c.sig.list.full$log2FoldChange > 1.0 & h_v_c.sig.list.full$padj < 0.05] <- "UP"
+
+# if log2Foldchange < -1 and adj pvalue < 0.05, set as "UP"
+h_v_c.sig.list.full$diffexpressed[h_v_c.sig.list.full$log2FoldChange < -1.0 & h_v_c.sig.list.full$padj < 0.05] <- "DOWN"
+```
+
+Make volcano plots for each comparison
+```{r}
+## Mid v Control
+ggplot(h_v_c.sig.list.full, aes(x = log2FoldChange, y = -log10(padj), color = diffexpressed)) + 
+  geom_point(size = 2) +
+  geom_hline(yintercept = -log10(0.05), col = "black", linetype = 'dashed') +
+  geom_vline(xintercept = c(-1.0, 1.0), col = "black", linetype = 'dashed') +
+  #geom_text_repel(max.overlaps = Inf, hjust = ifelse(h_v_c_deg$log2FoldChange > 0, 0, 1)) + # To show all labels 
+  scale_color_manual(values = c("blue", "grey", "red"), 
+                     labels = c("Downregulated", "Not significant", "Upregulated")) +
+    scale_fill_manual(values = c("red", "grey", "blue"),  # Match fill colors to diffexpressed
+                    labels = c("Downregulated", "Not significant", "Upregulated"),
+                    guide = "none") +  # Hide legend for arrow fill colors
+  labs(x = expression("log"[2]*"FC"), y = expression("-log"[10]*"p-value")) + 
+  theme_classic() +
+  theme(axis.title.y = element_text(face = "bold", margin = margin(0,20,0,0), size = rel(1.1), color = 'black'),
+        axis.title.x = element_text(hjust = 0.5, face = "bold", margin = margin(20,0,0,0), size = rel(1.1), color = 'black'))
+```
+
+HIGH v MID
+Add a column to the df that says if the gene is up or down regulated
+```{r}
+# Add a column to the data frame to specify if they are UP- or DOWN- regulated (log2fc respectively positive or negative)
+h_v_m.sig.list.full$diffexpressed <- "NO"
+
+# if log2Foldchange > 1 and adj pvalue < 0.05, set as "UP"
+h_v_m.sig.list.full$diffexpressed[h_v_m.sig.list.full$log2FoldChange > 1.0 & h_v_m.sig.list.full$padj < 0.05] <- "UP"
+
+# if log2Foldchange < -1 and adj pvalue < 0.05, set as "UP"
+h_v_m.sig.list.full$diffexpressed[h_v_m.sig.list.full$log2FoldChange < -1.0 & h_v_m.sig.list.full$padj < 0.05] <- "DOWN"
+```
+
+Make volcano plots for each comparison
+```{r}
+## Mid v Control
+ggplot(h_v_m.sig.list.full, aes(x = log2FoldChange, y = -log10(padj), color = diffexpressed)) + 
+  geom_point(size = 2) +
+  geom_hline(yintercept = -log10(0.05), col = "black", linetype = 'dashed') +
+  geom_vline(xintercept = c(-1.0, 1.0), col = "black", linetype = 'dashed') +
+  #geom_text_repel(max.overlaps = Inf, hjust = ifelse(h_v_c_deg$log2FoldChange > 0, 0, 1)) + # To show all labels 
+  scale_color_manual(values = c("blue", "grey", "red"), 
+                     labels = c("Downregulated", "Not significant", "Upregulated")) +
+    scale_fill_manual(values = c("red", "grey", "blue"),  # Match fill colors to diffexpressed
+                    labels = c("Downregulated", "Not significant", "Upregulated"),
+                    guide = "none") +  # Hide legend for arrow fill colors
+  labs(x = expression("log"[2]*"FC"), y = expression("-log"[10]*"p-value")) + 
+  theme_classic() +
+  theme(axis.title.y = element_text(face = "bold", margin = margin(0,20,0,0), size = rel(1.1), color = 'black'),
+        axis.title.x = element_text(hjust = 0.5, face = "bold", margin = margin(20,0,0,0), size = rel(1.1), color = 'black'))
+```
+
+
+
+
+
+
+
 
 Visualize the biomineralization DEGs of interest (identified in [this script](https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/blob/main/scripts/Biomineralization_Toolkit.Rmd)).
 ```{r}
