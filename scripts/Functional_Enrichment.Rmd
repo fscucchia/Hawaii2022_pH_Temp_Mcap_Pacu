@@ -781,33 +781,45 @@ Add slim terms to dataset
 GOslim <- read_csv("~/Desktop/PutnamLab/Repositories/SedimentStress/SedimentStress/Output/GOSeq/GO-GOslim.csv")
 ```
 
-Plot downregulated GO slim information
+Plot downregulated GO slim information. 
 ```{r}
 down_filt_slim <- down_filt %>%
   inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
 
+# Log the overrepresented pvalue 
+down_filt_slim <- down_filt_slim %>%
+  mutate(log_over_represented_pvalue = -log10(over_represented_pvalue))
+
+# Sort the data by GOSlim_bin and log_over_represented_pvalue
+down_filt_slim <- down_filt_slim %>%
+  arrange(GOSlim_bin, log_over_represented_pvalue)
+
+# Set the factor levels for term.x based on the sorted order
+down_filt_slim$term.x <- factor(down_filt_slim$term.x, levels = unique(down_filt_slim$term.x))
+
 down_filt_slim_plot <- down_filt_slim %>%
-      ggplot(aes(x=over_represented_pvalue, 
-               y=term.x)) +
-               #colour=ontology)) +
+      ggplot(aes(x=log_over_represented_pvalue, 
+               y=term.x,
+               colour=ontology)) +
         geom_point(size = 20) +
-        expand_limits(x=0) +
+    scale_color_manual(values = c("cornflowerblue", "mediumvioletred", "seagreen")) +
+        #expand_limits(x=0) +
         #labs(x="Number of DEGs", y="GO term", color="pvalue") %>%
         facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
       #xlab("Number of DEGs") +
       #ylab("") +
-      labs(x="Over-represented p-value", y="") +
+      labs(x="-log10(over-represented p-value)", y="") +
       theme_bw() + 
-      theme(
-        strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
-        axis.text = element_text(size = 32, colour = "black"),
-        axis.title.x = element_text(size = 35, colour = "black"),
-        legend.text=element_text(size = 22),
-        legend.title = element_text(size = 24)
-        #panel.border  = element_line(colour = "black"),
-        #panel.grid.major = element_line(colour = "black"),
-        #panel.grid.minor = element_line(colour = "black")
-      ); down_filt_slim_plot
+   theme(
+    strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
+    axis.text = element_text(size = 32, colour = "black"),
+    axis.title.x = element_text(size = 35, colour = "black"),
+    legend.text = element_text(size = 24),  # Increase legend text size
+    legend.title = element_text(size = 26), # Increase legend title size
+    legend.key.size = unit(1.5, "lines"),   # Increase size of legend key
+    panel.border = element_rect(colour = "black", size = 1.5),  # Darken and thicken the panel border
+    strip.background = element_rect(colour = "black", size = 1.5) # Darken and thicken the strip background border
+  )
 
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.pdf", down_filt_slim_plot, width = 35, height = 25)
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.png", down_filt_slim_plot, width = 35, height = 25)
@@ -818,28 +830,39 @@ Plot upregulated GO slim information
 up_filt_slim <- up_filt %>%
   inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
 
+# Log the overrepresented pvalue 
+up_filt_slim <- up_filt_slim %>%
+  mutate(log_over_represented_pvalue = -log10(over_represented_pvalue))
+
+# Sort the data by GOSlim_bin and log_over_represented_pvalue
+up_filt_slim <- up_filt_slim %>%
+  arrange(GOSlim_bin, log_over_represented_pvalue)
+
+# Set the factor levels for term.x based on the sorted order
+up_filt_slim$term.x <- factor(up_filt_slim$term.x, levels = unique(up_filt_slim$term.x))
+
 up_filt_slim_plot <- up_filt_slim %>%
       ggplot(aes(x=over_represented_pvalue, 
-               y=term.x)) +
-               #colour=ontology)) +
+               y=term.x,
+               colour=ontology)) +
         geom_point(size = 20) +
-        expand_limits(x=0) +
-        #labs(x="Number of DEGs", y="GO term", color="pvalue") %>%
+      scale_color_manual(values = c("cornflowerblue", "mediumvioletred", "seagreen")) +
+        #expand_limits(x=0) +
         facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
       #xlab("Number of DEGs") +
       #ylab("") +
-      labs(x="Over-represented p-value", y="") +
+      labs(x="-log10(over-represented p-value)", y="") +
       theme_bw() + 
-      theme(
-        strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
-        axis.text = element_text(size = 32, colour = "black"),
-        axis.title.x = element_text(size = 35, colour = "black"),
-        legend.text=element_text(size = 22),
-        legend.title = element_text(size = 24)
-        #panel.border  = element_line(colour = "black"),
-        #panel.grid.major = element_line(colour = "black"),
-        #panel.grid.minor = element_line(colour = "black")
-      ); down_filt_slim_plot
+   theme(
+    strip.text.y = element_text(size = 28, colour = "black", angle = 0, face = "bold"),
+    axis.text = element_text(size = 32, colour = "black"),
+    axis.title.x = element_text(size = 35, colour = "black"),
+    legend.text = element_text(size = 24),  # Increase legend text size
+    legend.title = element_text(size = 26), # Increase legend title size
+    legend.key.size = unit(1.5, "lines"),   # Increase size of legend key
+    panel.border = element_rect(colour = "black", size = 1.5),  # Darken and thicken the panel border
+    strip.background = element_rect(colour = "black", size = 1.5) # Darken and thicken the strip background border
+  )
 
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.pdf", up_filt_slim_plot, width = 35, height = 25)
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up_filt_slim_plot, width = 35, height = 25)
