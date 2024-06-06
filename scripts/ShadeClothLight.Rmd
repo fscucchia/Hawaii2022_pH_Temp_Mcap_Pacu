@@ -1,0 +1,63 @@
+---
+title: "Shade levels"
+author: "Jill Ashey"
+date: "2024-06-06"
+output: html_document
+---
+
+This script calculates the amount of light in tanks under a shade cloth relative to tanks without a shade cloth. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+```
+
+Load data
+```{r}
+shade <- read_excel("../Raw_data/HOBOs/control Shade 2022-06-19 10_01_12 -1000.xlsx")
+
+out <- read_excel("../Raw_data/HOBOs/control Out 2022-06-19 09_58_54 -1000.xlsx")
+```
+
+Manipulate data 
+```{r}
+# Remove first two rows and columns 4-7
+shade <- shade[-c(1:2), -c(4:7)]
+out <- out[-c(1:2), -c(4:7)]
+
+# Rename columns 
+colnames(shade) <- c("Date.Time", "Temperature_C", "Light_lux")
+colnames(out) <- c("Date.Time", "Temperature_C", "Light_lux")
+
+# Remove NAs
+shade <- na.omit(shade)
+out <- na.omit(out)
+```
+
+Change to numeric
+```{r}
+shade$Light_lux <- as.numeric(shade$Light_lux)
+out$Light_lux <- as.numeric(out$Light_lux)
+```
+
+
+Take mean of light 
+```{r}
+mean(shade$Light_lux)
+mean(out$Light_lux)
+```
+
+Mean light of shaded tanks is 2206.019 lux. Mean light of unshaded tanks is 7281.615. 
+
+How much light reduction is the shade cloth doing?
+```{r}
+(2206.019/7281.615)*100
+```
+
+30.29574% of light is coming through to the tanks when the shade cloth is on. 2206.019 is 32.44 umol/m2/s, and 7281.615 is 107.08 umol/m2/s. 
+
+
+
+
