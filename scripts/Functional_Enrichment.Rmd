@@ -162,12 +162,7 @@ Perform GOSeq
 GO.wall<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_GO, method="Wallenius", use_genes_without_cat=T)
 
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-#write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
-
-class(GO.wall)
-head(GO.wall)
-tail(GO.wall)
-nrow(GO.wall)
+write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
 ```
 
 Worked! 
@@ -178,7 +173,7 @@ GO_05 <- GO %>%
   dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-#write.csv(GO_05, file = "../output/functional_enrichment/GOSeq_GO_05.csv")
+write.csv(GO_05, file = "../output/functional_enrichment/GOSeq_GO_05.csv")
 ```
 
 Plot all ontologies (BP, CC, MF) and order by p-value 
@@ -205,8 +200,8 @@ GO_05_plot <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, nu
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot #Set the plot background #set title attributes
 
-#ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
-#ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot, width = 20, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05.pdf", GO_05_plot, width = 20, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05.png", GO_05_plot, width = 20, height = 10)
 ```
 
 Plot ontologies (BP, CC, MF) separately and order by p-value 
@@ -237,8 +232,8 @@ GO_05_plot_BP <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_BP #Set the plot background #set title attributes
 
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.pdf", GO_05_plot_BP, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.png", GO_05_plot_BP, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.pdf", GO_05_plot_BP, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_BP.png", GO_05_plot_BP, width = 30, height = 10)
 
 ## CC
 GO_05_plot_CC <- GO_05 %>% 
@@ -266,8 +261,8 @@ GO_05_plot_CC <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_CC #Set the plot background #set title attributes
 
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.pdf", GO_05_plot_CC, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.png", GO_05_plot_CC, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.pdf", GO_05_plot_CC, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_CC.png", GO_05_plot_CC, width = 30, height = 10)
 
 ## MF
 GO_05_plot_MF <- GO_05 %>% 
@@ -295,8 +290,8 @@ GO_05_plot_MF <- GO_05 %>%
         axis.line = element_line(colour = "black"), #Set axes color
         plot.background=element_blank()); GO_05_plot_MF #Set the plot background #set title attributes
 
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.pdf", GO_05_plot_MF, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.pdf", GO_05_plot_MF, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, width = 30, height = 10)
 ```
 
 Merge significant GO terms and annot list together 
@@ -318,7 +313,7 @@ GO_deg <- GO_genes %>%
 
 length(unique(GO_deg$gene_id)) # 178 DEGs with over-represented GO terms 
 
-#write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
+write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
 ```
 
 How does this relate to our DEG comparisons? Merge high v control DEGs with GO information
@@ -334,7 +329,7 @@ GO_h_v_c <- h_v_c %>%
 
 length(unique(GO_h_v_c$gene_id))
 
-#write.csv(GO_h_v_c, file = "../output/functional_enrichment/High_v_Control_GO.csv")
+write.csv(GO_h_v_c, file = "../output/functional_enrichment/High_v_Control_GO.csv")
 ```
 
 Merge Mid v control DEGs with GO information
@@ -350,7 +345,7 @@ GO_m_v_c <- m_v_c %>%
 
 length(unique(GO_m_v_c$gene_id))
 
-#write.csv(GO_m_v_c, file = "../output/functional_enrichment/Mid_v_Control_GO.csv")
+write.csv(GO_m_v_c, file = "../output/functional_enrichment/Mid_v_Control_GO.csv")
 ```
 
 Merge high v mid DEGs with GO information
@@ -366,11 +361,11 @@ GO_h_v_m <- h_v_m %>%
 
 length(unique(GO_h_v_m$gene_id))
 
-#write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
+write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
 ```
 
 There is only 1 gene that has GO terms between Mid v Control corals (	
-Pocillopora_acuta_HIv2___TS.g21597.t2). On the other hand, there are 137 and 114 genes with significant GO terms between H v C and H v M corals, respectively. 
+Pocillopora_acuta_HIv2___TS.g21597.t2). On the other hand, there are 164 and 120 genes with significant GO terms between H v C and H v M corals, respectively. 
 
 Let's visualize these data. First, High v Control. Positive LFC means that the genes are upregulated in the high treatment. 
 ```{r}
@@ -386,8 +381,8 @@ GO_BP_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Control
-#ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.pdf", GO_BP_High_v_Control, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.png", GO_BP_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.pdf", GO_BP_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Control_top50_pvalue.png", GO_BP_High_v_Control, width = 30, height = 10)
 
 GO_CC_High_v_Control <- GO_h_v_c %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -401,8 +396,8 @@ GO_CC_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Control
-#ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.pdf", GO_CC_High_v_Control, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.png", GO_CC_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.pdf", GO_CC_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Control_top50_pvalue.png", GO_CC_High_v_Control, width = 30, height = 10)
 
 GO_MF_High_v_Control <- GO_h_v_c %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -416,8 +411,8 @@ GO_MF_High_v_Control <- GO_h_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Control
-#ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", GO_MF_High_v_Control, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", GO_MF_High_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
 ```
 
 Mid v Control. Positive LFC means that the genes are upregulated in the mid treatment. Mid v Control only shares 1 gene with GO terms and all GO terms are BP. 
@@ -434,8 +429,8 @@ GO_BP_Mid_v_Control <- GO_m_v_c %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_Mid_v_Control
-#ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.pdf", GO_BP_Mid_v_Control, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.png", GO_BP_Mid_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.pdf", GO_BP_Mid_v_Control, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_Mid_v_Control_top50_pvalue.png", GO_BP_Mid_v_Control, width = 30, height = 10)
 ```
 
 High v Mid Positive LFC means that the genes are upregulated in the high treatment. 
@@ -452,8 +447,8 @@ GO_BP_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_BP_High_v_Mid
-#ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.pdf", GO_BP_High_v_Mid, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.png", GO_BP_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.pdf", GO_BP_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_BP_High_v_Mid_top50_pvalue.png", GO_BP_High_v_Mid, width = 30, height = 10)
 
 GO_CC_High_v_Mid <- GO_h_v_m %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -467,8 +462,8 @@ GO_CC_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_CC_High_v_Mid
-#ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.pdf", GO_CC_High_v_Mid, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.png", GO_CC_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.pdf", GO_CC_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_CC_High_v_Mid_top50_pvalue.png", GO_CC_High_v_Mid, width = 30, height = 10)
 
 GO_MF_High_v_Mid <- GO_h_v_m %>% 
     #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
@@ -482,8 +477,8 @@ GO_MF_High_v_Mid <- GO_h_v_m %>%
         geom_point() +
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); GO_MF_High_v_Mid
-#ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.pdf", GO_MF_High_v_Mid, width = 30, height = 10)
-#ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.png", GO_MF_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.pdf", GO_MF_High_v_Mid, width = 30, height = 10)
+ggsave("../output/functional_enrichment/GO_MF_High_v_Mid_top50_pvalue.png", GO_MF_High_v_Mid, width = 30, height = 10)
 ```
 
 Join the GO High v Control df and GO High v Mid df by gene
@@ -529,7 +524,7 @@ str(isect)
 isect$`A:B`
 ```
 
-There are 64 genes that are only present in H v C comparison, 41 genes that are only present in the H v M comparison and 73 genes shared between both comparisons. Filter the GO dfs so that we only have the shared genes. 
+Filter the GO dfs so that we only have the shared genes. 
 
 ```{r}
 GO_h_v_c_filt <- GO_h_v_c %>%
@@ -545,6 +540,19 @@ identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not
 *NOTE*: the genes below are only those that are shared between h v c and h v m comparisons 
 
 The top 5 genes that are downregulated in the high treatment compared to the control treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g8481.t1 (LFC -8.396540)
+- Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -8.446681)
+- Pocillopora_acuta_HIv2___RNAseq.22237_t (-7.667258)
+- 
+
+
+
+
+
+JA stopped here 6/6/24
+
+
 
 - Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.663960)
 - Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.153118)
@@ -577,18 +585,6 @@ The top 5 genes that are upregulated in the high treatment compared to the mid t
 - Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 2.899640)
 
 There is some high overlap between the top 5 genes (top 5 in terms of LFC) of down and upregulation in high v control and mid. I think we should investigate these genes more explicitly, given that the largest expression changes are happening in these genes. 
-
-Shared downregulated genes and general functions: 
-- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 - protein heterodimerization activity
-- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 - DNA binding, transcription regulation, protein heterodimerization activity
-- Pocillopora_acuta_HIv2___TS.g25049.t1 - metabolic processes (amine, ethanolamine-containing compound, ammonium ion), oxidoreductase activity
-- Pocillopora_acuta_HIv2___TS.g8000.t1 metabolic processes (organic acid, arachidonic acid, carboxylic acid, unsaturated fatty acid, oxoacid), biosynthetic processes (small molecule, carboxylic acid, icosanoid), oxidoreductase activity
-
-Shared upregulated genes and general functions: 
-- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 - DNA binding, transcription regulation 
-- Pocillopora_acuta_HIv2___TS.g23786.t1 - DNA binding
-- Pocillopora_acuta_HIv2___TS.g26760.t1 - DNA topoisomerase/isomerase activity 
-- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 - protein serine/threonine phosphatase activity, peptidyl-serine dephosphorylation
 
 Let's plot some of these genes! 
 

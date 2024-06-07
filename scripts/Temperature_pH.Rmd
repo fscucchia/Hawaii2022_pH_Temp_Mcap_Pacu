@@ -5,7 +5,265 @@ date: "2024-06-06"
 output: html_document
 ---
 
+This script plots temperature and pH before and during the experiment. The experiment was from 7/10/22 - 7/16/22. 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
 ```
 
+## Before experiment 
+
+In order to know the diurnal temperature and pH conditions, we measured incoming ambient water with hobo loggers for temperature and the apex for pH. We used this data to determine what the mid and high treatments would be in the experiment. Here, I will plot data frome 6/19-6/28. 
+
+Read in data prior to experiment
+```{r}
+# Define the path to the directory containing the files
+path <- "../Raw_data/HOBOs/txt"
+
+# List all files in the directory that contain "2022-06-28" in their names
+files <- list.files(path, pattern = "2022-06-28", full.names = TRUE)
+
+# Function to read each file, process data, and add the "tank" column
+read_and_process_file <- function(file) {
+  # Read the file into a data frame
+  df <- read.delim(file, header = F)  # Use read_csv for CSV files; adjust accordingly for other formats
+  
+  # Remove first two rows and columns 4-8
+  df <- df[-c(1:2), -c(4:8)]
+  
+  # Rename columns
+  colnames(df) <- c("Date.Time", "Temperature_C", "Light_lux")
+  
+  # Remove NAs
+  df <- df %>%
+    mutate(across(everything(), ~na_if(., ""))) %>%
+    na.omit()
+  
+  # Replace commas with periods in temp and light columns 
+  df$Temperature_C <- gsub(",", ".", df$Temperature_C)
+  df$Light_lux <- gsub(",", ".", df$Light_lux)
+  
+  # Extract the first 5 characters from the file name for the "tank" column
+  tank_name <- substr(basename(file), 1, 5)
+  
+  # Add the "tank" column to the data frame
+  df <- df %>%
+    mutate(tank = tank_name)
+  
+  return(df)
+}
+
+# Use purrr::map_df to read all files and bind them into one data frame
+combined_df <- map_df(files, read_and_process_file)
+```
+
+Make temperature and light variables numeric 
+```{r}
+combined_df$Temperature_C <- as.numeric(combined_df$Temperature_C)
+combined_df$Light_lux <- as.numeric(combined_df$Light_lux)
+```
+
+Convert Date.Time to POSIXct and add Time column
+```{r}
+combined_df <- combined_df %>%
+  mutate(Date.Time = as.POSIXct(Date.Time, format = "%Y-%m-%d %H:%M:%S")) %>%
+  mutate(Time = format(Date.Time, "%H:%M"))
+```
+
+Group by Time and calculate means 
+```{r}
+# Group by Time and calculate the mean of Temperature_C and Light_lux
+time_averages_ph <- combined_df %>%
+  group_by(Time) %>%
+  summarise(
+    Avg_Temperature_C = mean(Temperature_C, na.rm = F),
+    sd_Temperature_C = sd(Temperature_C, na.rm = TRUE) / sqrt(n()),
+    Avg_Light_lux = mean(Light_lux, na.rm = F)/60,
+    sd_Light_lux = sd(Light_lux, na.rm = TRUE) / sqrt(n())) %>%
+  mutate(upper_temp = Avg_Temperature_C+sd_Temperature_C, lower_temp = Avg_Temperature_C-sd_Temperature_C) %>%
+  na.omit() %>%
+  mutate(Time = hms::parse_hm(Time))
+```
+
+Plot 
+```{r}
+ggplot(time_averages_ph, aes(x = Time, y = Avg_Temperature_C)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
+```
+
+Read in pH data from apex 
+```{r}
+ph_data <- read.delim("../Raw_data/Apex/Data_log_control_beforeExp.xlsx.csv", sep = ";")
+```
+
+Convert Date.Time to POSIXct and add Time column
+```{r}
+ph_data <- ph_data %>%
+  mutate(record.date = as.POSIXct(record.date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  mutate(Time = format(record.date, "%H:%M"))
+```
+
+Filter so that there is only data from 6/19-6/28
+```{r}
+ph_data_filt <- ph_data %>%
+  dplyr::filter(record.date < as.POSIXct("2022-06-28 23:59:00"))
+```
+
+Group by Time and calculate means 
+```{r}
+time_averages <- ph_data_filt %>%
+  group_by(Time) %>%
+  summarise(
+    Avg_ph = mean(record.probe.value, na.rm = F),
+    sd_ph = sd(record.probe.value, na.rm = TRUE) / sqrt(n()))%>%
+  mutate(upper_ph = Avg_ph+sd_ph, lower_ph = Avg_ph-sd_ph) %>%
+  na.omit() %>%
+  mutate(Time = hms::parse_hm(Time))
+```
+
+Plot 
+```{r}
+ggplot(time_averages, aes(x = Time, y = Avg_ph)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average pH (NBS)") +
+  theme_minimal()
+```
+
+Join temperature and pH info
+```{r}
+before_exp <- time_averages %>%
+  inner_join(time_averages_ph, by = "Time")
+
+# Transform ph
+before_exp <- before_exp %>%
+  mutate(ph_transform = Avg_ph*(1+0.1*(Avg_Temperature_C-25)))
+```
+
+Plot together???
+```{r}
+ggplot(before_exp, aes(x = Time)) +
+  geom_line(aes(y = Avg_Temperature_C, color = "Avg_Temperature_C")) +
+  geom_line(aes(y = ph_transform, color = "Avg_ph")) +
+  scale_y_continuous(
+    name = "Average Temperature (°C)",  # Left y-axis label
+    sec.axis = sec_axis(~., name = "Average pH")  # Right y-axis label
+  ) +
+  labs(
+    x = "Time",
+    color = NULL
+  ) +
+  scale_color_manual(
+    name = "Variables",
+    values = c("Avg_Temperature_C" = "blue", "Avg_ph" = "red")
+  ) +
+  theme_minimal()
+```
+
+
+## During experiment 
+
+The following data is from the experiment from 7/10/22-7/16/22. 
+
+Read in data prior to experiment
+```{r}
+# Define the path to the directory containing the files
+path <- "../Raw_data/HOBOs/txt"
+
+# List all files in the directory that contain "2022-06-28" in their names
+files <- list.files(path, pattern = "2022-07-16", full.names = TRUE)
+
+# Function to read each file, process data, and add the "tank" column
+read_and_process_file <- function(file) {
+  # Read the file into a data frame
+  df <- read.delim(file, header = F)  # Use read_csv for CSV files; adjust accordingly for other formats
+  
+  # Remove first two rows and columns 4-8
+  df <- df[-c(1:2), -c(4:8)]
+  
+  # Rename columns
+  colnames(df) <- c("Date.Time", "Temperature_C", "Light_lux")
+  
+  # Remove NAs
+  df <- df %>%
+    mutate(across(everything(), ~na_if(., ""))) %>%
+    na.omit()
+  
+  # Replace commas with periods in temp and light columns 
+  df$Temperature_C <- gsub(",", ".", df$Temperature_C)
+  df$Light_lux <- gsub(",", ".", df$Light_lux)
+  
+  # Extract the first 5 characters from the file name for the "tank" column
+  tank_name <- substr(basename(file), 1, 5)
+  
+  # Add the "tank" column to the data frame
+  df <- df %>%
+    mutate(tank = tank_name)
+  
+  return(df)
+}
+
+# Use purrr::map_df to read all files and bind them into one data frame
+combined_df <- map_df(files, read_and_process_file)
+```
+
+Make temperature and light variables numeric 
+```{r}
+combined_df$Temperature_C <- as.numeric(combined_df$Temperature_C)
+combined_df$Light_lux <- as.numeric(combined_df$Light_lux)
+```
+
+Convert Date.Time to POSIXct 
+```{r}
+combined_df <- combined_df %>%
+  mutate(Date.Time = as.POSIXct(Date.Time, format = "%Y-%m-%d %H:%M:%S")) 
+```
+
+Filter so that Date.Time starts at 7/10
+```{r}
+during_exp <- combined_df %>%
+  dplyr::filter(Date.Time > as.POSIXct("2022-07-10 08:00:00"))
+```
+
+Make Treatment column and remove NAs
+```{r}
+during_exp <- during_exp %>%
+  mutate(Treatment = case_when(
+    grepl("C", tank) ~ "Control",
+    grepl("M", tank) ~ "Mid",
+    grepl("H", tank) ~ "High",
+    TRUE ~ NA_character_  # If none of the conditions match, return NA
+  )) %>%
+  na.omit()
+```
+
+```{r}
+blah <- ggplot(during_exp, aes(x = Date.Time, y = Temperature_C, color = Treatment)) +
+  #geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  geom_line()
+  labs(
+    x = "Date",
+    y = "Temperature (°C)"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ); blah
+  
+ggsave("../output/blah.pdf", blah, width = 20, height = 11)
+
+```
+
+
+Need to troubleshoot and save plots

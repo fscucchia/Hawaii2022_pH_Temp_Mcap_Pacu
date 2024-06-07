@@ -16,12 +16,12 @@ library(readxl)
 
 Load data
 ```{r}
-shade <- read_excel("../Raw_data/HOBOs/control Shade 2022-06-19 10_01_12 -1000.xlsx")
+shade <- read_excel("../Raw_data/HOBOs/excel/control Shade 2022-06-19 10_01_12 -1000.xlsx")
 
-out <- read_excel("../Raw_data/HOBOs/control Out 2022-06-19 09_58_54 -1000.xlsx")
+out <- read_excel("../Raw_data/HOBOs/excel/control Out 2022-06-19 09_58_54 -1000.xlsx")
 ```
 
-Manipulate data 
+Clean up data 
 ```{r}
 # Remove first two rows and columns 4-7
 shade <- shade[-c(1:2), -c(4:7)]

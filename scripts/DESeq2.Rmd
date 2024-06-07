@@ -60,7 +60,7 @@ all(rownames(meta$ID) == colnames(matrix)) #are they the same in the same order?
 
 Filter reads by proportion of samples containing cutoff value 
 ```{r}
-ffun<-filterfun(pOverA(0.75,5))  #set up filtering parameters--LOOK INTO FILTERING PARAMETERS
+ffun<-filterfun(pOverA(0.25,5))  #set up filtering parameters--LOOK INTO FILTERING PARAMETERS
 filt_outrm_poa <- genefilter((matrix), ffun) #apply filter
 sum(filt_outrm_poa) #count number of genes left
 
@@ -68,7 +68,7 @@ filt_outrm_poa <- matrix[filt_outrm_poa,] #keep only rows that passed filter
 
 all(rownames(meta$ID) %in% colnames(filt_outrm_poa)) # must come out TRUE
 
-#write.csv(filt_outrm_poa, file = "../output/DEG/filtered_counts.csv")
+write.csv(filt_outrm_poa, file = "../output/DEG/filtered_counts.csv")
 ```
 
 Put data and metadata in DESeq2 matrix 
@@ -120,18 +120,18 @@ df <- as.data.frame(colData(m_v_c.rsig)[,c("Treatment")])
 colnames(df) <- "Treatment"
 rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
 df <- df[col.order, , drop = FALSE]
-heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-# ggsave("../output/DEG/ma_plot_mid_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
-# ggsave("../output/DEG/pca_mid_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
-# ggsave("../output/DEG/heatmap_mid_v_control_DEG.pdf", heatmap, width = 8, height = 10)
+ggsave("../output/DEG/ma_plot_mid_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_mid_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_mid_v_control_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 m_v_c.sig <- as.data.frame(m_v_c.sig)
 m_v_c.sig.list <- as.data.frame(counts(m_v_c.sig.list))
 m_v_c.sig.list.full <- cbind(m_v_c.sig, m_v_c.sig.list)
-#write.csv(m_v_c.sig.list.full, file = "../output/DEG/Mid_v_Control_DEGs.csv")
+write.csv(m_v_c.sig.list.full, file = "../output/DEG/Mid_v_Control_DEGs.csv")
 ```
 
 Look at high v control contrast
@@ -156,18 +156,18 @@ df <- as.data.frame(colData(h_v_c.rsig)[,c("Treatment")])
 colnames(df) <- "Treatment"
 rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
 df <- df[col.order, , drop = FALSE]
-heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-# ggsave("../output/DEG/ma_plot_high_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
-# ggsave("../output/DEG/pca_high_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
-# ggsave("../output/DEG/heatmap_high_v_control_DEG.pdf", heatmap, width = 8, height = 10)
+ggsave("../output/DEG/ma_plot_high_v_control_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_high_v_control_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_high_v_control_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 h_v_c.sig <- as.data.frame(h_v_c.sig)
 h_v_c.sig.list <- as.data.frame(counts(h_v_c.sig.list))
 h_v_c.sig.list.full <- cbind(h_v_c.sig, h_v_c.sig.list)
-# write.csv(h_v_c.sig.list.full, file = "../output/DEG/High_v_Control_DEGs.csv")
+write.csv(h_v_c.sig.list.full, file = "../output/DEG/High_v_Control_DEGs.csv")
 ```
 
 Look at high v mid contrast
@@ -194,12 +194,12 @@ df <- as.data.frame(colData(h_v_m.rsig)[,c("Treatment")])
 colnames(df) <- "Treatment"
 rownames(df) <- c("A", "B", "C", "D", "E", "F", "G", "H", "L", "M", "N")
 df <- df[col.order, , drop = FALSE]
-heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE, color = my_color_palette); heatmap #plot heatmap of all DEG by group
+heatmap <- pheatmap(mat, annotation_col=df, clustering_method = "average", scale="row", clustering_distance_rows="euclidean", show_rownames =TRUE,fontsize_row = 4, cluster_cols=T, cluster_rows=TRUE, show_colnames =TRUE); heatmap #plot heatmap of all DEG by group
 
 ## Save plots 
-# ggsave("../output/DEG/ma_plot_high_v_mid_DEG.pdf", ma_plot, width = 10, height = 8)
-# ggsave("../output/DEG/pca_high_v_mid_DEG.pdf", pca_plot, width = 10, height = 8)
-# ggsave("../output/DEG/heatmap_high_v_mid_DEG.pdf", heatmap, width = 8, height = 10)
+ggsave("../output/DEG/ma_plot_high_v_mid_DEG.pdf", ma_plot, width = 10, height = 8)
+ggsave("../output/DEG/pca_high_v_mid_DEG.pdf", pca_plot, width = 10, height = 8)
+ggsave("../output/DEG/heatmap_high_v_mid_DEG.pdf", heatmap, width = 8, height = 10)
 
 # Save info with pvalues and LFC
 h_v_m.sig <- as.data.frame(h_v_m.sig)
@@ -243,7 +243,7 @@ length(unique(DEGs.all$DEGs))
 
 Unique.sig.list <- data[which(rownames(data) %in% DEGs.all$DEGs),] #subset list of sig transcripts from original count data
 Unique.rsig <- rlog(Unique.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
-#write.csv(counts(Unique.sig.list), file="../output/DEG/Unique_DEGs.csv")
+write.csv(counts(Unique.sig.list), file="../output/DEG/Unique_DEGs.csv")
 ```
 
 Visualize the DEGs
@@ -271,8 +271,8 @@ pca_plot_degs <- ggplot(pca_plot, aes(PC1, PC2, color = Treatment)) +
         plot.title = element_text(size = 20, face = "italic", hjust = 0.5)) +
   coord_equal(ratio = 2); pca_plot_degs
 
-#ggsave("../output/DEG/pca_DEGs.pdf", pca_plot_degs, width = 10, height = 8)
-#ggsave("../output/DEG/pca_DEGs.png", pca_plot_degs, width = 10, height = 8)
+ggsave("../output/DEG/pca_DEGs.pdf", pca_plot_degs, width = 10, height = 8)
+ggsave("../output/DEG/pca_DEGs.png", pca_plot_degs, width = 10, height = 8)
 ```
 
 Heatmap with DEGs
