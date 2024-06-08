@@ -72,10 +72,18 @@ combined_df <- combined_df %>%
   mutate(Time = format(Date.Time, "%H:%M"))
 ```
 
+```{r}
+head(combined_df)
+```
+
+
+
+
+
 Group by Time and calculate means 
 ```{r}
 # Group by Time and calculate the mean of Temperature_C and Light_lux
-time_averages_ph <- combined_df %>%
+time_averages <- combined_df %>%
   group_by(Time) %>%
   summarise(
     Avg_Temperature_C = mean(Temperature_C, na.rm = F),
@@ -89,7 +97,7 @@ time_averages_ph <- combined_df %>%
 
 Plot 
 ```{r}
-ggplot(time_averages_ph, aes(x = Time, y = Avg_Temperature_C)) +
+ggplot(time_averages, aes(x = Time, y = Avg_Temperature_C)) +
     #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
   geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
   #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
@@ -98,6 +106,22 @@ ggplot(time_averages_ph, aes(x = Time, y = Avg_Temperature_C)) +
        y = "Average Temperature (°C)") +
   theme_minimal()
 ```
+
+Plot part 2 - can't figure out how to plot the upper and lower 
+```{r}
+ggplot(time_averages, aes(x = Time, y = Avg_Temperature_C)) +
+  geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 1, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=F, alpha=0.5, show.legend=TRUE) +
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
+```
+
+
+
+
+
 
 Read in pH data from apex 
 ```{r}
@@ -249,9 +273,43 @@ during_exp <- during_exp %>%
 ```
 
 ```{r}
+head(during_exp)
+```
+
+
+
+
+
+
+
+
+Group by Time and calculate means 
+```{r}
+# Group by Time and calculate the mean of Temperature_C and Light_lux
+during_exp_avg <- during_exp %>%
+  group_by(Treatment, Date.Time) %>%
+  summarise(
+    Avg_Temperature_C = mean(Temperature_C, na.rm = F),
+    sd_Temperature_C = sd(Temperature_C, na.rm = TRUE) / sqrt(n()),
+    Avg_Light_lux = mean(Light_lux, na.rm = F)/60,
+    sd_Light_lux = sd(Light_lux, na.rm = TRUE) / sqrt(n())) %>%
+  mutate(upper_temp = Avg_Temperature_C+sd_Temperature_C, lower_temp = Avg_Temperature_C-sd_Temperature_C) %>%
+  na.omit() 
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
 blah <- ggplot(during_exp, aes(x = Date.Time, y = Temperature_C, color = Treatment)) +
-  #geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
-  geom_line()
+  geom_smooth(method="loess", span=0.5, se=F, alpha=0.5, show.legend=TRUE) +
+  #geom_line()
   labs(
     x = "Date",
     y = "Temperature (°C)"
@@ -261,7 +319,7 @@ blah <- ggplot(during_exp, aes(x = Date.Time, y = Temperature_C, color = Treatme
     axis.text.x = element_text(angle = 45, hjust = 1)
   ); blah
   
-ggsave("../output/blah.pdf", blah, width = 20, height = 11)
+#ggsave("../output/blah.pdf", blah, width = 20, height = 11)
 
 ```
 

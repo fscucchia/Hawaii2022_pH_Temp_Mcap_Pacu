@@ -594,17 +594,9 @@ Save plots
 #ggsave(all_plots, file="output/CarbChem/CarbChem_panel.png", width=25, height=10)
 ```
 
-## Save carb chem values in csv
-```{r}
-```
-
-
 ```{r}
 #write.csv(carb.output, "output/CarbChem/CarbChem.csv")
 ```
-
-
-
 
 ## Remake figures for publication 
 
@@ -631,7 +623,7 @@ Temperature
 outlier.plot <- ggbetweenstats(data, Treatment, Temperature, outlier.tagging = TRUE); outlier.plot # no major outliers 
 
 # Test for differences in temperature by treatment with one-way ANOVA
-res.aov <- aov(Temperature ~ Treatment, data = carb.output)
+res.aov <- aov(Temperature ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
 TukeyHSD(res.aov) # Significant differences in all treatment comparisons
 

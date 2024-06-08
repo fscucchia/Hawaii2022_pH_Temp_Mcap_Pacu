@@ -105,7 +105,7 @@ ma_plot <- plotMA(m_v_c); ma_plot
 sum(m_v_c$padj <0.05, na.rm = T)
 m_v_c.sig <- subset(m_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
 head(m_v_c.sig)
-sum(m_v_c.sig$log2FoldChange <0, na.rm=T) # 1 gene is downregulated in mid relative to control
+sum(m_v_c.sig$log2FoldChange <0, na.rm=T) # 4 gene is downregulated in mid relative to control
 sum(m_v_c.sig$log2FoldChange >0, na.rm=T) # 3 gene are upregulated in mid relative to control
 #plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g3840.t1", intgroup="Treatment")
 m_v_c.sig.list <- data[which(rownames(DEG.int) %in% rownames(m_v_c.sig)),] #subset list of sig transcripts from original count data
@@ -141,8 +141,8 @@ head(h_v_c)
 ma_plot <- plotMA(h_v_c); ma_plot
 sum(h_v_c$padj <0.05, na.rm=T)
 h_v_c.sig <- subset(h_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
-sum(h_v_c.sig$log2FoldChange <0, na.rm=T) # 249 genes are downregulated in high relative to control
-sum(h_v_c.sig$log2FoldChange >0, na.rm=T) # 372 genes are upregulated in high relative to control
+sum(h_v_c.sig$log2FoldChange <0, na.rm=T) # 306 genes are downregulated in high relative to control
+sum(h_v_c.sig$log2FoldChange >0, na.rm=T) # 366 genes are upregulated in high relative to control
 #plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g3840.t1", intgroup="Treatment")
 h_v_c.sig.list <- data[which(rownames(DEG.int) %in% rownames(h_v_c.sig)),] #subset list of sig transcripts from original count data
 h_v_c.rsig <- rlog(h_v_c.sig.list, blind=FALSE) #apply a regularized log transformation to minimize effects of small counts and normalize wrt library size
@@ -178,8 +178,8 @@ plotMA(h_v_m)
 sum(h_v_m$padj <0.05, na.rm=T)
 h_v_m.sig <- subset(h_v_m, padj<0.05,) #identify signficant pvalues with 5%FDR
 head(h_v_m.sig)
-sum(h_v_m.sig$log2FoldChange <0, na.rm=T) # 263 genes are downregulated in high relative to mid
-sum(h_v_m.sig$log2FoldChange >0, na.rm=T) # 329 genes are upregulated in high relative to mid
+sum(h_v_m.sig$log2FoldChange <0, na.rm=T) # 307 genes are downregulated in high relative to mid
+sum(h_v_m.sig$log2FoldChange >0, na.rm=T) # 318 genes are upregulated in high relative to mid
 #plotCounts(DEG.int, gene="Pocillopora_acuta_HIv2___RNAseq.g16321.t1", intgroup="Treatment")
 h_v_m.sig.list <- data[which(rownames(DEG.int) %in% rownames(h_v_m.sig)),] #subset list of sig transcripts from original count data
 write.csv(counts(h_v_m.sig.list), file = "../output/DEG/High_v_Mid_DEGs.csv")

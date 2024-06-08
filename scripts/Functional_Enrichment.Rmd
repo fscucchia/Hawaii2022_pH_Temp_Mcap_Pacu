@@ -311,7 +311,7 @@ deg <- read.csv("../output/DEG/Unique_DEGs.csv") %>%
 GO_deg <- GO_genes %>%
   inner_join(deg, by = "gene_id")
 
-length(unique(GO_deg$gene_id)) # 178 DEGs with over-represented GO terms 
+length(unique(GO_deg$gene_id)) # 204 DEGs with over-represented GO terms 
 
 write.csv(GO_deg, file = "../output/functional_enrichment/DEG_GO.csv")
 ```
@@ -363,9 +363,6 @@ length(unique(GO_h_v_m$gene_id))
 
 write.csv(GO_h_v_m, file = "../output/functional_enrichment/High_v_Mid_GO.csv")
 ```
-
-There is only 1 gene that has GO terms between Mid v Control corals (	
-Pocillopora_acuta_HIv2___TS.g21597.t2). On the other hand, there are 164 and 120 genes with significant GO terms between H v C and H v M corals, respectively. 
 
 Let's visualize these data. First, High v Control. Positive LFC means that the genes are upregulated in the high treatment. 
 ```{r}
@@ -539,179 +536,43 @@ identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not
 
 *NOTE*: the genes below are only those that are shared between h v c and h v m comparisons 
 
-The top 5 genes that are downregulated in the high treatment compared to the control treatment are:
+The top 5 genes that are most DOWNregulated in the high treatment compared to the control treatment are:
+
+- Pocillopora_acuta_HIv2___RNAseq.g8481.t1 (LFC -8.8221765)
+- Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -8.446681)
+- Pocillopora_acuta_HIv2___RNAseq.22237_t (LFC -7.667258)
+- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.6686604)
+- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.1565947)
+
+The top 5 genes that are most DOWNregulated in the high treatment compared to the mid treatment are:
 
 - Pocillopora_acuta_HIv2___RNAseq.g8481.t1 (LFC -8.396540)
-- Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -8.446681)
-- Pocillopora_acuta_HIv2___RNAseq.22237_t (-7.667258)
-- 
+- Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -7.753341)
+- Pocillopora_acuta_HIv2___RNAseq.22237_t (LFC -7.162973)
+- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.554880)
+- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.392526)
 
+The top 5 genes that are most UPregulated in the high treatment compared to the control treatment are:
 
+- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.549559)
+- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.653126)
+- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 3.001841)
+- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 2.848650)
+- Pocillopora_acuta_HIv2___RNAseq.g19484.t2 (LFC 2.744931)
 
+The top 5 genes that are most UPregulated in the high treatment compared to the mid treatment are:
 
+- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.709843)
+- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 4.278247)
+- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.599031)
+- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 3.373083)
+- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 2.893989)
 
-JA stopped here 6/6/24
+Compared to mid and control corals, high corals strongly downregulated `Pocillopora_acuta_HIv2___RNAseq.g8481.t1`, `Pocillopora_acuta_HIv2___RNAseq.g12512.t1`, `Pocillopora_acuta_HIv2___RNAseq.22237_t`, `Pocillopora_acuta_HIv2___RNAseq.g24121.t1`, and `Pocillopora_acuta_HIv2___RNAseq.g13974.t1`. 
 
+Compared to mid and control corals, high corals strongly upregulated `Pocillopora_acuta_HIv2___RNAseq.g22884.t1`, `Pocillopora_acuta_HIv2___TS.g23786.t1`, `Pocillopora_acuta_HIv2___RNAseq.g19477.t1`, and `Pocillopora_acuta_HIv2___RNAseq.3335_t`.
 
-
-- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.663960)
-- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.153118)
-- Pocillopora_acuta_HIv2___TS.g25049.t1 (LFC -2.854903)
-- Pocillopora_acuta_HIv2___RNAseq.g9799.t1 (LFC -1.640748)
-- Pocillopora_acuta_HIv2___TS.g8000.t1 (LFC -1.557406)
-
-The top 5 genes that are upregulated in the high treatment compared to the control treatment are:
-
-- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.555041)
-- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.660517)
-- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 3.510781)
-- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 3.006764)
-- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 2.853978)
-
-The top 5 genes that are downregulated in the high treatment compared to the mid treatment are:
-
-- Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.548878)
-- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.387855)
-- Pocillopora_acuta_HIv2___TS.g25049.t1 (LFC -2.895585)
-- Pocillopora_acuta_HIv2___TS.g8000.t1 (LFC -2.070186)
-- Pocillopora_acuta_HIv2___TS.g30183.t1 (LFC -1.955101)
-
-The top 5 genes that are upregulated in the high treatment compared to the mid treatment are:
-
-- Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.715193)
-- Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 4.283870)
-- Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.605581)
-- Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 3.378883)
-- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 2.899640)
-
-There is some high overlap between the top 5 genes (top 5 in terms of LFC) of down and upregulation in high v control and mid. I think we should investigate these genes more explicitly, given that the largest expression changes are happening in these genes. 
-
-Let's plot some of these genes! 
-
-Read in the unique DEGs file, as that has the normalized counts, and the metadata file
-```{r}
-degs <- read.csv("../output/DEG/Unique_DEGs.csv")
-
-meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
-  dplyr::select(Treatment, Species, Lifestage, TubeID) %>%
-  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
-  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
-  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
-  rename(ID = TubeID) %>%
-  arrange(ID)
-```
-
-Pivot the counts data, join with treatment column, and calculate mean + sd
-```{r}
-deg_means <- degs %>%
-  pivot_longer(cols = -X, names_to = "Treatment", values_to = "Count") %>%
-  left_join(meta, by = c("Treatment" = "ID")) %>%
-  mutate(log_Count = log(Count)) %>%
-  group_by(X, Treatment.y) %>%
-  summarize(mean_log_count = mean(log_Count), sd_log_count = sd(log_Count))
-```
-
-Make a list of downregulated DEGs of interest and filter the df means by that list. Plot downregulated genes
-```{r}
-down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
-
-# Select genes of interest 
-down_filt <- deg_means %>% 
-  filter(X %in% down) %>%
-  rename("gene_id" = "X") %>%
-  rename("Treatment" = "Treatment.y")  
-
-# Arrange treatment order
-down_filt$Treatment <- factor(down_filt$Treatment, levels = c("Control", "Mid", "High"))
-
-# Plot 
-shared_down <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  # geom_errorbar(aes(ymin = mean_log_count - sd_count, ymax = mean_log_count + sd_count),
-  #               width = 0.2,  # Adjust width as needed
-  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 10, color="black"),
-        axis.title=element_text(size=12, color="black", face="bold")); shared_down
-ggsave("../output/functional_enrichment/Downregulated_shared_genes.pdf", shared_down)
-ggsave("../output/functional_enrichment/Downregulated_shared_genes.png", shared_down)
-
-# Plot w/ error bars
-shared_down_error <- ggplot(down_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = "identity", color = "black") +
-   geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
-                 width = 0.2,  # Adjust width as needed
-                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free", nrow = 1) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 20, color="black"),
-        axis.title=element_text(size=25, color="black", face="bold"),
-        #axis.line = element_line(colour = 'black', size = 1),
-        strip.text = element_text(size = 17, color = "black")); shared_down_error
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.pdf", shared_down_error, width = 20, height = 14)
-ggsave("../output/functional_enrichment/Downregulated_shared_genes_WithErrorBars.png", shared_down_error, width = 20, height = 14)
-```
-
-Make a list of upregulated DEGs of interest and filter the df means by that list. Plot upregulated genes
-```{r}
-up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
-
-# Select genes of interest 
-up_filt <- deg_means %>% 
-  filter(X %in% up) %>%
-  rename("gene_id" = "X") %>%
-  rename("Treatment" = "Treatment.y")  
-
-# Arrange treatment order
-up_filt$Treatment <- factor(up_filt$Treatment, levels = c("Control", "Mid", "High"))
-
-# Plot 
-shared_up <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  # geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
-  #               width = 0.2,  # Adjust width as needed
-  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") + 
-  theme(axis.text = element_text(size = 10, color="black"),
-        axis.title=element_text(size=12, color="black", face="bold")); shared_up
-ggsave("../output/functional_enrichment/Upregulated_shared_genes.pdf", shared_up)
-ggsave("../output/functional_enrichment/Upregulated_shared_genes.png", shared_up)
-
-# Plot w/ error bars
-shared_up_error <- ggplot(up_filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = "identity", color = "black") +
-   geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
-                 width = 0.2,  # Adjust width as needed
-                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 20, color="black"),
-        axis.title=element_text(size=25, color="black", face="bold"),
-        #axis.line = element_line(colour = 'black', size = 1),
-        strip.text = element_text(size = 17, color = "black")); shared_up_error
-ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.pdf", shared_up_error, width = 15, height = 14)
-ggsave("../output/functional_enrichment/Upregulated_shared_genes_WithErrorBars.png", shared_up_error, width = 15, height = 14)
-```
+Given these genes have the greatest LFC in the comparisons, I think we should investigate them further. 
 
 Plot the DEGs of interest with the GO information. First, read in DEG and GO information.
 ```{r}
@@ -720,7 +581,7 @@ deg_go <- read.csv("../output/functional_enrichment/DEG_GO.csv")
 
 Filter by downregulated genes of interest 
 ```{r}
-down <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1")
+down <- c("Pocillopora_acuta_HIv2___RNAseq.g8481.t1", "Pocillopora_acuta_HIv2___RNAseq.g12512.t1", "Pocillopora_acuta_HIv2___RNAseq.22237_t", "Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1")
 
 # Select genes of interest 
 down_filt <- deg_go %>% 
@@ -747,7 +608,7 @@ down_deg_go <- down_filt %>%
 
 Filter by upregulated genes of interest 
 ```{r}
-up <- list("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
+up <- c("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1", "Pocillopora_acuta_HIv2___RNAseq.3335_t")
 
 # Select genes of interest 
 up_filt <- deg_go %>% 
@@ -777,7 +638,7 @@ Add slim terms to dataset
 GOslim <- read_csv("~/Desktop/PutnamLab/Repositories/SedimentStress/SedimentStress/Output/GOSeq/GO-GOslim.csv")
 ```
 
-Plot downregulated GO slim information. 
+Merge GO slim info and log p-value
 ```{r}
 down_filt_slim <- down_filt %>%
   inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
@@ -790,9 +651,23 @@ down_filt_slim <- down_filt_slim %>%
 down_filt_slim <- down_filt_slim %>%
   arrange(GOSlim_bin, log_over_represented_pvalue)
 
+# Save csv with slim info for these genes 
+write.csv(down_filt_slim, file = "../output/functional_enrichment/Down_filt_genes_GOslim.csv")
+```
+
+Plot downregulated GO slim information. 
+```{r}
 # Set the factor levels for term.x based on the sorted order
 down_filt_slim$term.x <- factor(down_filt_slim$term.x, levels = unique(down_filt_slim$term.x))
 
+# Set the order of the facet grid levels
+down_filt_slim$ontology <- factor(down_filt_slim$ontology, levels = c("BP", "MF", "CC"))
+
+# Create a new factor for GOSlim_bin ordered by ontology
+down_filt_slim <- down_filt_slim %>%
+  mutate(GOSlim_bin = factor(GOSlim_bin, levels = unique(GOSlim_bin[order(ontology)])))
+
+# Plot
 down_filt_slim_plot <- down_filt_slim %>%
       ggplot(aes(x=log_over_represented_pvalue, 
                y=term.x,
@@ -821,7 +696,7 @@ ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.pdf", 
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.png", down_filt_slim_plot, width = 35, height = 25)
 ```
 
-Plot upregulated GO slim information
+Merge GO slim info and log p-value
 ```{r}
 up_filt_slim <- up_filt %>%
   inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
@@ -834,11 +709,25 @@ up_filt_slim <- up_filt_slim %>%
 up_filt_slim <- up_filt_slim %>%
   arrange(GOSlim_bin, log_over_represented_pvalue)
 
+# Save csv with slim info for these genes 
+#write.csv(up_filt_slim, file = "../output/functional_enrichment/Up_filt_genes_GOslim.csv")
+```
+
+Plot
+```{r}
 # Set the factor levels for term.x based on the sorted order
 up_filt_slim$term.x <- factor(up_filt_slim$term.x, levels = unique(up_filt_slim$term.x))
 
+# Set the order of the facet grid levels
+up_filt_slim$ontology <- factor(up_filt_slim$ontology, levels = c("BP", "MF", "CC"))
+
+# Create a new factor for GOSlim_bin ordered by ontology
+up_filt_slim <- up_filt_slim %>%
+  mutate(GOSlim_bin = factor(GOSlim_bin, levels = unique(GOSlim_bin[order(ontology)])))
+
+# Plot
 up_filt_slim_plot <- up_filt_slim %>%
-      ggplot(aes(x=over_represented_pvalue, 
+      ggplot(aes(x=log_over_represented_pvalue, 
                y=term.x,
                colour=ontology)) +
         geom_point(size = 20) +
@@ -864,58 +753,7 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.pdf", up
 ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up_filt_slim_plot, width = 35, height = 25)
 ```
 
-I want to make a volcano plot for High v Control and High v Mid that labels the 4 upregulated and 4 downregulated genes of interest. 
 
-Read in High v Control DEG information. Don't include the GO information here, as not all of the DEGs had go information. 
-```{r}
-h_v_c_deg <- read.csv("../output/DEG/High_v_Control_DEGs.csv")
-length(unique(h_v_c_deg$X))
-```
-
-Add a column to the df that says if the gene is up or down regulated
-```{r}
-# Add a column to the data frame to specify if they are UP- or DOWN- regulated (log2fc respectively positive or negative)
-h_v_c_deg$diffexpressed <- "NO"
-
-# if log2Foldchange > 1 and adj pvalue < 0.05, set as "UP"
-h_v_c_deg$diffexpressed[h_v_c_deg$log2FoldChange > 1.0 & h_v_c_deg$padj < 0.05] <- "UP"
-
-# if log2Foldchange < -1 and adj pvalue < 0.05, set as "UP"
-h_v_c_deg$diffexpressed[h_v_c_deg$log2FoldChange < -1.0 & h_v_c_deg$padj < 0.05] <- "DOWN"
-```
-
-Add a column that says which genes to label on plot 
-```{r}
-gene_interest <- list("Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1", "Pocillopora_acuta_HIv2___TS.g25049.t1", "Pocillopora_acuta_HIv2___TS.g8000.t1", "Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___TS.g26760.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1")
-
-h_v_c_deg$delabel <- ifelse(h_v_c_deg$X %in% gene_interest, h_v_c_deg$X, NA)
-
-# Remove extra gene name information. This will help with the label on the volcano plot
-h_v_c_deg$delabel <- sub("Pocillopora_acuta_HIv2___RNAseq.", "", h_v_c_deg$delabel)
-h_v_c_deg$delabel <- sub("Pocillopora_acuta_HIv2___TS.", "", h_v_c_deg$delabel)
-```
-
-
-Make a volcano plot where LFC is on the x-axis and adj pvalue is on the y-axis for the high v control comparison.
-```{r}
-ggplot(h_v_c_deg, aes(x = log2FoldChange, y = -log10(padj), color = diffexpressed, label = delabel)) + 
-  geom_point(size = 2) +
-  geom_hline(yintercept = -log10(0.05), col = "black", linetype = 'dashed') +
-  geom_vline(xintercept = c(-1.0, 1.0), col = "black", linetype = 'dashed') +
-###ADD LABEL REPEL 
-  
-  #geom_text_repel(max.overlaps = Inf, hjust = ifelse(h_v_c_deg$log2FoldChange > 0, 0, 1)) + # To show all labels 
-  scale_color_manual(values = c("blue", "grey", "red"), 
-                     labels = c("Downregulated", "Not significant", "Upregulated")) +
-    scale_fill_manual(values = c("red", "grey", "blue"),  # Match fill colors to diffexpressed
-                    labels = c("Downregulated", "Not significant", "Upregulated"),
-                    guide = "none") +  # Hide legend for arrow fill colors
-  labs(color = 'High v. Control', #legend_title, 
-       x = expression("log"[2]*"FC"), y = expression("-log"[10]*"p-value")) + 
-  theme_classic() +
-  theme(axis.title.y = element_text(face = "bold", margin = margin(0,20,0,0), size = rel(1.1), color = 'black'),
-        axis.title.x = element_text(hjust = 0.5, face = "bold", margin = margin(20,0,0,0), size = rel(1.1), color = 'black'))
-```
 
 
 

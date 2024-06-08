@@ -57,7 +57,7 @@ length(unique(biomin_filt_genes$gene_id))
 length(unique(biomin_filt_genes$`accessionnumber/geneID`))
 ```
 
-158 out of 172 of the biomineralization genes are represented in the filtered gene counts. This corresponds to 84 unique Pacuta genes. 
+168 out of 172 of the biomineralization genes are represented in the filtered gene counts. This corresponds to 94 unique Pacuta genes. 
 
 How many biomin genes are in DEGs?
 ```{r}
@@ -71,20 +71,22 @@ biomin_deg_genes <- deg %>%
 length(unique(biomin_deg_genes$gene_id))
 length(unique(biomin_deg_genes$`accessionnumber/geneID`))
 
-#write.csv(biomin_deg_genes, file = "../output/Biomineralization_Toolkit/biomin_DEG.csv", row.names = F)
+write.csv(biomin_deg_genes, file = "../output/Biomineralization_Toolkit/biomin_DEG.csv", row.names = F)
 ```
 
-7 out of 172 of the biomineralization genes are represented in the DEGs. This corresponds to 5 unique Pacuta genes: 
+6 Pacuta DEGs are characterized as biomineralization genes. The DEGs are: 
 
 - Pocillopora_acuta_HIv2___RNAseq.g25214.t1
+- Pocillopora_acuta_HIv2___TS.g576.t1
 - Pocillopora_acuta_HIv2___RNAseq.g11609.t1
-- Pocillopora_acuta_HIv2___TS.g23498.t1  
+- Pocillopora_acuta_HIv2___TS.g23498.t1
 - Pocillopora_acuta_HIv2___RNAseq.g7668.t1
 - Pocillopora_acuta_HIv2___RNAseq.g30830.t1
 
-These are the 7 biomineralization genes: 
+The DEGs were similar to these 8 biomineralization genes: 
 
 - PFX13778.1
+- XP_022784623.1
 - P33_g8985
 - Gene:g38128
 - JT016638.1
@@ -105,7 +107,7 @@ biomin_h_v_c <- h_v_c %>%
 length(unique(biomin_h_v_c$gene_id))
 unique(biomin_h_v_c$gene_id)
 
-#write.csv(biomin_h_v_c, file = "../output/Biomineralization_Toolkit/biomin_DEG_high_v_control.csv", row.names = F)
+write.csv(biomin_h_v_c, file = "../output/Biomineralization_Toolkit/biomin_DEG_high_v_control.csv", row.names = F)
 ```
 
 These Pacuta genes are differentially expressed between high and control treatments and are related to biomineralization: 
@@ -144,7 +146,7 @@ biomin_h_v_m <- h_v_m %>%
 length(unique(biomin_h_v_m$gene_id))
 unique(biomin_h_v_m$gene_id)
 
-#write.csv(biomin_h_v_m, file = "../output/Biomineralization_Toolkit/biomin_DEG_high_v_mid.csv", row.names = F)
+write.csv(biomin_h_v_m, file = "../output/Biomineralization_Toolkit/biomin_DEG_high_v_mid.csv", row.names = F)
 ```
 
 These Pacuta genes are differentially expressed between high and mid treatments and are related to biomineralization: 
@@ -153,6 +155,7 @@ These Pacuta genes are differentially expressed between high and mid treatments 
 - Pocillopora_acuta_HIv2___RNAseq.g11609.t1 - Flagellar associated protein
 - Pocillopora_acuta_HIv2___TS.g23498.t1 - α-Collagen, coadhesion, clone g810 alpha collagen-like protein gene
 - Pocillopora_acuta_HIv2___RNAseq.g7668.t1 - uncharacterized protein 
+- Pocillopora_acuta_HIv2___TS.g576.t1 - cation channel sperm-associated protein subunit beta-like 
 
 Similar to the high v control comparison, corals in high treatment are downregulating a collagen related gene (Pocillopora_acuta_HIv2___TS.g23498.t1) compared to mid corals (LFC = -2.99). Corals in high treatment are also downregulating sacsin (LFC = -1.56) and flagellar-associated protein (LFC = -0.83) compared to mid corals. 
 
@@ -160,106 +163,4 @@ These Pacuta biomin genes were shared between high v control and high v mid DEG 
 
 - Pocillopora_acuta_HIv2___TS.g23498.t1 - α-Collagen, coadhesion, clone g810 alpha collagen-like protein gene
 - Pocillopora_acuta_HIv2___RNAseq.g7668.t1 - uncharacterized protein
-
-Let's plot these genes!
-
-Read in the unique DEGs file, as that has the normalized counts, and the metadata file
-```{r}
-degs <- read.csv("../output/DEG/Unique_DEGs.csv")
-
-meta <- read_csv("../Metadata/Pacuta_HI2022_Sequencing_Metadata.csv") %>%
-  dplyr::select(Treatment, Species, Lifestage, TubeID) %>%
-  mutate(Treatment = ifelse(Treatment == "control", "Control", Treatment)) %>%
-  mutate(Treatment = ifelse(Treatment == "medium", "Mid", Treatment)) %>%
-  mutate(Treatment = ifelse(Treatment == "high", "High", Treatment)) %>%
-  rename(ID = TubeID) %>%
-  arrange(ID)
-```
-
-Make PCA and heatmap for the genes of interest
-
-```{r}
-# Filter genes of interest 
-genes <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
-
-filt <- degs %>% 
-  filter(X %in% genes) %>%
-  rename("gene_id" = "X") #%>%
-  #rename("Treatment" = "Treatment.y")  
-
-pca_plot <- plotPCA(filt[,2:12], intgroup = c("Treatment"))
-
-```
-
-
-
-
-
-
-Pivot the counts data, join with treatment column, and calculate mean + sd
-```{r}
-deg_means <- degs %>%
-  pivot_longer(cols = -X, names_to = "Treatment", values_to = "Count") %>%
-  left_join(meta, by = c("Treatment" = "ID")) %>%
-  mutate(log_Count = log(Count)) %>%
-  group_by(X, Treatment.y) %>%
-  summarize(mean_log_count = mean(log_Count), sd_log_count = sd(log_Count))
-```
-
-Make a list of DEGs of interest and filter the df means by that list. Plot counts for DEGs of interest 
-```{r}
-genes <- list("Pocillopora_acuta_HIv2___TS.g23498.t1", "Pocillopora_acuta_HIv2___RNAseq.g7668.t1")
-
-# Select genes of interest 
-filt <- deg_means %>% 
-  filter(X %in% genes) %>%
-  rename("gene_id" = "X") %>%
-  rename("Treatment" = "Treatment.y")  
-
-# Arrange treatment order
-filt$Treatment <- factor(filt$Treatment, levels = c("Control", "Mid", "High"))
-
-# Plot 
-shared_biomin <- ggplot(filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
-  # geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
-  #               width = 0.2,  # Adjust width as needed
-  #               position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 10, color="black"),
-        axis.title=element_text(size=12, color="black", face="bold")); shared_biomin
-ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs.pdf", shared_biomin)
-ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs.png", shared_biomin)
-
-# Plot w/ error bars
-shared_biomin_error <- ggplot(filt, aes(x = Treatment, y = mean_log_count, fill = Treatment)) +
-  geom_bar(stat = "identity", position = "identity", color = "black") +
-   geom_errorbar(aes(ymin = mean_log_count - sd_log_count, ymax = mean_log_count + sd_log_count),
-                 width = 0.2,  # Adjust width as needed
-                 position = position_dodge(width = 0.9)) + # Adjust dodge width as needed
-  facet_wrap(~gene_id, scales = "free",) +
-  labs(x = "", y = expression(bold(paste("log"[2], " Normalized Counts")))) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) + 
-  scale_fill_manual(values = wes_palette("GrandBudapest1", n=3)) +
-  #theme_minimal() +
-  theme_bw() +
-  theme(legend.position = "none") +
-  theme(axis.text = element_text(size = 20, color="black"),
-        axis.title=element_text(size=25, color="black", face="bold"),
-        #axis.line = element_line(colour = 'black', size = 1),
-        strip.text = element_text(size = 17, color = "black")); shared_biomin_error
-ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs_WithErrorBars.pdf", shared_biomin_error, width = 14, height = 11)
-ggsave("../output/Biomineralization_Toolkit/Biomin_shared_DEGs_WithErrorBars.png", shared_biomin_error, width = 14, height = 11)
-```
-
-
-
-
-
-
 
