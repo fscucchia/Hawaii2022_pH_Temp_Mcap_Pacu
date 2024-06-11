@@ -625,7 +625,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, Temperature, outlier.tagging = T
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(Temperature ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -664,7 +665,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, Salinity, outlier.tagging = TRUE
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(Salinity ~ Treatment, data = data)
 summary(res.aov) # no significant differences between treatments
-TukeyHSD(res.aov) # no significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -675,10 +677,12 @@ plot(res.aov, 2)
 aov_residuals <- residuals(object = res.aov)
 shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
 
+
 # Transform data with log
 res.aov <- aov(log(Salinity) ~ Treatment, data = data)
 summary(res.aov) # no significant differences between treatments
-TukeyHSD(res.aov)
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -721,6 +725,7 @@ shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is not normal
 
 # Conduct non-parametric test 
 kruskal.test(Salinity ~ Treatment, data = data) # no significance 
+dunn.test(data$Salinity, g = data$Treatment, method = "bonferroni") # I specified the Bonferroni method, otherwise the default method  is no adjustment for multiple comparisons
 
 # Plot
 sal_plot <- ggplot(data, aes(x = Treatment, y = Salinity, fill = Treatment)) +
@@ -750,7 +755,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, pH.Total, outlier.tagging = TRUE
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(pH.Total ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -789,7 +795,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, CO2, outlier.tagging = TRUE); ou
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(CO2 ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -803,7 +810,8 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 # Transform data with log
 res.aov <- aov(log(CO2) ~ Treatment, data = data)
 summary(res.aov) # no significant differences between treatments
-TukeyHSD(res.aov)
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -848,7 +856,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, pCO2, outlier.tagging = TRUE); o
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(pCO2 ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -862,7 +871,8 @@ shapiro.test(x = aov_residuals) # pvalue > 0.05, normal distribution
 # Transform data with log
 res.aov <- aov(log(pCO2) ~ Treatment, data = data)
 summary(res.aov) # no significant differences between treatments
-TukeyHSD(res.aov)
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -905,7 +915,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, HCO3, outlier.tagging = TRUE); o
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(HCO3 ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -944,7 +955,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, CO3, outlier.tagging = TRUE); ou
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(CO3 ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -983,7 +995,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, DIC, outlier.tagging = TRUE); ou
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(DIC ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -1022,7 +1035,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, TA, outlier.tagging = TRUE); out
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(TA ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences between high and control/mid treatment 
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -1036,7 +1050,8 @@ shapiro.test(x = aov_residuals) # pvalue < 0.05, distribution is NOT normal
 # Transform data with log
 res.aov <- aov(log(TA) ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov)
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -1050,7 +1065,8 @@ shapiro.test(x = aov_residuals) # pvalue < 0.05,distribution is NOT normal
 # Transform data with sqrt
 res.aov <- aov(sqrt(TA) ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov)
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
@@ -1107,7 +1123,8 @@ outlier.plot <- ggbetweenstats(data, Treatment, AragSat, outlier.tagging = TRUE)
 # Test for differences in temperature by treatment with one-way ANOVA
 res.aov <- aov(AragSat ~ Treatment, data = data)
 summary(res.aov) # significant differences between treatments
-TukeyHSD(res.aov) # Significant differences in all treatment comparisons
+tukey <- glht(res.aov, linfct = mcp(Treatment = "Tukey"))
+summary(tukey)
 
 ## Check ANOVA assumption of homogeneity of variance 
 plot(res.aov, 1) 
