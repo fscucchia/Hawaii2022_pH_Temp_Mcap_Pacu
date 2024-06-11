@@ -17,7 +17,7 @@ library(tidyverse)
 
 In order to know the diurnal temperature and pH conditions, we measured incoming ambient water with hobo loggers for temperature and the apex for pH. We used this data to determine what the mid and high treatments would be in the experiment. Here, I will plot data frome 6/19-6/28. 
 
-Read in data prior to experiment
+Read in data prior to experiment. First, read in 6/19-6/28
 ```{r}
 # Define the path to the directory containing the files
 path <- "../Raw_data/HOBOs/txt"
@@ -76,10 +76,6 @@ combined_df <- combined_df %>%
 head(combined_df)
 ```
 
-
-
-
-
 Group by Time and calculate means 
 ```{r}
 # Group by Time and calculate the mean of Temperature_C and Light_lux
@@ -94,6 +90,16 @@ time_averages <- combined_df %>%
   na.omit() %>%
   mutate(Time = hms::parse_hm(Time))
 ```
+
+Calculate mean, sd, median, min, max
+```{r}
+mean(time_averages$Avg_Temperature_C)
+sd(time_averages$Avg_Temperature_C)
+median(time_averages$Avg_Temperature_C)
+min(time_averages$Avg_Temperature_C)
+max(time_averages$Avg_Temperature_C)
+```
+
 
 Plot 
 ```{r}
@@ -153,6 +159,15 @@ time_averages <- ph_data_filt %>%
   mutate(Time = hms::parse_hm(Time))
 ```
 
+Calculate mean, sd, median, min, max
+```{r}
+mean(time_averages$Avg_ph)
+sd(time_averages$Avg_ph)
+median(time_averages$Avg_ph)
+min(time_averages$Avg_ph)
+max(time_averages$Avg_ph)
+```
+
 Plot 
 ```{r}
 ggplot(time_averages, aes(x = Time, y = Avg_ph)) +
@@ -165,35 +180,7 @@ ggplot(time_averages, aes(x = Time, y = Avg_ph)) +
   theme_minimal()
 ```
 
-Join temperature and pH info
-```{r}
-before_exp <- time_averages %>%
-  inner_join(time_averages_ph, by = "Time")
 
-# Transform ph
-before_exp <- before_exp %>%
-  mutate(ph_transform = Avg_ph*(1+0.1*(Avg_Temperature_C-25)))
-```
-
-Plot together???
-```{r}
-ggplot(before_exp, aes(x = Time)) +
-  geom_line(aes(y = Avg_Temperature_C, color = "Avg_Temperature_C")) +
-  geom_line(aes(y = ph_transform, color = "Avg_ph")) +
-  scale_y_continuous(
-    name = "Average Temperature (°C)",  # Left y-axis label
-    sec.axis = sec_axis(~., name = "Average pH")  # Right y-axis label
-  ) +
-  labs(
-    x = "Time",
-    color = NULL
-  ) +
-  scale_color_manual(
-    name = "Variables",
-    values = c("Avg_Temperature_C" = "blue", "Avg_ph" = "red")
-  ) +
-  theme_minimal()
-```
 
 
 ## During experiment 
@@ -207,6 +194,10 @@ path <- "../Raw_data/HOBOs/txt"
 
 # List all files in the directory that contain "2022-06-28" in their names
 files <- list.files(path, pattern = "2022-07-16", full.names = TRUE)
+
+# Remove extra High Squaricle 3 file 
+remove_file <- "../Raw_data/HOBOs/txt/H_sq3 2022-07-16 10_13_44 -1000.txt"
+files <- files[files != remove_file]
 
 # Function to read each file, process data, and add the "tank" column
 read_and_process_file <- function(file) {
@@ -276,52 +267,211 @@ during_exp <- during_exp %>%
 head(during_exp)
 ```
 
+Separate by Control Treatment and order by Date.Time 
+```{r}
+control <- during_exp %>%
+  filter(Treatment == "Control")
 
+ordered_control <- control[order(control$Date.Time), ]
+head(ordered_control)
+```
 
+The loggers were not logging at the same time, they were about a minute off from one another. To get the mean for the loggers, I will compute the mean for every 3 rows while keeping the Date.Time from the first row of each three-row group.
+```{r}
+# Create a function to perform the required operation
+summarize_groups <- function(data) {
+  data %>%
+    # Add a grouping variable that increments every 3 rows
+    mutate(group = rep(1:(nrow(.) %/% 3 + 1), each = 3, length.out = nrow(.))) %>%
+    group_by(group) %>%
+    summarize(
+      Date.Time = first(Date.Time),
+      Temperature_C = mean(Temperature_C, na.rm = TRUE),
+      Light_lux = mean(Light_lux, na.rm = TRUE),
+      Treatment = first(Treatment)
+    ) %>%
+    ungroup() %>%
+    select(-group)
+}
 
+# Apply the function to the ordered data frame
+summarized_control <- summarize_groups(ordered_control)
+```
 
-
-
+Add Time column 
+```{r}
+summarized_control <- summarized_control %>%
+  mutate(Time = format(Date.Time, "%H:%M"))
+```
 
 Group by Time and calculate means 
 ```{r}
 # Group by Time and calculate the mean of Temperature_C and Light_lux
-during_exp_avg <- during_exp %>%
-  group_by(Treatment, Date.Time) %>%
+control_avg <- summarized_control %>%
+  group_by(Time) %>%
   summarise(
     Avg_Temperature_C = mean(Temperature_C, na.rm = F),
     sd_Temperature_C = sd(Temperature_C, na.rm = TRUE) / sqrt(n()),
     Avg_Light_lux = mean(Light_lux, na.rm = F)/60,
     sd_Light_lux = sd(Light_lux, na.rm = TRUE) / sqrt(n())) %>%
   mutate(upper_temp = Avg_Temperature_C+sd_Temperature_C, lower_temp = Avg_Temperature_C-sd_Temperature_C) %>%
-  na.omit() 
+  na.omit() %>%
+  mutate(Time = hms::parse_hm(Time))
 ```
 
-
-
-
-
-
-
-
-
-
+Calculate mean, sd, median, min, max
 ```{r}
-blah <- ggplot(during_exp, aes(x = Date.Time, y = Temperature_C, color = Treatment)) +
-  geom_smooth(method="loess", span=0.5, se=F, alpha=0.5, show.legend=TRUE) +
-  #geom_line()
-  labs(
-    x = "Date",
-    y = "Temperature (°C)"
-  ) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  ); blah
-  
-#ggsave("../output/blah.pdf", blah, width = 20, height = 11)
+mean(control_avg$Avg_Temperature_C)
+sd(control_avg$Avg_Temperature_C)
+median(control_avg$Avg_Temperature_C)
+min(control_avg$Avg_Temperature_C)
+max(control_avg$Avg_Temperature_C)
+```
 
+Plot 
+```{r}
+ggplot(control_avg, aes(x = Time, y = Avg_Temperature_C)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
+```
+
+Separate by Mid Treatment and order by Date.Time 
+```{r}
+mid <- during_exp %>%
+  filter(Treatment == "Mid")
+
+ordered_mid <- mid[order(mid$Date.Time), ]
+head(ordered_mid)
+```
+
+Apply the summarize function to the ordered data frame
+```{r}
+summarized_mid <- summarize_groups(ordered_mid)
+```
+
+Add Time column 
+```{r}
+summarized_mid <- summarized_mid %>%
+  mutate(Time = format(Date.Time, "%H:%M"))
+```
+
+Group by Time and calculate means 
+```{r}
+# Group by Time and calculate the mean of Temperature_C and Light_lux
+mid_avg <- summarized_mid %>%
+  group_by(Time) %>%
+  summarise(
+    Avg_Temperature_C = mean(Temperature_C, na.rm = F),
+    sd_Temperature_C = sd(Temperature_C, na.rm = TRUE) / sqrt(n()),
+    Avg_Light_lux = mean(Light_lux, na.rm = F)/60,
+    sd_Light_lux = sd(Light_lux, na.rm = TRUE) / sqrt(n())) %>%
+  mutate(upper_temp = Avg_Temperature_C+sd_Temperature_C, lower_temp = Avg_Temperature_C-sd_Temperature_C) %>%
+  na.omit() %>%
+  mutate(Time = hms::parse_hm(Time))
+```
+
+Calculate mean, sd, median, min, max
+```{r}
+mean(mid_avg$Avg_Temperature_C)
+sd(mid_avg$Avg_Temperature_C)
+median(mid_avg$Avg_Temperature_C)
+min(mid_avg$Avg_Temperature_C)
+max(mid_avg$Avg_Temperature_C)
+```
+
+Plot 
+```{r}
+ggplot(mid_avg, aes(x = Time, y = Avg_Temperature_C)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
+```
+
+Separate by High Treatment and order by Date.Time 
+```{r}
+high <- during_exp %>%
+  filter(Treatment == "High")
+
+ordered_high <- high[order(high$Date.Time), ]
+head(ordered_high)
+```
+
+Apply the summarize function to the ordered data frame
+```{r}
+summarized_high <- summarize_groups(ordered_high)
+```
+
+Add Time column 
+```{r}
+summarized_high <- summarized_high %>%
+  mutate(Time = format(Date.Time, "%H:%M"))
+```
+
+Group by Time and calculate means 
+```{r}
+# Group by Time and calculate the mean of Temperature_C and Light_lux
+high_avg <- summarized_high %>%
+  group_by(Time) %>%
+  summarise(
+    Avg_Temperature_C = mean(Temperature_C, na.rm = F),
+    sd_Temperature_C = sd(Temperature_C, na.rm = TRUE) / sqrt(n()),
+    Avg_Light_lux = mean(Light_lux, na.rm = F)/60,
+    sd_Light_lux = sd(Light_lux, na.rm = TRUE) / sqrt(n())) %>%
+  mutate(upper_temp = Avg_Temperature_C+sd_Temperature_C, lower_temp = Avg_Temperature_C-sd_Temperature_C) %>%
+  na.omit() %>%
+  mutate(Time = hms::parse_hm(Time))
+```
+
+Calculate mean, sd, median, min, max
+```{r}
+mean(high_avg$Avg_Temperature_C)
+sd(high_avg$Avg_Temperature_C)
+median(high_avg$Avg_Temperature_C)
+min(high_avg$Avg_Temperature_C)
+max(high_avg$Avg_Temperature_C)
+```
+
+Plot 
+```{r}
+ggplot(high_avg, aes(x = Time, y = Avg_Temperature_C)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
+```
+
+Add Treatment column to each avg df and bind together 
+```{r}
+control_avg$Treatment <- "Control"
+mid_avg$Treatment <- "Mid"
+high_avg$Treatment <- "High"
+time_averages$Treatment <- "Pre-experiment"
+
+all <- rbind(control_avg, mid_avg, high_avg)
+```
+
+Plot 
+```{r}
+ggplot(all, aes(x = Time, y = Avg_Temperature_C, color = Treatment)) +
+    #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.4, show.legend=FALSE) +
+  geom_smooth(method="loess", span=0.5, se=T, alpha=0.5, show.legend=TRUE) +
+  #geom_line(color = "blue", linewidth = 0.5) +  # Adjust the size parameter for thinner lines
+  #geom_ribbon(aes(ymin = lower_temp, ymax = upper_temp), alpha = 0.05, fill = "blue") +
+  labs(x = "Time",
+       y = "Average Temperature (°C)") +
+  theme_minimal()
 ```
 
 
-Need to troubleshoot and save plots
