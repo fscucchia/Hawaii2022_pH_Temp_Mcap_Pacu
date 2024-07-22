@@ -1,374 +1,467 @@
-"","category","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology"
-"1","GO:1901052",4.60385473330182e-05,1,3,3,"sarcosine metabolic process","BP"
-"2","GO:0006553",9.4616491273264e-05,0.999994757917888,5,14,"lysine metabolic process","BP"
-"3","GO:0042426",0.000116022566437408,0.999993280966614,5,14,"choline catabolic process","BP"
-"4","GO:0019695",0.000165684596977863,0.999989390032312,5,15,"choline metabolic process","BP"
-"5","GO:0046439",0.000182621501437344,0.999993286246861,4,9,"L-cysteine metabolic process","BP"
-"6","GO:0035999",0.000320817116435368,0.999985552764963,4,10,"tetrahydrofolate interconversion","BP"
-"7","GO:0009066",0.000415790888664708,0.999918523925838,9,63,"aspartate family amino acid metabolic process","BP"
-"8","GO:1901607",0.000439917401797643,0.999903303903559,10,74,"alpha-amino acid biosynthetic process","BP"
-"9","GO:0016053",0.000456575552250082,0.99981119207786,24,300,"organic acid biosynthetic process","BP"
-"10","GO:0046394",0.000456575552250082,0.99981119207786,24,300,"carboxylic acid biosynthetic process","BP"
-"11","GO:0044283",0.000513870561751277,0.999749317181179,34,493,"small molecule biosynthetic process","BP"
-"12","GO:0006576",0.000566322294392649,0.99987101327547,10,77,"biogenic amine metabolic process","BP"
-"13","GO:0009308",0.000622012336523791,0.999856458488756,10,78,"amine metabolic process","BP"
-"14","GO:0008652",0.000853356759037696,0.999776021538464,11,96,"amino acid biosynthetic process","BP"
-"15","GO:0033353",0.000895556943966028,0.999974939559552,3,6,"S-adenosylmethionine cycle","BP"
-"16","GO:0042135",0.000930309010176069,0.999905242203279,5,21,"neurotransmitter catabolic process","BP"
-"17","GO:0006554",0.00095528697833892,0.999972654615743,3,6,"lysine catabolic process","BP"
-"18","GO:0000012",0.00123465793206615,0.999911989101944,4,13,"single strand break repair","BP"
-"19","GO:1901053",0.00130000349245063,1,2,2,"sarcosine catabolic process","BP"
-"20","GO:0046653",0.00179248066955443,0.999853160661337,4,15,"tetrahydrofolate metabolic process","BP"
-"21","GO:0006534",0.00219387063659612,0.999807251322261,4,16,"cysteine metabolic process","BP"
-"22","GO:0006545",0.00223052508847348,0.99989863866729,3,8,"glycine biosynthetic process","BP"
-"23","GO:0097164",0.00283085633524862,0.99902248246138,13,144,"ammonium ion metabolic process","BP"
-"24","GO:0019369",0.00286077460136268,0.999323051871521,8,65,"arachidonic acid metabolic process","BP"
-"25","GO:0046500",0.00312132412749078,0.999693755719562,4,17,"S-adenosylmethionine metabolic process","BP"
-"26","GO:0009085",0.00337136077195638,0.999814222634951,3,9,"lysine biosynthetic process","BP"
-"27","GO:0019878",0.00337136077195638,0.999814222634951,3,9,"lysine biosynthetic process via aminoadipic acid","BP"
-"28","GO:0006730",0.00343234089107514,0.999650554419143,4,18,"one-carbon metabolic process","BP"
-"29","GO:0042136",0.00350765357956274,0.999361189323218,6,40,"neurotransmitter biosynthetic process","BP"
-"30","GO:0009310",0.00366673970391054,0.999462959308748,5,29,"amine catabolic process","BP"
-"31","GO:0042402",0.00366673970391054,0.999462959308748,5,29,"cellular biogenic amine catabolic process","BP"
-"32","GO:0000019",0.00401272374043047,0.999788693658268,3,7,"regulation of mitotic recombination","BP"
-"33","GO:0046498",0.00436604976588301,0.999726956778336,3,10,"S-adenosylhomocysteine metabolic process","BP"
-"34","GO:0019752",0.00452928219770473,0.997303453913898,42,735,"carboxylic acid metabolic process","BP"
-"35","GO:0042133",0.00510151921746037,0.99853101290172,9,83,"neurotransmitter metabolic process","BP"
-"36","GO:0006303",0.00537678956968192,0.998748172591209,7,52,"double-strand break repair via nonhomologous end joining","BP"
-"37","GO:0051280",0.00543634368511012,0.999622319106403,3,11,"negative regulation of release of sequestered calcium ion into cytosol","BP"
-"38","GO:0051284",0.00543634368511012,0.999622319106403,3,11,"positive regulation of sequestering of calcium ion","BP"
-"39","GO:0097154",0.00559203349093533,0.999607500608642,3,11,"GABAergic neuron differentiation","BP"
-"40","GO:0009650",0.0058222205647163,0.999305082247542,4,19,"UV protection","BP"
-"41","GO:0030578",0.0058426397531986,0.999910197704914,2,3,"PML body organization","BP"
-"42","GO:0020027",0.00586594114932321,0.999591695507029,3,10,"hemoglobin metabolic process","BP"
-"43","GO:0009070",0.00618147812372166,0.99923824658303,4,21,"serine family amino acid biosynthetic process","BP"
-"44","GO:0021539",0.00635687398645254,0.999856380560082,2,4,"subthalamus development","BP"
-"45","GO:0006082",0.0063643255442906,0.996062975332203,45,815,"organic acid metabolic process","BP"
-"46","GO:0045165",0.00643878882678289,0.996580402990653,27,410,"cell fate commitment","BP"
-"47","GO:0035666",0.00650809135259471,0.999517267972021,3,11,"TRIF-dependent toll-like receptor signaling pathway","BP"
-"48","GO:0046456",0.00661626751606086,0.998383377334768,7,60,"icosanoid biosynthetic process","BP"
-"49","GO:0060126",0.00675658394756306,0.999842412480901,2,4,"somatotropin secreting cell differentiation","BP"
-"50","GO:0044026",0.00693674233797611,0.999883334912802,2,3,"DNA hypermethylation","BP"
-"51","GO:0060577",0.00712441847153533,0.999829164621133,2,4,"pulmonary vein morphogenesis","BP"
-"52","GO:0033615",0.00745057595606888,0.999817109377668,2,4,"mitochondrial proton-transporting ATP synthase complex assembly","BP"
-"53","GO:0042464",0.00752187495812255,0.999867985376712,2,3,"dosage compensation by hypoactivation of X chromosome","BP"
-"54","GO:0060841",0.00775813882992214,0.999373679312018,3,12,"venous blood vessel development","BP"
-"55","GO:0033189",0.00802637914235291,0.999357126829239,3,11,"response to vitamin A","BP"
-"56","GO:0043436",0.00826798453335152,0.994833984207531,44,806,"oxoacid metabolic process","BP"
-"57","GO:0010523",0.00880218936854909,0.999243182826323,3,13,"negative regulation of calcium ion transport into cytosol","BP"
-"58","GO:2000371",0.00888152187096674,0.999246452509928,3,12,"regulation of DNA topoisomerase (ATP-hydrolyzing) activity","BP"
-"59","GO:2000373",0.00888152187096674,0.999246452509928,3,12,"positive regulation of DNA topoisomerase (ATP-hydrolyzing) activity","BP"
-"60","GO:0070306",0.0102007762284748,0.998047771162007,5,36,"lens fiber cell differentiation","BP"
-"61","GO:0033559",0.01034499382517,0.996920670898005,8,81,"unsaturated fatty acid metabolic process","BP"
-"62","GO:2000254",0.0105891807668419,0.999638059502706,2,5,"regulation of male germ cell proliferation","BP"
-"63","GO:1905459",0.0107404392076157,0.999022391121529,3,12,"regulation of vascular associated smooth muscle cell apoptotic process","BP"
-"64","GO:0042439",0.0111383408928805,0.998344000217445,4,24,"ethanolamine-containing compound metabolic process","BP"
-"65","GO:1904354",0.0115789587166417,0.998937826084042,3,11,"negative regulation of telomere capping","BP"
-"66","GO:0043461",0.0117311607214716,0.999576781607813,2,5,"proton-transporting ATP synthase complex assembly","BP"
-"67","GO:0045132",0.0117467628851292,0.996130526422226,9,86,"meiotic chromosome segregation","BP"
-"68","GO:0038001",0.0118850848566152,0.999568266942578,2,5,"paracrine signaling","BP"
-"69","GO:0070262",0.0121239879141675,0.99955493364218,2,5,"peptidyl-serine dephosphorylation","BP"
-"70","GO:0045646",0.0121876380647864,0.99755699555354,5,37,"regulation of erythrocyte differentiation","BP"
-"71","GO:0003175",0.0122035652714917,0.999550460744864,2,5,"tricuspid valve development","BP"
-"72","GO:0002756",0.0126785834166833,0.998734923303021,3,14,"MyD88-independent toll-like receptor signaling pathway","BP"
-"73","GO:0036514",0.0127394316827366,0.999519932902428,2,5,"dopaminergic neuron axon guidance","BP"
-"74","GO:1904938",0.0127394316827366,0.999519932902428,2,5,"planar cell polarity pathway involved in axon guidance","BP"
-"75","GO:0042762",0.0133485916755537,0.998642226209545,3,14,"regulation of sulfur metabolic process","BP"
-"76","GO:0042558",0.0133740084112492,0.997240058099805,5,40,"pteridine-containing compound metabolic process","BP"
-"77","GO:0006760",0.0134357313067692,0.997870458772584,4,26,"folic acid-containing compound metabolic process","BP"
-"78","GO:0002568",0.0134383878791556,0.999549662462397,2,4,"somatic diversification of T cell receptor genes","BP"
-"79","GO:0002681",0.0134383878791556,0.999549662462397,2,4,"somatic recombination of T cell receptor gene segments","BP"
-"80","GO:0033153",0.0134383878791556,0.999549662462397,2,4,"T cell receptor V(D)J recombination","BP"
-"81","GO:1905767",0.0135743017669653,0.999470978577789,2,5,"regulation of double-stranded telomeric DNA binding","BP"
-"82","GO:1905768",0.0135743017669653,0.999470978577789,2,5,"negative regulation of double-stranded telomeric DNA binding","BP"
-"83","GO:0042006",0.0138820395203679,0.999452513467072,2,5,"masculinization of hermaphroditic germ-line","BP"
-"84","GO:0010216",0.0143346919345513,0.999502805842466,2,4,"negative regulation of gene expression via chromosomal DNA cytosine methylation","BP"
-"85","GO:0010032",0.014445048075552,0.99856039242477,3,11,"meiotic chromosome condensation","BP"
-"86","GO:0001569",0.0146850693774777,0.997610129911946,4,26,"branching involved in blood vessel morphogenesis","BP"
-"87","GO:0061298",0.0151769838025693,0.999372392455683,2,5,"retina vasculature development in camera-type eye","BP"
-"88","GO:0007366",0.016896014505774,0.999197081371235,2,6,"periodic partitioning by pair rule gene","BP"
-"89","GO:0010911",0.017282422882406,0.99804065521836,3,15,"regulation of isomerase activity","BP"
-"90","GO:0010912",0.017282422882406,0.99804065521836,3,15,"positive regulation of isomerase activity","BP"
-"91","GO:0071356",0.0178550035554262,0.994669256914284,7,70,"cellular response to tumor necrosis factor","BP"
-"92","GO:0042541",0.0181760163020148,0.999101962284974,2,6,"hemoglobin biosynthetic process","BP"
-"93","GO:0006366",0.0186767457418618,0.989409693003516,25,427,"transcription by RNA polymerase II","BP"
-"94","GO:1901605",0.0192449140988607,0.991206477406592,14,204,"alpha-amino acid metabolic process","BP"
-"95","GO:1901255",0.0192674347550068,0.999017905932368,2,6,"nucleotide-excision repair involved in interstrand cross-link repair","BP"
-"96","GO:0061035",0.0192772642760697,0.995615332273962,5,43,"regulation of cartilage development","BP"
-"97","GO:0002328",0.0193108343581972,0.999091734797331,2,5,"pro-B cell differentiation","BP"
-"98","GO:0032330",0.0200265492937161,0.996385698563266,4,29,"regulation of chondrocyte differentiation","BP"
-"99","GO:0033209",0.0200552446842524,0.996378950646284,4,29,"tumor necrosis factor-mediated signaling pathway","BP"
-"100","GO:0045944",0.0209419952967175,0.986748336004359,36,651,"positive regulation of transcription by RNA polymerase II","BP"
-"101","GO:0019371",0.0210867230869687,0.996123169637773,4,30,"cyclooxygenase pathway","BP"
-"102","GO:1905064",0.021915929390575,0.998803029033666,2,6,"negative regulation of vascular associated smooth muscle cell differentiation","BP"
-"103","GO:0016321",0.0220238398794246,0.997293000495702,3,14,"female meiosis chromosome segregation","BP"
-"104","GO:0032877",0.0220515697004758,0.998791619134966,2,6,"positive regulation of DNA endoreduplication","BP"
-"105","GO:1901570",0.0221319048693708,0.992407918378645,8,91,"fatty acid derivative biosynthetic process","BP"
-"106","GO:1904743",0.0224155054326689,0.998760814008075,2,6,"negative regulation of telomeric DNA binding","BP"
-"107","GO:0003171",0.0226724504362786,0.997122385187522,3,16,"atrioventricular valve development","BP"
-"108","GO:0009069",0.0227853182425169,0.994574602474806,5,45,"serine family amino acid metabolic process","BP"
-"109","GO:1905050",0.022857061247913,0.998654368520033,2,7,"positive regulation of metallopeptidase activity","BP"
-"110","GO:0061303",0.0233118195659088,0.99861299185063,2,7,"cornea development in camera-type eye","BP"
-"111","GO:0051131",0.0236026574072087,0.998586294896675,2,7,"chaperone-mediated protein complex assembly","BP"
-"112","GO:0000096",0.0236213198113739,0.994322910832857,5,45,"sulfur amino acid metabolic process","BP"
-"113","GO:0090308",0.0237325577051284,0.99864702798165,2,6,"regulation of DNA methylation-dependent heterochromatin formation","BP"
-"114","GO:0045950",0.0241453473992119,0.998718959727068,2,5,"negative regulation of mitotic recombination","BP"
-"115","GO:0051304",0.0241694982878868,0.994211563772779,5,39,"chromosome separation","BP"
-"116","GO:0002088",0.0251412671716472,0.992819623356478,6,59,"lens development in camera-type eye","BP"
-"117","GO:0042219",0.025668456514701,0.996506977974865,3,19,"cellular modified amino acid catabolic process","BP"
-"118","GO:0006577",0.0256964328486906,0.996524133722124,3,18,"amino-acid betaine metabolic process","BP"
-"119","GO:0001525",0.0261375117202701,0.988415277670518,12,165,"angiogenesis","BP"
-"120","GO:0061819",0.0265159932258169,0.998308963070778,2,7,"telomeric DNA-containing double minutes formation","BP"
-"121","GO:1905764",0.0265159932258169,0.998308963070778,2,7,"regulation of protection from non-homologous end joining at telomere","BP"
-"122","GO:1905765",0.0265159932258169,0.998308963070778,2,7,"negative regulation of protection from non-homologous end joining at telomere","BP"
-"123","GO:0060143",0.0266261342225521,0.99829813094449,2,7,"positive regulation of syncytium formation by plasma membrane fusion","BP"
-"124","GO:0033152",0.0267354298803671,0.998374433009093,2,6,"immunoglobulin V(D)J recombination","BP"
-"125","GO:0006555",0.0268937935730844,0.994646257569916,4,32,"methionine metabolic process","BP"
-"126","GO:0006690",0.0276427129247758,0.990106759058595,8,93,"icosanoid metabolic process","BP"
-"127","GO:2000241",0.0277166650899848,0.985656964045977,17,261,"regulation of reproductive process","BP"
-"128","GO:1901606",0.0282727990607843,0.990669683692764,7,82,"alpha-amino acid catabolic process","BP"
-"129","GO:0044752",0.0283806815458346,0.998122241634123,2,7,"response to human chorionic gonadotropin","BP"
-"130","GO:0001516",0.0284346463757667,0.994228101990452,4,33,"prostaglandin biosynthetic process","BP"
-"131","GO:0046457",0.0284346463757667,0.994228101990452,4,33,"prostanoid biosynthetic process","BP"
-"132","GO:0045778",0.0288957020236871,0.990449861446261,7,76,"positive regulation of ossification","BP"
-"133","GO:0021984",0.029379802421675,0.995815049758301,3,18,"adenohypophysis development","BP"
-"134","GO:0016054",0.0294455014459621,0.986204133047705,13,200,"organic acid catabolic process","BP"
-"135","GO:0046395",0.0294455014459621,0.986204133047705,13,200,"carboxylic acid catabolic process","BP"
-"136","GO:1904742",0.0296525241457034,0.997990876778444,2,7,"regulation of telomeric DNA binding","BP"
-"137","GO:1901568",0.0299690710678597,0.987616928731574,10,130,"fatty acid derivative metabolic process","BP"
-"138","GO:0009068",0.030206697964211,0.995622873798601,3,19,"aspartate family amino acid catabolic process","BP"
-"139","GO:1905936",0.0303995632294385,0.997912227762159,2,7,"regulation of germ cell proliferation","BP"
-"140","GO:0009067",0.0306438400970169,0.99363374531058,4,33,"aspartate family amino acid biosynthetic process","BP"
-"141","GO:0044572",0.0309349297320385,1,1,1,"[4Fe-4S] cluster assembly","BP"
-"142","GO:0014054",0.0311701682735024,1,1,1,"positive regulation of gamma-aminobutyric acid secretion","BP"
-"143","GO:0035886",0.031210159652721,0.997825655142563,2,7,"vascular associated smooth muscle cell differentiation","BP"
-"144","GO:0002432",0.0317596302589713,1,1,1,"granuloma formation","BP"
-"145","GO:0035711",0.0317596302589713,1,1,1,"T-helper 1 cell activation","BP"
-"146","GO:1900015",0.0318270540125143,0.99767607250653,2,8,"regulation of cytokine production involved in inflammatory response","BP"
-"147","GO:0051307",0.0318515712577426,0.993370495117341,4,29,"meiotic chromosome separation","BP"
-"148","GO:0019310",0.0320691496753447,1,1,1,"inositol catabolic process","BP"
-"149","GO:2000256",0.0324940882590793,1,1,1,"positive regulation of male germ cell proliferation","BP"
-"150","GO:0045669",0.0328533293105041,0.993040934221323,4,32,"positive regulation of osteoblast differentiation","BP"
-"151","GO:0045648",0.0328545458285145,0.995081091633979,3,19,"positive regulation of erythrocyte differentiation","BP"
-"152","GO:2001287",0.0332155942099073,1,1,1,"negative regulation of caveolin-mediated endocytosis","BP"
-"153","GO:0097355",0.0333477604005193,1,1,1,"protein localization to heterochromatin","BP"
-"154","GO:1902267",0.0334039504422889,1,1,1,"regulation of polyamine transmembrane transport","BP"
-"155","GO:1902268",0.0334039504422889,1,1,1,"negative regulation of polyamine transmembrane transport","BP"
-"156","GO:0001676",0.0336222028224403,0.98748220951316,8,99,"long-chain fatty acid metabolic process","BP"
-"157","GO:0009237",0.0337170334916844,1,1,1,"siderophore metabolic process","BP"
-"158","GO:0019290",0.0337170334916844,1,1,1,"siderophore biosynthetic process","BP"
-"159","GO:0021763",0.0342116569162367,1,1,1,"subthalamic nucleus development","BP"
-"160","GO:0035462",0.0342116569162367,1,1,1,"determination of left/right asymmetry in diencephalon","BP"
-"161","GO:0060127",0.0342116569162367,1,1,1,"prolactin secreting cell differentiation","BP"
-"162","GO:0060578",0.0342116569162367,1,1,1,"superior vena cava morphogenesis","BP"
-"163","GO:0031631",0.0342815140624313,0.997486207235119,2,7,"negative regulation of synaptic vesicle fusion to presynaptic active zone membrane","BP"
-"164","GO:0030213",0.0342970495933211,1,1,1,"hyaluronan biosynthetic process","BP"
-"165","GO:1904787",0.0342970495933211,1,1,1,"positive regulation of asymmetric protein localization involved in cell fate determination","BP"
-"166","GO:1905935",0.0342970495933211,1,1,1,"positive regulation of cell fate determination","BP"
-"167","GO:0090660",0.0344317376433447,1,1,1,"cerebrospinal fluid circulation","BP"
-"168","GO:0006043",0.0345146799071424,1,1,1,"glucosamine catabolic process","BP"
-"169","GO:0046370",0.0345146799071424,1,1,1,"fructose biosynthetic process","BP"
-"170","GO:0016260",0.0347257432327681,1,1,1,"selenocysteine biosynthetic process","BP"
-"171","GO:0045667",0.0347507140593314,0.988038300250761,7,80,"regulation of osteoblast differentiation","BP"
-"172","GO:0001708",0.0352319199391719,0.984308806934461,11,155,"cell fate specification","BP"
-"173","GO:0050843",0.0354849524398429,1,1,1,"S-adenosylmethionine catabolic process","BP"
-"174","GO:1901054",0.0354849524398429,1,1,1,"sarcosine biosynthetic process","BP"
-"175","GO:0007429",0.0358259321933211,1,1,1,"secondary branching, open tracheal system","BP"
-"176","GO:0001946",0.0358430566259072,0.99720768405181,2,8,"lymphangiogenesis","BP"
-"177","GO:0036303",0.0358430566259072,0.99720768405181,2,8,"lymph vessel morphogenesis","BP"
-"178","GO:0007341",0.0358631248320837,1,1,1,"penetration of zona pellucida","BP"
-"179","GO:0014028",0.0358631248320837,1,1,1,"notochord formation","BP"
-"180","GO:0000722",0.0361157849690122,0.994424307845789,3,18,"telomere maintenance via recombination","BP"
-"181","GO:0006436",0.0361328154205458,1,1,1,"tryptophanyl-tRNA aminoacylation","BP"
-"182","GO:0060315",0.0361441814449537,0.997094724185286,2,9,"negative regulation of ryanodine-sensitive calcium-release channel activity","BP"
-"183","GO:0021854",0.0362745308327445,0.994294300581414,3,21,"hypothalamus development","BP"
-"184","GO:1901738",0.0364510069778453,1,1,1,"regulation of vitamin A metabolic process","BP"
-"185","GO:2000489",0.0364510069778453,1,1,1,"regulation of hepatic stellate cell activation","BP"
-"186","GO:2000491",0.0364510069778453,1,1,1,"positive regulation of hepatic stellate cell activation","BP"
-"187","GO:0021773",0.0365852751649872,1,1,1,"striatal medium spiny neuron differentiation","BP"
-"188","GO:0034125",0.0365852751649872,1,1,1,"negative regulation of MyD88-dependent toll-like receptor signaling pathway","BP"
-"189","GO:0045578",0.0365852751649872,1,1,1,"negative regulation of B cell differentiation","BP"
-"190","GO:0046882",0.0365852751649872,1,1,1,"negative regulation of follicle-stimulating hormone secretion","BP"
-"191","GO:0060935",0.0366105306054959,1,1,1,"cardiac fibroblast cell differentiation","BP"
-"192","GO:0060936",0.0366105306054959,1,1,1,"cardiac fibroblast cell development","BP"
-"193","GO:0060938",0.0366105306054959,1,1,1,"epicardium-derived cardiac fibroblast cell differentiation","BP"
-"194","GO:0060939",0.0366105306054959,1,1,1,"epicardium-derived cardiac fibroblast cell development","BP"
-"195","GO:0060940",0.0366105306054959,1,1,1,"epithelial to mesenchymal transition involved in cardiac fibroblast development","BP"
-"196","GO:0006781",0.0366907896898603,1,1,1,"succinyl-CoA pathway","BP"
-"197","GO:1904505",0.0368143932516505,0.99708975191399,2,8,"regulation of telomere maintenance in response to DNA damage","BP"
-"198","GO:1904506",0.0368143932516505,0.99708975191399,2,8,"negative regulation of telomere maintenance in response to DNA damage","BP"
-"199","GO:0035787",0.0368950331589388,1,1,1,"cell migration involved in kidney development","BP"
-"200","GO:0045813",0.0368950331589388,1,1,1,"positive regulation of Wnt signaling pathway, calcium modulating pathway","BP"
-"201","GO:0060629",0.0370881960395728,1,1,1,"regulation of homologous chromosome segregation","BP"
-"202","GO:0021858",0.037161839309606,1,1,1,"GABAergic neuron differentiation in basal ganglia","BP"
-"203","GO:0003252",0.0371920791164619,1,1,1,"negative regulation of cell proliferation involved in heart valve morphogenesis","BP"
-"204","GO:0060836",0.0371920791164619,1,1,1,"lymphatic endothelial cell differentiation","BP"
-"205","GO:1904026",0.0372838941768169,1,1,1,"regulation of collagen fibril organization","BP"
-"206","GO:1904028",0.0372838941768169,1,1,1,"positive regulation of collagen fibril organization","BP"
-"207","GO:0043392",0.0372916257030902,0.99178018819657,4,32,"negative regulation of DNA binding","BP"
-"208","GO:0003031",0.0373111797119293,1,1,1,"detection of carbon dioxide","BP"
-"209","GO:0009454",0.0373111797119293,1,1,1,"aerotaxis","BP"
-"210","GO:0048845",0.0374216578792057,0.996934406615564,2,9,"venous blood vessel morphogenesis","BP"
-"211","GO:0006635",0.0376125894285022,0.989711320379126,5,51,"fatty acid beta-oxidation","BP"
-"212","GO:0030278",0.0379213211311233,0.983698760045877,10,132,"regulation of ossification","BP"
-"213","GO:0000122",0.037954324905773,0.975889273883155,30,562,"negative regulation of transcription by RNA polymerase II","BP"
-"214","GO:0014034",0.0380461424033122,0.996854898804306,2,9,"neural crest cell fate commitment","BP"
-"215","GO:0070291",0.0381293661022802,0.996844246914117,2,9,"N-acylethanolamine metabolic process","BP"
-"216","GO:0006105",0.0383398272998604,0.996817251106285,2,9,"succinate metabolic process","BP"
-"217","GO:0045637",0.0384953371409274,0.982608617894039,11,157,"regulation of myeloid cell differentiation","BP"
-"218","GO:0006302",0.0385291221822236,0.981918822223899,12,165,"double-strand break repair","BP"
-"219","GO:1902442",0.0385932852028095,1,1,1,"regulation of ripoptosome assembly involved in necroptotic process","BP"
-"220","GO:1902443",0.0385932852028095,1,1,1,"negative regulation of ripoptosome assembly involved in necroptotic process","BP"
-"221","GO:0070169",0.0386466230782426,0.989362050986454,5,50,"positive regulation of biomineral tissue development","BP"
-"222","GO:0006544",0.0389430294756428,0.993701445166978,3,21,"glycine metabolic process","BP"
-"223","GO:0032924",0.0392663748494047,0.996697407200707,2,9,"activin receptor signaling pathway","BP"
-"224","GO:0006520",0.0394681055380902,0.978660772434021,17,287,"amino acid metabolic process","BP"
-"225","GO:0006578",0.040035196782801,0.996596739384134,2,9,"amino-acid betaine biosynthetic process","BP"
-"226","GO:0045329",0.040035196782801,0.996596739384134,2,9,"carnitine biosynthetic process","BP"
-"227","GO:1990440",0.0411556346784204,0.996448059509038,2,9,"positive regulation of transcription from RNA polymerase II promoter in response to endoplasmic reticulum stress","BP"
-"228","GO:0051102",0.0414446260472129,1,1,1,"DNA ligation involved in DNA recombination","BP"
-"229","GO:0032223",0.0426314653425427,0.996346961249525,2,8,"negative regulation of synaptic transmission, cholinergic","BP"
-"230","GO:0045638",0.0429645189787931,0.987830443499278,5,50,"negative regulation of myeloid cell differentiation","BP"
-"231","GO:0006265",0.0432785956263283,0.996260544879161,2,8,"DNA topological change","BP"
-"232","GO:1990166",0.0433107525671969,1,1,1,"protein localization to site of double-strand break","BP"
-"233","GO:0090062",0.0435538362587101,1,1,1,"regulation of trehalose metabolic process","BP"
-"234","GO:1901143",0.0435538362587101,1,1,1,"insulin catabolic process","BP"
-"235","GO:0007054",0.0442272345083772,1,1,1,"spindle assembly involved in male meiosis I","BP"
-"236","GO:0016346",0.0442272345083772,1,1,1,"male meiotic chromosome movement towards spindle pole","BP"
-"237","GO:0055047",0.0442272345083772,1,1,1,"generative cell mitosis","BP"
-"238","GO:0019395",0.0443051274064049,0.985436914779586,6,71,"fatty acid oxidation","BP"
-"239","GO:0000724",0.0445853835039064,0.982498346205201,8,93,"double-strand break repair via homologous recombination","BP"
-"240","GO:0000725",0.0445853835039064,0.982498346205201,8,93,"recombinational repair","BP"
-"241","GO:0060734",0.0447103362340818,1,1,1,"regulation of endoplasmic reticulum stress-induced eIF2 alpha phosphorylation","BP"
-"242","GO:0048211",0.0449803853731997,1,1,1,"Golgi vesicle docking","BP"
-"243","GO:0070886",0.0450841755789289,0.995908576372029,2,9,"positive regulation of calcineurin-NFAT signaling cascade","BP"
-"244","GO:0106058",0.0450841755789289,0.995908576372029,2,9,"positive regulation of calcineurin-mediated signaling","BP"
-"245","GO:0051383",0.0464045243560881,0.992088164086001,3,18,"kinetochore organization","BP"
-"246","GO:0034612",0.047690456986506,0.982394329461357,7,85,"response to tumor necrosis factor","BP"
-"247","GO:0035970",0.048113413972515,0.99538076295147,2,10,"peptidyl-threonine dephosphorylation","BP"
-"248","GO:0006636",0.0482217708218965,0.988313291571654,4,39,"unsaturated fatty acid biosynthetic process","BP"
-"249","GO:0071103",0.0490008158586663,0.975351642806007,13,185,"DNA conformation change","BP"
-"250","GO:1902224",0.0490745373406468,0.995236597455704,2,10,"ketone body metabolic process","BP"
-"251","GO:0003209",0.0493274977623815,0.991280110144889,3,20,"cardiac atrium morphogenesis","BP"
-"252","GO:0070192",0.0495921457361944,0.981602291493901,7,77,"chromosome organization involved in meiotic cell cycle","BP"
-"253","GO:0034440",0.049617895289915,0.983222370684682,6,73,"lipid oxidation","BP"
-"254","GO:0070071",0.0499245487186761,0.995107737820537,2,10,"proton-transporting two-sector ATPase complex assembly","BP"
-"255","GO:0000796",0.000531723902008301,0.999975783239336,4,8,"condensin complex","CC"
-"256","GO:0044815",0.00143405812920778,0.999840262788685,5,20,"DNA packaging complex","CC"
-"257","GO:0000793",0.00380156784476954,0.998643791817305,13,136,"condensed chromosome","CC"
-"258","GO:0034399",0.00501187343595847,0.998238524551702,12,125,"nuclear periphery","CC"
-"259","GO:0016363",0.0094016881203849,0.997009799305458,9,88,"nuclear matrix","CC"
-"260","GO:0016272",0.00953698948462729,0.999691473784027,2,5,"prefoldin complex","CC"
-"261","GO:0098687",0.0139469437698053,0.993342699640742,17,227,"chromosomal region","CC"
-"262","GO:0005958",0.0190501035355106,0.999110510483515,2,5,"DNA-dependent protein kinase-DNA ligase 4 complex","CC"
-"263","GO:0005828",0.0192682470749037,0.997779510974897,3,13,"kinetochore microtubule","CC"
-"264","GO:0005667",0.019535663853005,0.990780462930959,15,222,"transcription regulator complex","CC"
-"265","GO:0005641",0.0211875944152572,0.997434053811322,3,14,"nuclear envelope lumen","CC"
-"266","GO:0000110",0.0259791206824677,0.998361405306992,2,7,"nucleotide-excision repair factor 1 complex","CC"
-"267","GO:0070522",0.0265159932258169,0.998308963070778,2,7,"ERCC4-ERCC1 complex","CC"
-"268","GO:0005739",0.0294465317141525,0.979446730160105,51,1074,"mitochondrion","CC"
-"269","GO:0036488",0.0317596302589713,1,1,1,"CHOP-C/EBP complex","CC"
-"270","GO:0005694",0.0327063481689902,0.978339656394364,38,695,"chromosome","CC"
-"271","GO:0000800",0.0330538609704311,0.997744083374366,2,6,"lateral element","CC"
-"272","GO:1902712",0.0342815140624313,0.997486207235119,2,7,"G protein-coupled GABA receptor complex","CC"
-"273","GO:0043509",0.0365852751649872,1,1,1,"activin A complex","CC"
-"274","GO:0043511",0.0365852751649872,1,1,1,"inhibin complex","CC"
-"275","GO:0043512",0.0365852751649872,1,1,1,"inhibin A complex","CC"
-"276","GO:0048180",0.0365852751649872,1,1,1,"activin complex","CC"
-"277","GO:0009361",0.0366907896898603,1,1,1,"succinate-CoA ligase complex (ADP-forming)","CC"
-"278","GO:0098820",0.0371920791164619,1,1,1,"trans-synaptic protein complex","CC"
-"279","GO:0032807",0.0414446260472129,1,1,1,"DNA ligase IV complex","CC"
-"280","GO:0070419",0.0430131005131,0.996296088538826,2,8,"nonhomologous end joining complex","CC"
-"281","GO:0016645",8.03517094672342e-05,0.999991490013712,7,30,"oxidoreductase activity, acting on the CH-NH group of donors","MF"
-"282","GO:0005542",0.000162825065564949,0.999994193714995,4,9,"folic acid binding","MF"
-"283","GO:0043565",0.000171229729345699,0.999922640244637,33,442,"sequence-specific DNA binding","MF"
-"284","GO:0003700",0.000197216316600678,0.999905754103294,37,509,"DNA-binding transcription factor activity","MF"
-"285","GO:0046997",0.000217394077833628,0.999997864509609,3,4,"oxidoreductase activity, acting on the CH-NH group of donors, flavin as acceptor","MF"
-"286","GO:0000981",0.000497186060059514,0.999763977767244,32,441,"DNA-binding transcription factor activity, RNA polymerase II-specific","MF"
-"287","GO:0003677",0.000641059155561641,0.999640572268365,49,780,"DNA binding","MF"
-"288","GO:0003690",0.000782867525337222,0.999622476813472,31,441,"double-stranded DNA binding","MF"
-"289","GO:0000976",0.00116767358667233,0.999481880333218,24,321,"transcription cis-regulatory region binding","MF"
-"290","GO:0008480",0.00130000349245063,1,2,2,"sarcosine dehydrogenase activity","MF"
-"291","GO:0001228",0.00146766478827438,0.99946322906502,16,189,"DNA-binding transcription activator activity, RNA polymerase II-specific","MF"
-"292","GO:0000977",0.002035367432417,0.999093062245975,22,298,"RNA polymerase II transcription regulatory region sequence-specific DNA binding","MF"
-"293","GO:0004753",0.00235037837956852,0.999891181847837,3,8,"saccharopine dehydrogenase activity","MF"
-"294","GO:0001227",0.00251048760427034,0.999293023600868,10,95,"DNA-binding transcription repressor activity, RNA polymerase II-specific","MF"
-"295","GO:0016628",0.00266900367265077,0.999640234330709,5,27,"oxidoreductase activity, acting on the CH-CH group of donors, NAD or NADP as acceptor","MF"
-"296","GO:0016646",0.00286305579610079,0.999725816728005,4,17,"oxidoreductase activity, acting on the CH-NH group of donors, NAD or NADP as acceptor","MF"
-"297","GO:0016838",0.00329253250913706,0.999962449008962,2,3,"carbon-oxygen lyase activity, acting on phosphates","MF"
-"298","GO:0016491",0.00383993363194059,0.99791690542819,32,528,"oxidoreductase activity","MF"
-"299","GO:1990837",0.00406015368077444,0.998010967050496,24,353,"sequence-specific double-stranded DNA binding","MF"
-"300","GO:0140110",0.00437056853388836,0.997404540289783,42,710,"transcription regulator activity","MF"
-"301","GO:0016627",0.00492764997538017,0.99886273835799,7,58,"oxidoreductase activity, acting on the CH-CH group of donors","MF"
-"302","GO:0046982",0.00715617138316886,0.996444374009014,22,327,"protein heterodimerization activity","MF"
-"303","GO:0008453",0.00759514271256274,0.999811674816289,2,4,"alanine-glyoxylate transaminase activity","MF"
-"304","GO:0019842",0.00765377280172501,0.998074048851569,7,62,"vitamin binding","MF"
-"305","GO:0001067",0.00952091253530726,0.994985754164663,24,378,"transcription regulatory region nucleic acid binding","MF"
-"306","GO:0003697",0.0114434347634243,0.996233497810656,9,93,"single-stranded DNA binding","MF"
-"307","GO:0008336",0.0120841988929032,0.999557164193568,2,5,"gamma-butyrobetaine dioxygenase activity","MF"
-"308","GO:0003988",0.0125056383892728,0.999533338846945,2,5,"acetyl-CoA C-acyltransferase activity","MF"
-"309","GO:0031996",0.0128561560841802,0.997988750739286,4,26,"thioesterase binding","MF"
-"310","GO:0005164",0.0183390297651821,0.996787184324755,4,28,"tumor necrosis factor receptor binding","MF"
-"311","GO:0004796",0.0225927419541152,0.997112247793719,3,17,"thromboxane-A synthase activity","MF"
-"312","GO:0036134",0.0225927419541152,0.997112247793719,3,17,"12-hydroxyheptadecatrienoic acid synthase activity","MF"
-"313","GO:0004754",0.0236075738103619,0.998585842036472,2,7,"saccharopine dehydrogenase (NAD+, L-lysine-forming) activity","MF"
-"314","GO:0000987",0.0237939229062613,0.988826122552265,14,205,"cis-regulatory region sequence-specific DNA binding","MF"
-"315","GO:0004029",0.0314454429244294,0.997718939168529,2,8,"aldehyde dehydrogenase (NAD+) activity","MF"
-"316","GO:0050113",0.0320691496753447,1,1,1,"inositol oxygenase activity","MF"
-"317","GO:0035259",0.0328750362453271,0.997556870566158,2,8,"nuclear glucocorticoid receptor binding","MF"
-"318","GO:0008073",0.0334039504422889,1,1,1,"ornithine decarboxylase inhibitor activity","MF"
-"319","GO:0042979",0.0334039504422889,1,1,1,"ornithine decarboxylase regulator activity","MF"
-"320","GO:0003858",0.0337170334916844,1,1,1,"3-hydroxybutyrate dehydrogenase activity","MF"
-"321","GO:0031750",0.0339854011020666,1,1,1,"D3 dopamine receptor binding","MF"
-"322","GO:0031751",0.0339854011020666,1,1,1,"D4 dopamine receptor binding","MF"
-"323","GO:0017065",0.0341079813331539,1,1,1,"single-strand selective uracil DNA N-glycosylase activity","MF"
-"324","GO:0004965",0.0342815140624313,0.997486207235119,2,7,"G protein-coupled GABA receptor activity","MF"
-"325","GO:0004342",0.0345146799071424,1,1,1,"glucosamine-6-phosphate deaminase activity","MF"
-"326","GO:0017077",0.0346937107214281,1,1,1,"oxidative phosphorylation uncoupler activity","MF"
-"327","GO:0004756",0.0347257432327681,1,1,1,"selenide, water dikinase activity","MF"
-"328","GO:0016781",0.0347257432327681,1,1,1,"phosphotransferase activity, paired acceptors","MF"
-"329","GO:0004830",0.0361328154205458,1,1,1,"tryptophan-tRNA ligase activity","MF"
-"330","GO:0003846",0.0364510069778453,1,1,1,"2-acylglycerol O-acyltransferase activity","MF"
-"331","GO:0004144",0.0364510069778453,1,1,1,"diacylglycerol O-acyltransferase activity","MF"
-"332","GO:0070699",0.0365852751649872,1,1,1,"type II activin receptor binding","MF"
-"333","GO:0004569",0.0366752248208693,1,1,1,"glycoprotein endo-alpha-1,2-mannosidase activity","MF"
-"334","GO:0050459",0.0367286253774527,1,1,1,"ethanolamine-phosphate phospho-lyase activity","MF"
-"335","GO:0004043",0.0369734160384235,1,1,1,"L-aminoadipate-semialdehyde dehydrogenase activity","MF"
-"336","GO:0008802",0.0369734160384235,1,1,1,"betaine-aldehyde dehydrogenase activity","MF"
-"337","GO:0004742",0.0370239468877154,1,1,1,"dihydrolipoyllysine-residue acetyltransferase activity","MF"
-"338","GO:0016418",0.0370239468877154,1,1,1,"S-acetyltransferase activity","MF"
-"339","GO:0003912",0.0371342257880465,1,1,1,"DNA nucleotidylexotransferase activity","MF"
-"340","GO:0016362",0.0371920791164619,1,1,1,"activin receptor activity, type II","MF"
-"341","GO:0005223",0.0373111797119293,1,1,1,"intracellular cGMP-activated cation channel activity","MF"
-"342","GO:0004634",0.0373765983667665,1,1,1,"phosphopyruvate hydratase activity","MF"
-"343","GO:0004722",0.0374798747091362,0.989778582874725,5,49,"protein serine/threonine phosphatase activity","MF"
-"344","GO:0000978",0.0379115289385804,0.981598935033477,13,198,"RNA polymerase II cis-regulatory region sequence-specific DNA binding","MF"
-"345","GO:0008488",0.0379787052223257,1,1,1,"gamma-glutamyl carboxylase activity","MF"
-"346","GO:0051880",0.0407277542654111,0.996717119832783,2,7,"G-quadruplex DNA binding","MF"
-"347","GO:0016155",0.0416040587263351,1,1,1,"formyltetrahydrofolate dehydrogenase activity","MF"
-"348","GO:0047130",0.0421086594172283,1,1,1,"saccharopine dehydrogenase (NADP+, L-lysine-forming) activity","MF"
-"349","GO:0047131",0.0421086594172283,1,1,1,"saccharopine dehydrogenase (NAD+, L-glutamate-forming) activity","MF"
-"350","GO:0031626",0.0435538362587101,1,1,1,"beta-endorphin binding","MF"
-"351","GO:0070463",0.0442272345083772,1,1,1,"tubulin-dependent ATPase activity","MF"
-"352","GO:0008327",0.0466850066628626,0.995680779686525,2,9,"methyl-CpG binding","MF"
-"353","GO:0016860",0.0472086344725728,0.986217566647322,5,55,"intramolecular oxidoreductase activity","MF"
-"354","GO:0044106",0.000566322294392649,0.99987101327547,10,77,NA,NA
-"355","GO:0001158",0.00122613988688171,0.999748183256257,8,60,NA,NA
-"356","GO:0001078",0.00219652170115628,0.999567584601698,7,49,NA,NA
-"357","GO:0001012",0.00223100812730556,0.998998230736439,22,300,NA,NA
-"358","GO:0035326",0.00257982613084585,0.999398608575397,8,67,NA,NA
-"359","GO:0000982",0.00380055650024963,0.998519111389806,15,188,NA,NA
-"360","GO:0000980",0.00851390138422202,0.998102235172834,6,50,NA,NA
-"361","GO:0044212",0.00894077481069761,0.995317101780341,24,376,NA,NA
-"362","GO:0003705",0.00986904743241504,0.997083251499297,8,83,NA,NA
-"363","GO:0000726",0.0101479140322817,0.99731570687595,7,58,NA,NA
-"364","GO:0055114",0.0150230667192931,0.990651611579376,37,688,NA,NA
-"365","GO:0001077",0.0172958169120868,0.993096475477576,11,146,NA,NA
-"366","GO:0044427",0.0188240386883147,0.988356596756256,34,581,NA,NA
-"367","GO:0042737",0.0239557789664854,0.991650341191179,8,94,NA,NA
-"368","GO:0017144",0.0260316027189476,0.984282913510937,28,506,NA,NA
-"369","GO:0001206",0.0335926689309975,0.997405425964615,2,9,NA,NA
-"370","GO:0045072",0.0365852751649872,1,1,1,NA,NA
-"371","GO:0045077",0.0365852751649872,1,1,1,NA,NA
-"372","GO:0006295",0.0381814283056666,0.996920778809546,2,8,NA,NA
-"373","GO:0009109",0.0449650918199136,0.995841429487755,2,10,NA,NA
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust"
+"1","GO:1901052",3.35544618335114e-05,1,3,3,"sarcosine metabolic process","BP",0.142892995915142
+"2","GO:0044283",5.45397555402525e-05,0.999976734359868,34,493,"small molecule biosynthetic process","BP",0.142892995915142
+"3","GO:0006553",5.6574481209598e-05,0.999997202610753,5,14,"lysine metabolic process","BP",0.142892995915142
+"4","GO:0042426",7.83202260870167e-05,0.999995846249925,5,14,"choline catabolic process","BP",0.146010458938954
+"5","GO:0016053",7.94870359461788e-05,0.999971094847524,24,300,"organic acid biosynthetic process","BP",0.146010458938954
+"6","GO:0046394",7.94870359461788e-05,0.999971094847524,24,300,"carboxylic acid biosynthetic process","BP",0.146010458938954
+"7","GO:0019695",0.000110764162619929,0.999993520597917,5,15,"choline metabolic process","BP",0.163954747079409
+"8","GO:0046439",0.000123078093686602,0.999995934227926,4,9,"L-cysteine metabolic process","BP",0.165794397402098
+"9","GO:1901607",0.000168590223172705,0.99996734823659,10,74,"alpha-amino acid biosynthetic process","BP",0.212908378089229
+"10","GO:0009066",0.000191645045526042,0.999966386771739,9,63,"aspartate family amino acid metabolic process","BP",0.222489998045832
+"11","GO:0006576",0.000236852114899731,0.99995198297355,10,77,"biogenic amine metabolic process","BP",0.227896849222094
+"12","GO:0035999",0.000255791204086626,0.999989183424151,4,10,"tetrahydrofolate interconversion","BP",0.228510654329973
+"13","GO:0009308",0.00026010813865136,0.999946590635192,10,78,"amine metabolic process","BP",0.228510654329973
+"14","GO:0008652",0.000315540833093127,0.999926941664498,11,96,"amino acid biosynthetic process","BP",0.25503626724453
+"15","GO:0019752",0.000550778912770252,0.999710953531655,42,735,"carboxylic acid metabolic process","BP",0.370967957047857
+"16","GO:0042135",0.000640698497461075,0.999940157762638,5,21,"neurotransmitter catabolic process","BP",0.403707396263906
+"17","GO:0033353",0.000690905170127694,0.999982380172469,3,6,"S-adenosylmethionine cycle","BP",0.410600878458829
+"18","GO:0006082",0.000744146616498801,0.999594337110895,45,815,"organic acid metabolic process","BP",0.418852879745263
+"19","GO:0006554",0.000746248820688383,0.999980448663357,3,6,"lysine catabolic process","BP",0.418852879745263
+"20","GO:0000012",0.000802382233820207,0.999949271907327,4,13,"single strand break repair","BP",0.438187443691111
+"21","GO:0043436",0.00106171118376628,0.999414417784457,44,806,"oxoacid metabolic process","BP",0.506030842535361
+"22","GO:1901053",0.00107687450405922,1,2,2,"sarcosine catabolic process","BP",0.506030842535361
+"23","GO:0097164",0.00120349269288515,0.999624920568659,13,144,"ammonium ion metabolic process","BP",0.540394963387495
+"24","GO:0045165",0.00137370048398593,0.999354078868565,27,410,"cell fate commitment","BP",0.560634474356294
+"25","GO:0046653",0.0013872970265176,0.99989434557553,4,15,"tetrahydrofolate metabolic process","BP",0.560634474356294
+"26","GO:0006534",0.0015260014849448,0.999879010043882,4,16,"cysteine metabolic process","BP",0.604595804015581
+"27","GO:0006545",0.00160865449255862,0.99993502363971,3,8,"glycine biosynthetic process","BP",0.625086013012296
+"28","GO:0019369",0.00166212393603758,0.999641029646347,8,65,"arachidonic acid metabolic process","BP",0.633676910407084
+"29","GO:0046500",0.00190647022735182,0.999837325883575,4,17,"S-adenosylmethionine metabolic process","BP",0.687895310961979
+"30","GO:0042136",0.00224156834056908,0.999628251463846,6,40,"neurotransmitter biosynthetic process","BP",0.742510326058015
+"31","GO:0009310",0.00234177363828054,0.999691940602549,5,29,"amine catabolic process","BP",0.749469720028171
+"32","GO:0042402",0.00234177363828054,0.999691940602549,5,29,"cellular biogenic amine catabolic process","BP",0.749469720028171
+"33","GO:0009085",0.00249942971402257,0.999876480816112,3,9,"lysine biosynthetic process","BP",0.749469720028171
+"34","GO:0019878",0.00249942971402257,0.999876480816112,3,9,"lysine biosynthetic process via aminoadipic acid","BP",0.749469720028171
+"35","GO:0000019",0.00253436251334098,0.999887120995913,3,7,"regulation of mitotic recombination","BP",0.749469720028171
+"36","GO:0006730",0.0025593096447562,0.999760537861175,4,18,"one-carbon metabolic process","BP",0.749469720028171
+"37","GO:0042133",0.00277393248480604,0.999274856333437,9,83,"neurotransmitter metabolic process","BP",0.789437743492829
+"38","GO:0006303",0.00299071711545804,0.999376739814057,7,52,"double-strand break repair via nonhomologous end joining","BP",0.827814110067742
+"39","GO:0046498",0.00319477515157538,0.999821754188427,3,10,"S-adenosylhomocysteine metabolic process","BP",0.872346306928813
+"40","GO:0045944",0.00376890119881292,0.997895288651029,36,651,"positive regulation of transcription by RNA polymerase II","BP",0.98901841069109
+"41","GO:0097154",0.00389299789028202,0.999760700920505,3,11,"GABAergic neuron differentiation","BP",0.992858944139855
+"42","GO:0051280",0.00393094702223045,0.999757524306176,3,11,"negative regulation of release of sequestered calcium ion into cytosol","BP",0.992858944139855
+"43","GO:0051284",0.00393094702223045,0.999757524306176,3,11,"positive regulation of sequestering of calcium ion","BP",0.992858944139855
+"44","GO:0046456",0.00416815208827639,0.999068158326578,7,60,"icosanoid biosynthetic process","BP",1
+"45","GO:0009070",0.00423716571828349,0.999532134625212,4,21,"serine family amino acid biosynthetic process","BP",1
+"46","GO:0009650",0.00429793309633515,0.999530572586732,4,19,"UV protection","BP",1
+"47","GO:0020027",0.00443601174748772,0.999721499007221,3,10,"hemoglobin metabolic process","BP",1
+"48","GO:0021539",0.00477082750636629,0.999907294348409,2,4,"subthalamus development","BP",1
+"49","GO:0006366",0.00484753232030514,0.997562826401035,25,427,"transcription by RNA polymerase II","BP",1
+"50","GO:0044026",0.00504897640453506,0.999928200347695,2,3,"DNA hypermethylation","BP",1
+"51","GO:0035666",0.00509084721695443,0.999655274907231,3,11,"TRIF-dependent toll-like receptor signaling pathway","BP",1
+"52","GO:0060126",0.00515311173118018,0.999895778624011,2,4,"somatotropin secreting cell differentiation","BP",1
+"53","GO:0030578",0.00521028880239679,0.999924680071172,2,3,"PML body organization","BP",1
+"54","GO:0060577",0.00554051837405271,0.999883640707343,2,4,"pulmonary vein morphogenesis","BP",1
+"55","GO:0042464",0.00557019422412334,0.999916617208361,2,3,"dosage compensation by hypoactivation of X chromosome","BP",1
+"56","GO:0060841",0.00567146501966823,0.999592320686943,3,12,"venous blood vessel development","BP",1
+"57","GO:0033189",0.00570746580794371,0.999597153728986,3,11,"response to vitamin A","BP",1
+"58","GO:0045132",0.00573056910624869,0.998322785752114,9,86,"meiotic chromosome segregation","BP",1
+"59","GO:0033615",0.00596641354005202,0.999869771152772,2,4,"mitochondrial proton-transporting ATP synthase complex assembly","BP",1
+"60","GO:0033559",0.0062198515317322,0.998309866777643,8,81,"unsaturated fatty acid metabolic process","BP",1
+"61","GO:0010523",0.00630921107558097,0.999520601450996,3,13,"negative regulation of calcium ion transport into cytosol","BP",1
+"62","GO:2000371",0.00681903048354907,0.999475830565349,3,12,"regulation of DNA topoisomerase (ATP-hydrolyzing) activity","BP",1
+"63","GO:2000373",0.00681903048354907,0.999475830565349,3,12,"positive regulation of DNA topoisomerase (ATP-hydrolyzing) activity","BP",1
+"64","GO:0070306",0.00685390961302237,0.998812487518612,5,36,"lens fiber cell differentiation","BP",1
+"65","GO:1901605",0.00753023350159509,0.996946400529169,14,204,"alpha-amino acid metabolic process","BP",1
+"66","GO:0042439",0.00792247900791698,0.998935816528923,4,24,"ethanolamine-containing compound metabolic process","BP",1
+"67","GO:2000254",0.00804669123121795,0.999762197237891,2,5,"regulation of male germ cell proliferation","BP",1
+"68","GO:1905459",0.00841336248069334,0.999301526525257,3,12,"regulation of vascular associated smooth muscle cell apoptotic process","BP",1
+"69","GO:1904354",0.00862547631860353,0.999291871781592,3,11,"negative regulation of telomere capping","BP",1
+"70","GO:0045646",0.00877574126792337,0.998381702680763,5,37,"regulation of erythrocyte differentiation","BP",1
+"71","GO:0045934",0.00896236901677613,0.994331507232597,47,959,"negative regulation of nucleobase-containing compound metabolic process","BP",1
+"72","GO:0042558",0.00896914736135576,0.9983271216155,5,40,"pteridine-containing compound metabolic process","BP",1
+"73","GO:0043461",0.00929726624650549,0.999703643844259,2,5,"proton-transporting ATP synthase complex assembly","BP",1
+"74","GO:0038001",0.00948554694561907,0.999694444063478,2,5,"paracrine signaling","BP",1
+"75","GO:0000122",0.00949709179393305,0.994643725202654,30,562,"negative regulation of transcription by RNA polymerase II","BP",1
+"76","GO:0070262",0.00969952448305153,0.999683869760478,2,5,"peptidyl-serine dephosphorylation","BP",1
+"77","GO:0010032",0.00975115561202436,0.999162333270388,3,11,"meiotic chromosome condensation","BP",1
+"78","GO:0002756",0.0098777638397876,0.999103157569082,3,14,"MyD88-independent toll-like receptor signaling pathway","BP",1
+"79","GO:0003175",0.00988113021904542,0.99967479681018,2,5,"tricuspid valve development","BP",1
+"80","GO:0006760",0.00998417508731248,0.998552989238679,4,26,"folic acid-containing compound metabolic process","BP",1
+"81","GO:0001569",0.0101282656771863,0.998525946200168,4,26,"branching involved in blood vessel morphogenesis","BP",1
+"82","GO:0042762",0.0103750718863429,0.999040754897687,3,14,"regulation of sulfur metabolic process","BP",1
+"83","GO:2000241",0.0106135160991593,0.995091196417124,17,261,"regulation of reproductive process","BP",1
+"84","GO:0002568",0.0106983867068279,0.99968278119563,2,4,"somatic diversification of T cell receptor genes","BP",1
+"85","GO:0002681",0.0106983867068279,0.99968278119563,2,4,"somatic recombination of T cell receptor gene segments","BP",1
+"86","GO:0033153",0.0106983867068279,0.99968278119563,2,4,"T cell receptor V(D)J recombination","BP",1
+"87","GO:0036514",0.011028269205566,0.999615444001372,2,5,"dopaminergic neuron axon guidance","BP",1
+"88","GO:1904938",0.011028269205566,0.999615444001372,2,5,"planar cell polarity pathway involved in axon guidance","BP",1
+"89","GO:0071356",0.0110611419967513,0.997003026550081,7,70,"cellular response to tumor necrosis factor","BP",1
+"90","GO:0042006",0.0115830020972433,0.999585509100453,2,5,"masculinization of hermaphroditic germ-line","BP",1
+"91","GO:0010216",0.0119617587439913,0.999623722654567,2,4,"negative regulation of gene expression via chromosomal DNA cytosine methylation","BP",1
+"92","GO:1905767",0.012599416302785,0.99952864499194,2,5,"regulation of double-stranded telomeric DNA binding","BP",1
+"93","GO:1905768",0.012599416302785,0.99952864499194,2,5,"negative regulation of double-stranded telomeric DNA binding","BP",1
+"94","GO:0001525",0.0126845711428401,0.994938382286848,12,165,"angiogenesis","BP",1
+"95","GO:0061035",0.012801670756724,0.997379983095105,5,43,"regulation of cartilage development","BP",1
+"96","GO:1901570",0.0129540565604065,0.995980568124137,8,91,"fatty acid derivative biosynthetic process","BP",1
+"97","GO:0044281",0.0130778598697298,0.991034305473901,63,1418,"small molecule metabolic process","BP",1
+"98","GO:0061298",0.0131194137406664,0.999498569197265,2,5,"retina vasculature development in camera-type eye","BP",1
+"99","GO:0007366",0.013525745383193,0.9994296152559,2,6,"periodic partitioning by pair rule gene","BP",1
+"100","GO:0045893",0.0136966899660744,0.991331306530152,42,850,"positive regulation of DNA-templated transcription","BP",1
+"101","GO:0016054",0.013876520010074,0.994145876076022,13,200,"organic acid catabolic process","BP",1
+"102","GO:0046395",0.013876520010074,0.994145876076022,13,200,"carboxylic acid catabolic process","BP",1
+"103","GO:0032330",0.0140375704196692,0.997727165175448,4,29,"regulation of chondrocyte differentiation","BP",1
+"104","GO:0010911",0.0141626000680086,0.998512765916863,3,15,"regulation of isomerase activity","BP",1
+"105","GO:0010912",0.0141626000680086,0.998512765916863,3,15,"positive regulation of isomerase activity","BP",1
+"106","GO:0033209",0.0143330412166748,0.99766492901439,4,29,"tumor necrosis factor-mediated signaling pathway","BP",1
+"107","GO:0019371",0.014473242181943,0.997628263854824,4,30,"cyclooxygenase pathway","BP",1
+"108","GO:0000096",0.0150936329494391,0.996771499912751,5,45,"sulfur amino acid metabolic process","BP",1
+"109","GO:0051254",0.0151268192096519,0.990167354963375,46,954,"positive regulation of RNA metabolic process","BP",1
+"110","GO:0009069",0.0152963697858962,0.996717139292621,5,45,"serine family amino acid metabolic process","BP",1
+"111","GO:0002328",0.0153301331707313,0.999363557857017,2,5,"pro-B cell differentiation","BP",1
+"112","GO:0051253",0.0153893749846469,0.990292542218384,40,821,"negative regulation of RNA metabolic process","BP",1
+"113","GO:0006520",0.0155071525372112,0.992510972072579,17,287,"amino acid metabolic process","BP",1
+"114","GO:1905064",0.0155897955209839,0.999291184299972,2,6,"negative regulation of vascular associated smooth muscle cell differentiation","BP",1
+"115","GO:0042541",0.0157222202174587,0.999281944350454,2,6,"hemoglobin biosynthetic process","BP",1
+"116","GO:1901568",0.0158040079052672,0.994124715943141,10,130,"fatty acid derivative metabolic process","BP",1
+"117","GO:0016321",0.0163343578513395,0.998210931011661,3,14,"female meiosis chromosome segregation","BP",1
+"118","GO:0003171",0.0163345042065129,0.998172461062115,3,16,"atrioventricular valve development","BP",1
+"119","GO:0051304",0.0163356742872882,0.99646992728978,5,39,"chromosome separation","BP",1
+"120","GO:0006690",0.0164195010268485,0.994679240219774,8,93,"icosanoid metabolic process","BP",1
+"121","GO:1901576",0.0164471502587721,0.987917831726391,92,2217,"organic substance biosynthetic process","BP",1
+"122","GO:0045778",0.0166591653514554,0.99509029285247,7,76,"positive regulation of ossification","BP",1
+"123","GO:0002088",0.0167352743546106,0.995649760661046,6,59,"lens development in camera-type eye","BP",1
+"124","GO:1901606",0.016774221557418,0.995033978533215,7,82,"alpha-amino acid catabolic process","BP",1
+"125","GO:0045950",0.0170980968707722,0.999247606416327,2,5,"negative regulation of mitotic recombination","BP",1
+"126","GO:1901255",0.0174238677911849,0.999159495718274,2,6,"nucleotide-excision repair involved in interstrand cross-link repair","BP",1
+"127","GO:0001708",0.0177453587480635,0.992904984483149,11,155,"cell fate specification","BP",1
+"128","GO:1905050",0.0180341835866897,0.999065985563673,2,7,"positive regulation of metallopeptidase activity","BP",1
+"129","GO:0042219",0.0182297944391696,0.997826013726939,3,19,"cellular modified amino acid catabolic process","BP",1
+"130","GO:0009893",0.0185138152769562,0.98646990708579,85,1965,"positive regulation of metabolic process","BP",1
+"131","GO:0032877",0.0186734072498457,0.999065297956221,2,6,"positive regulation of DNA endoreduplication","BP",1
+"132","GO:0090308",0.0187483134288971,0.999059538537592,2,6,"regulation of DNA methylation-dependent heterochromatin formation","BP",1
+"133","GO:0006555",0.018863223223732,0.996636291927733,4,32,"methionine metabolic process","BP",1
+"134","GO:0061303",0.0189817340372751,0.998989707764708,2,7,"cornea development in camera-type eye","BP",1
+"135","GO:0006302",0.0190536867596344,0.991957371153441,12,165,"double-strand break repair","BP",1
+"136","GO:0030278",0.0191967246254021,0.992639121544715,10,132,"regulation of ossification","BP",1
+"137","GO:0006577",0.0192453176866778,0.99767262605043,3,18,"amino-acid betaine metabolic process","BP",1
+"138","GO:0045935",0.0193527712185171,0.98700446567628,50,1069,"positive regulation of nucleobase-containing compound metabolic process","BP",1
+"139","GO:0001516",0.0195333655002136,0.996471641807168,4,33,"prostaglandin biosynthetic process","BP",1
+"140","GO:0046457",0.0195333655002136,0.996471641807168,4,33,"prostanoid biosynthetic process","BP",1
+"141","GO:0051131",0.0200939122051409,0.998897492903941,2,7,"chaperone-mediated protein complex assembly","BP",1
+"142","GO:1903507",0.0201248442297129,0.98729626018155,37,761,"negative regulation of nucleic acid-templated transcription","BP",1
+"143","GO:0010604",0.0202711453649042,0.985243943425155,80,1839,"positive regulation of macromolecule metabolic process","BP",1
+"144","GO:1902679",0.0204950591322397,0.987045204983455,37,762,"negative regulation of RNA biosynthetic process","BP",1
+"145","GO:1904743",0.0206303198991231,0.998910750614631,2,6,"negative regulation of telomeric DNA binding","BP",1
+"146","GO:0001676",0.0210101325012086,0.992861610849678,8,99,"long-chain fatty acid metabolic process","BP",1
+"147","GO:0045667",0.0217135045576828,0.993236721038115,7,80,"regulation of osteoblast differentiation","BP",1
+"148","GO:0031328",0.0217887429924802,0.985150061342336,52,1128,"positive regulation of cellular biosynthetic process","BP",1
+"149","GO:0033152",0.021952841668808,0.998801597304866,2,6,"immunoglobulin V(D)J recombination","BP",1
+"150","GO:0071103",0.0220276145888157,0.990138039354763,13,185,"DNA conformation change","BP",1
+"151","GO:0044752",0.0221364992887191,0.998720790771266,2,7,"response to human chorionic gonadotropin","BP",1
+"152","GO:0045669",0.0221676286369951,0.995849066336895,4,32,"positive regulation of osteoblast differentiation","BP",1
+"153","GO:0009067",0.0224779481832383,0.995763243261614,4,33,"aspartate family amino acid biosynthetic process","BP",1
+"154","GO:0045637",0.0228956537921764,0.990487961992028,11,157,"regulation of myeloid cell differentiation","BP",1
+"155","GO:0009058",0.0230500134509461,0.982801111529678,92,2248,"biosynthetic process","BP",1
+"156","GO:0009068",0.0232118192663523,0.996965966367795,3,19,"aspartate family amino acid catabolic process","BP",1
+"157","GO:0021984",0.0233736085515743,0.996956422186188,3,18,"adenohypophysis development","BP",1
+"158","GO:0060143",0.023496298926399,0.998598031621024,2,7,"positive regulation of syncytium formation by plasma membrane fusion","BP",1
+"159","GO:0010628",0.0234978591446798,0.983853417677752,53,1164,"positive regulation of gene expression","BP",1
+"160","GO:1905936",0.0236763169911477,0.998581479525158,2,7,"regulation of germ cell proliferation","BP",1
+"161","GO:0051307",0.0237746389728001,0.995488497287519,4,29,"meiotic chromosome separation","BP",1
+"162","GO:0035886",0.0238765640696636,0.998562985685505,2,7,"vascular associated smooth muscle cell differentiation","BP",1
+"163","GO:0061819",0.0241310312769239,0.998539360551104,2,7,"telomeric DNA-containing double minutes formation","BP",1
+"164","GO:1905764",0.0241310312769239,0.998539360551104,2,7,"regulation of protection from non-homologous end joining at telomere","BP",1
+"165","GO:1905765",0.0241310312769239,0.998539360551104,2,7,"negative regulation of protection from non-homologous end joining at telomere","BP",1
+"166","GO:0000724",0.0244883085215664,0.991458624775526,8,93,"double-strand break repair via homologous recombination","BP",1
+"167","GO:0000725",0.0244883085215664,0.991458624775526,8,93,"recombinational repair","BP",1
+"168","GO:0051173",0.0248555290396376,0.981882936288361,75,1730,"positive regulation of nitrogen compound metabolic process","BP",1
+"169","GO:0031325",0.0257448598133137,0.981097673020706,78,1812,"positive regulation of cellular metabolic process","BP",1
+"170","GO:1900015",0.0261177137286147,0.998288849755142,2,8,"regulation of cytokine production involved in inflammatory response","BP",1
+"171","GO:0044572",0.0262010025152319,1,1,1,"[4Fe-4S] cluster assembly","BP",1
+"172","GO:0014054",0.0264471566964019,1,1,1,"positive regulation of gamma-aminobutyric acid secretion","BP",1
+"173","GO:0021854",0.0266245730284984,0.996292050456929,3,21,"hypothalamus development","BP",1
+"174","GO:1904742",0.026874170534548,0.998276033563977,2,7,"regulation of telomeric DNA binding","BP",1
+"175","GO:0002432",0.0270674776609096,1,1,1,"granuloma formation","BP",1
+"176","GO:0035711",0.0270674776609096,1,1,1,"T-helper 1 cell activation","BP",1
+"177","GO:0006635",0.0271705560706245,0.993195652196957,5,51,"fatty acid beta-oxidation","BP",1
+"178","GO:0019310",0.0273956020855889,1,1,1,"inositol catabolic process","BP",1
+"179","GO:0045648",0.0274101115711357,0.996181137900739,3,19,"positive regulation of erythrocyte differentiation","BP",1
+"180","GO:0000722",0.0274631576391406,0.996195353179129,3,18,"telomere maintenance via recombination","BP",1
+"181","GO:0044249",0.0275329132807069,0.979364097516258,89,2184,"cellular biosynthetic process","BP",1
+"182","GO:0032787",0.0276500155633459,0.984647419207809,21,394,"monocarboxylic acid metabolic process","BP",1
+"183","GO:1903508",0.0276773606072544,0.98161906330115,42,890,"positive regulation of nucleic acid-templated transcription","BP",1
+"184","GO:0043392",0.0277555648066341,0.994431957933721,4,32,"negative regulation of DNA binding","BP",1
+"185","GO:0070169",0.0277851793291484,0.993008201642693,5,50,"positive regulation of biomineral tissue development","BP",1
+"186","GO:2000256",0.027849375740319,1,1,1,"positive regulation of male germ cell proliferation","BP",1
+"187","GO:0070192",0.0278527638160597,0.990884586522798,7,77,"chromosome organization involved in meiotic cell cycle","BP",1
+"188","GO:0009891",0.0280021175883577,0.98061256781482,52,1147,"positive regulation of biosynthetic process","BP",1
+"189","GO:1902680",0.028104317345478,0.981315165958979,42,891,"positive regulation of RNA biosynthetic process","BP",1
+"190","GO:0048514",0.0281574566829027,0.986510001151562,14,226,"blood vessel morphogenesis","BP",1
+"191","GO:2001287",0.0286307575479803,1,1,1,"negative regulation of caveolin-mediated endocytosis","BP",1
+"192","GO:0097355",0.0287757012430826,1,1,1,"protein localization to heterochromatin","BP",1
+"193","GO:1902267",0.0288375189533823,1,1,1,"regulation of polyamine transmembrane transport","BP",1
+"194","GO:1902268",0.0288375189533823,1,1,1,"negative regulation of polyamine transmembrane transport","BP",1
+"195","GO:0060315",0.0288663079579686,0.99794927649085,2,9,"negative regulation of ryanodine-sensitive calcium-release channel activity","BP",1
+"196","GO:0010558",0.0289170734338601,0.980642415126195,43,927,"negative regulation of macromolecule biosynthetic process","BP",1
+"197","GO:0098813",0.0289318788593989,0.986540371629502,13,193,"nuclear chromosome segregation","BP",1
+"198","GO:0009237",0.0291842778573872,1,1,1,"siderophore metabolic process","BP",1
+"199","GO:0019290",0.0291842778573872,1,1,1,"siderophore biosynthetic process","BP",1
+"200","GO:0048845",0.0293320541333088,0.997898079288362,2,9,"venous blood vessel morphogenesis","BP",1
+"201","GO:0021763",0.0297414307032732,1,1,1,"subthalamic nucleus development","BP",1
+"202","GO:0035462",0.0297414307032732,1,1,1,"determination of left/right asymmetry in diencephalon","BP",1
+"203","GO:0060127",0.0297414307032732,1,1,1,"prolactin secreting cell differentiation","BP",1
+"204","GO:0060578",0.0297414307032732,1,1,1,"superior vena cava morphogenesis","BP",1
+"205","GO:0030213",0.0298389750763138,1,1,1,"hyaluronan biosynthetic process","BP",1
+"206","GO:1904787",0.0298389750763138,1,1,1,"positive regulation of asymmetric protein localization involved in cell fate determination","BP",1
+"207","GO:1905935",0.0298389750763138,1,1,1,"positive regulation of cell fate determination","BP",1
+"208","GO:0090660",0.0299937585531042,1,1,1,"cerebrospinal fluid circulation","BP",1
+"209","GO:0019395",0.0300617430044092,0.991002266728759,6,71,"fatty acid oxidation","BP",1
+"210","GO:0006544",0.0300779969447693,0.995609292334848,3,21,"glycine metabolic process","BP",1
+"211","GO:0006043",0.0300896770219441,1,1,1,"glucosamine catabolic process","BP",1
+"212","GO:0046370",0.0300896770219441,1,1,1,"fructose biosynthetic process","BP",1
+"213","GO:0070291",0.0301074211920728,0.997811841394819,2,9,"N-acylethanolamine metabolic process","BP",1
+"214","GO:0014034",0.0301596229784613,0.997805990515804,2,9,"neural crest cell fate commitment","BP",1
+"215","GO:0016260",0.0303360229225431,1,1,1,"selenocysteine biosynthetic process","BP",1
+"216","GO:0048705",0.0303608204422757,0.986818422047199,11,163,"skeletal system morphogenesis","BP",1
+"217","GO:0034612",0.0304781908668026,0.989798112727614,7,85,"response to tumor necrosis factor","BP",1
+"218","GO:0051383",0.0306428890559909,0.995570857434739,3,18,"kinetochore organization","BP",1
+"219","GO:0045638",0.0307781490545802,0.992044036344652,5,50,"negative regulation of myeloid cell differentiation","BP",1
+"220","GO:0031631",0.0310074593039635,0.997850381209137,2,7,"negative regulation of synaptic vesicle fusion to presynaptic active zone membrane","BP",1
+"221","GO:1903046",0.0312565994858954,0.984008348188839,16,259,"meiotic cell cycle process","BP",1
+"222","GO:0050843",0.0312568508935675,1,1,1,"S-adenosylmethionine catabolic process","BP",1
+"223","GO:1901054",0.0312568508935675,1,1,1,"sarcosine biosynthetic process","BP",1
+"224","GO:0007429",0.031695784714427,1,1,1,"secondary branching, open tracheal system","BP",1
+"225","GO:0007341",0.0317450073229362,1,1,1,"penetration of zona pellucida","BP",1
+"226","GO:0014028",0.0317450073229362,1,1,1,"notochord formation","BP",1
+"227","GO:0006105",0.0318909476480557,0.997608765830629,2,9,"succinate metabolic process","BP",1
+"228","GO:0006436",0.032112158708863,1,1,1,"tryptophanyl-tRNA aminoacylation","BP",1
+"229","GO:0032924",0.0322043315358235,0.997572413432567,2,9,"activin receptor signaling pathway","BP",1
+"230","GO:0001946",0.0325566447996081,0.997596620962638,2,8,"lymphangiogenesis","BP",1
+"231","GO:0036303",0.0325566447996081,0.997596620962638,2,8,"lymph vessel morphogenesis","BP",1
+"232","GO:1901738",0.0325779061603253,1,1,1,"regulation of vitamin A metabolic process","BP",1
+"233","GO:2000489",0.0325779061603253,1,1,1,"regulation of hepatic stellate cell activation","BP",1
+"234","GO:2000491",0.0325779061603253,1,1,1,"positive regulation of hepatic stellate cell activation","BP",1
+"235","GO:0006578",0.0325912447066623,0.997527258165354,2,9,"amino-acid betaine biosynthetic process","BP",1
+"236","GO:0045329",0.0325912447066623,0.997527258165354,2,9,"carnitine biosynthetic process","BP",1
+"237","GO:0021773",0.0327929322493282,1,1,1,"striatal medium spiny neuron differentiation","BP",1
+"238","GO:0034125",0.0327929322493282,1,1,1,"negative regulation of MyD88-dependent toll-like receptor signaling pathway","BP",1
+"239","GO:0045578",0.0327929322493282,1,1,1,"negative regulation of B cell differentiation","BP",1
+"240","GO:0046882",0.0327929322493282,1,1,1,"negative regulation of follicle-stimulating hormone secretion","BP",1
+"241","GO:0060935",0.0328352884587167,1,1,1,"cardiac fibroblast cell differentiation","BP",1
+"242","GO:0060936",0.0328352884587167,1,1,1,"cardiac fibroblast cell development","BP",1
+"243","GO:0060938",0.0328352884587167,1,1,1,"epicardium-derived cardiac fibroblast cell differentiation","BP",1
+"244","GO:0060939",0.0328352884587167,1,1,1,"epicardium-derived cardiac fibroblast cell development","BP",1
+"245","GO:0060940",0.0328352884587167,1,1,1,"epithelial to mesenchymal transition involved in cardiac fibroblast development","BP",1
+"246","GO:0006781",0.0329751355935547,1,1,1,"succinyl-CoA pathway","BP",1
+"247","GO:0007127",0.0330712275678273,0.987757996367584,8,100,"meiosis I","BP",1
+"248","GO:0008406",0.0331046733818871,0.982930702035011,16,269,"gonad development","BP",1
+"249","GO:0035787",0.0333854527081477,1,1,1,"cell migration involved in kidney development","BP",1
+"250","GO:0045813",0.0333854527081477,1,1,1,"positive regulation of Wnt signaling pathway, calcium modulating pathway","BP",1
+"251","GO:0006636",0.0334646626929537,0.992789603254717,4,39,"unsaturated fatty acid biosynthetic process","BP",1
+"252","GO:0034440",0.0337688017501658,0.98960456190512,6,73,"lipid oxidation","BP",1
+"253","GO:0003209",0.0338782551903738,0.994846528152161,3,20,"cardiac atrium morphogenesis","BP",1
+"254","GO:1904505",0.0338945409179965,0.997442355190666,2,8,"regulation of telomere maintenance in response to DNA damage","BP",1
+"255","GO:1904506",0.0338945409179965,0.997442355190666,2,8,"negative regulation of telomere maintenance in response to DNA damage","BP",1
+"256","GO:0060629",0.0338976029134495,1,1,1,"regulation of homologous chromosome segregation","BP",1
+"257","GO:0021858",0.0341425153318518,1,1,1,"GABAergic neuron differentiation in basal ganglia","BP",1
+"258","GO:0003252",0.0342526517631518,1,1,1,"negative regulation of cell proliferation involved in heart valve morphogenesis","BP",1
+"259","GO:0060836",0.0342526517631518,1,1,1,"lymphatic endothelial cell differentiation","BP",1
+"260","GO:0006355",0.0344505774365539,0.974687696073815,70,1622,"regulation of DNA-templated transcription","BP",1
+"261","GO:0006631",0.0345927336290239,0.982478297210329,15,262,"fatty acid metabolic process","BP",1
+"262","GO:1904026",0.0346188518391888,1,1,1,"regulation of collagen fibril organization","BP",1
+"263","GO:1904028",0.0346188518391888,1,1,1,"positive regulation of collagen fibril organization","BP",1
+"264","GO:0003031",0.0347347618406921,1,1,1,"detection of carbon dioxide","BP",1
+"265","GO:0009454",0.0347347618406921,1,1,1,"aerotaxis","BP",1
+"266","GO:1990440",0.0352306197886926,0.997211265022581,2,9,"positive regulation of transcription from RNA polymerase II promoter in response to endoplasmic reticulum stress","BP",1
+"267","GO:1903506",0.0353098512183256,0.973969071401066,71,1651,"regulation of nucleic acid-templated transcription","BP",1
+"268","GO:0061982",0.0354071202167697,0.984979146578228,10,140,"meiosis I cell cycle process","BP",1
+"269","GO:0045137",0.0356294851194774,0.981456335150054,16,272,"development of primary sexual characteristics","BP",1
+"270","GO:0060538",0.0360647240403607,0.98462182226471,10,152,"skeletal muscle organ development","BP",1
+"271","GO:2001141",0.0360998303992569,0.973353575552617,71,1653,"regulation of RNA biosynthetic process","BP",1
+"272","GO:0007549",0.0363661952289898,0.992045184578635,4,33,"dosage compensation","BP",1
+"273","GO:0140013",0.0366095897028238,0.982381812611875,13,200,"meiotic nuclear division","BP",1
+"274","GO:0006265",0.0366865694088054,0.997109326422185,2,8,"DNA topological change","BP",1
+"275","GO:0045892",0.0372747579594785,0.975632069604224,35,747,"negative regulation of DNA-templated transcription","BP",1
+"276","GO:0032223",0.0381130714636004,0.99693349641386,2,8,"negative regulation of synaptic transmission, cholinergic","BP",1
+"277","GO:1902442",0.0384696234032483,1,1,1,"regulation of ripoptosome assembly involved in necroptotic process","BP",1
+"278","GO:1902443",0.0384696234032483,1,1,1,"negative regulation of ripoptosome assembly involved in necroptotic process","BP",1
+"279","GO:0009266",0.0388197899023298,0.980048403077247,15,255,"response to temperature stimulus","BP",1
+"280","GO:0035970",0.0390460605687928,0.996662799184993,2,10,"peptidyl-threonine dephosphorylation","BP",1
+"281","GO:0007517",0.0391812594908538,0.979828954064338,15,262,"muscle organ development","BP",1
+"282","GO:1905063",0.0402145739311734,0.99650696299458,2,10,"regulation of vascular associated smooth muscle cell differentiation","BP",1
+"283","GO:0070886",0.040236516178233,0.996574866980088,2,9,"positive regulation of calcineurin-NFAT signaling cascade","BP",1
+"284","GO:0106058",0.040236516178233,0.996574866980088,2,9,"positive regulation of calcineurin-mediated signaling","BP",1
+"285","GO:0002320",0.0405122395922792,0.996538439982671,2,9,"lymphoid progenitor cell differentiation","BP",1
+"286","GO:0009063",0.0406598432766242,0.985463931226376,7,99,"amino acid catabolic process","BP",1
+"287","GO:0009952",0.040709597000176,0.978441879794745,16,281,"anterior/posterior pattern specification","BP",1
+"288","GO:0051782",0.0408959170604952,0.993268092434406,3,21,"negative regulation of cell division","BP",1
+"289","GO:1903170",0.0411472695939216,0.993179813266356,3,22,"negative regulation of calcium ion transmembrane transport","BP",1
+"290","GO:0035844",0.0413427399656741,0.996354053615711,2,10,"cloaca development","BP",1
+"291","GO:1902224",0.0413656047813408,0.996350929809609,2,10,"ketone body metabolic process","BP",1
+"292","GO:0048644",0.0425260513935422,0.9861839971464,6,72,"muscle organ morphogenesis","BP",1
+"293","GO:0051102",0.0425345598676672,1,1,1,"DNA ligation involved in DNA recombination","BP",1
+"294","GO:0006536",0.0431053924598885,0.992666291588538,3,24,"glutamate metabolic process","BP",1
+"295","GO:0003148",0.04376040752808,0.989754708270566,4,38,"outflow tract septum morphogenesis","BP",1
+"296","GO:0045907",0.0439682189921533,0.987417224440281,5,57,"positive regulation of vasoconstriction","BP",1
+"297","GO:0070071",0.0440452964188184,0.995978091259352,2,10,"proton-transporting two-sector ATPase complex assembly","BP",1
+"298","GO:1905314",0.0442757084985035,0.995945414185939,2,10,"semi-lunar valve development","BP",1
+"299","GO:1990166",0.04429021769838,1,1,1,"protein localization to site of double-strand break","BP",1
+"300","GO:1905048",0.0443670913233349,0.995932427347817,2,10,"regulation of metallopeptidase activity","BP",1
+"301","GO:0090062",0.0444928652604437,1,1,1,"regulation of trehalose metabolic process","BP",1
+"302","GO:1901143",0.0444928652604437,1,1,1,"insulin catabolic process","BP",1
+"303","GO:0003230",0.04462396448254,0.992362067121983,3,22,"cardiac atrium development","BP",1
+"304","GO:0006029",0.0446823633820353,0.985274492736764,6,77,"proteoglycan metabolic process","BP",1
+"305","GO:0007054",0.0450311636151684,1,1,1,"spindle assembly involved in male meiosis I","BP",1
+"306","GO:0016346",0.0450311636151684,1,1,1,"male meiotic chromosome movement towards spindle pole","BP",1
+"307","GO:0055047",0.0450311636151684,1,1,1,"generative cell mitosis","BP",1
+"308","GO:0060734",0.045398662783815,1,1,1,"regulation of endoplasmic reticulum stress-induced eIF2 alpha phosphorylation","BP",1
+"309","GO:0006692",0.0454237605354799,0.989176558006524,4,42,"prostanoid metabolic process","BP",1
+"310","GO:0006693",0.0454237605354799,0.989176558006524,4,42,"prostaglandin metabolic process","BP",1
+"311","GO:0031630",0.0454874430350398,0.995857231930372,2,9,"regulation of synaptic vesicle fusion to presynaptic active zone membrane","BP",1
+"312","GO:0048211",0.0455979515951899,1,1,1,"Golgi vesicle docking","BP",1
+"313","GO:0006351",0.045756727081487,0.971861842935322,25,518,"DNA-templated transcription","BP",1
+"314","GO:0097659",0.045756727081487,0.971861842935322,25,518,"nucleic acid-templated transcription","BP",1
+"315","GO:0034698",0.0461937116478686,0.991951607230233,3,23,"response to gonadotropin","BP",1
+"316","GO:0007091",0.0463025756779597,0.995852551697168,2,8,"metaphase/anaphase transition of mitotic cell cycle","BP",1
+"317","GO:0030644",0.0464330283070699,0.991863573203022,3,24,"intracellular chloride ion homeostasis","BP",1
+"318","GO:0048665",0.0469650707066075,0.988703931946497,4,41,"neuron fate specification","BP",1
+"319","GO:0034391",0.0472834020905729,0.991718204400624,3,22,"regulation of smooth muscle cell apoptotic process","BP",1
+"320","GO:0021983",0.0474695388575248,0.988543418174174,4,41,"pituitary gland development","BP",1
+"321","GO:0023019",0.0475976272342794,0.9953898059924,2,11,"signal transduction involved in regulation of gene expression","BP",1
+"322","GO:0009890",0.0484504088009299,0.966049808379643,45,1015,"negative regulation of biosynthetic process","BP",1
+"323","GO:0031327",0.0486258560941999,0.966052688347472,44,989,"negative regulation of cellular biosynthetic process","BP",1
+"324","GO:0006312",0.049055132762552,0.991245687210094,3,23,"mitotic recombination","BP",1
+"325","GO:0009437",0.0490752312004321,0.995165653011087,2,11,"carnitine metabolic process","BP",1
+"326","GO:0090594",0.0493245359578642,0.995205303428049,2,10,"inflammatory response to wounding","BP",1
+"327","GO:0007131",0.0494891107284892,0.98542068326044,5,53,"reciprocal meiotic recombination","BP",1
+"328","GO:0035825",0.0494891107284892,0.98542068326044,5,53,"homologous recombination","BP",1
+"329","GO:0000796",0.0003155452183071,0.999987551260842,4,8,"condensin complex","CC",0.25503626724453
+"330","GO:0044815",0.000873613761073887,0.99991330901946,5,20,"DNA packaging complex","CC",0.46453262253313
+"331","GO:0000793",0.00136152816896204,0.999570714035231,13,136,"condensed chromosome","CC",0.560634474356294
+"332","GO:0034399",0.00203479245267579,0.999363469960519,12,125,"nuclear periphery","CC",0.708879591358052
+"333","GO:0005739",0.00360142158619714,0.997792645317676,51,1074,"mitochondrion","CC",0.957504270667097
+"334","GO:0098687",0.00461077536010114,0.9980514054628,17,227,"chromosomal region","CC",1
+"335","GO:0016363",0.00473500250655148,0.998653181985013,9,88,"nuclear matrix","CC",1
+"336","GO:0005694",0.00643066325413936,0.996224919689089,38,695,"chromosome","CC",1
+"337","GO:0016272",0.00700418110251106,0.999807469209851,2,5,"prefoldin complex","CC",1
+"338","GO:0005667",0.00750653907533742,0.996848170010169,15,222,"transcription regulator complex","CC",1
+"339","GO:0005828",0.0141282771205853,0.998554502696157,3,13,"kinetochore microtubule","CC",1
+"340","GO:0005958",0.0150689022984325,0.999380099905262,2,5,"DNA-dependent protein kinase-DNA ligase 4 complex","CC",1
+"341","GO:0005641",0.0171957728596987,0.998079676063311,3,14,"nuclear envelope lumen","CC",1
+"342","GO:0005759",0.0220488793919387,0.988662880124208,18,337,"mitochondrial matrix","CC",1
+"343","GO:0000110",0.0231266625404276,0.998631799490129,2,7,"nucleotide-excision repair factor 1 complex","CC",1
+"344","GO:0070522",0.0241310312769239,0.998539360551104,2,7,"ERCC4-ERCC1 complex","CC",1
+"345","GO:0000800",0.0248227728028189,0.99855215604813,2,6,"lateral element","CC",1
+"346","GO:0036488",0.0270674776609096,1,1,1,"CHOP-C/EBP complex","CC",1
+"347","GO:0000775",0.029051503423225,0.988754892992772,9,116,"chromosome, centromeric region","CC",1
+"348","GO:1902712",0.0310074593039635,0.997850381209137,2,7,"G protein-coupled GABA receptor complex","CC",1
+"349","GO:0043509",0.0327929322493282,1,1,1,"activin A complex","CC",1
+"350","GO:0043511",0.0327929322493282,1,1,1,"inhibin complex","CC",1
+"351","GO:0043512",0.0327929322493282,1,1,1,"inhibin A complex","CC",1
+"352","GO:0048180",0.0327929322493282,1,1,1,"activin complex","CC",1
+"353","GO:0009361",0.0329751355935547,1,1,1,"succinate-CoA ligase complex (ADP-forming)","CC",1
+"354","GO:0098820",0.0342526517631518,1,1,1,"trans-synaptic protein complex","CC",1
+"355","GO:0070419",0.0360847020060869,0.997182368750641,2,8,"nonhomologous end joining complex","CC",1
+"356","GO:0005876",0.0389959816438215,0.989263741015825,5,50,"spindle microtubule","CC",1
+"357","GO:1904813",0.0400570296610593,0.984553908821594,8,113,"ficolin-1-rich granule lumen","CC",1
+"358","GO:1990391",0.0405718588233998,0.990793416400539,4,34,"DNA repair complex","CC",1
+"359","GO:0035631",0.0408052789258945,0.993231358074099,3,23,"CD40 receptor complex","CC",1
+"360","GO:0098802",0.0413192344061859,0.986690118212057,6,69,"plasma membrane signaling receptor complex","CC",1
+"361","GO:0032807",0.0425345598676672,1,1,1,"DNA ligase IV complex","CC",1
+"362","GO:1902710",0.0459431931096018,0.995792599971242,2,9,"GABA receptor complex","CC",1
+"363","GO:0003700",1.27484321092806e-05,0.999994753849523,37,509,"DNA-binding transcription factor activity","MF",0.142892995915142
+"364","GO:0043565",1.77493983419355e-05,0.999992976861272,33,442,"sequence-specific DNA binding","MF",0.142892995915142
+"365","GO:0003677",3.69379987118433e-05,0.999982014465965,49,780,"DNA binding","MF",0.142892995915142
+"366","GO:0000981",4.42976422079349e-05,0.999981861264969,32,441,"DNA-binding transcription factor activity, RNA polymerase II-specific","MF",0.142892995915142
+"367","GO:0016645",4.60800456548418e-05,0.999995555868947,7,30,"oxidoreductase activity, acting on the CH-NH group of donors","MF",0.142892995915142
+"368","GO:0003690",0.000100801516998954,0.999957397334561,31,441,"double-stranded DNA binding","MF",0.163954747079409
+"369","GO:0005542",0.000113598260868639,0.999996325995873,4,9,"folic acid binding","MF",0.163954747079409
+"370","GO:0046997",0.000198199542948876,0.999998118043558,3,4,"oxidoreductase activity, acting on the CH-NH group of donors, flavin as acceptor","MF",0.222489998045832
+"371","GO:0000976",0.000229388150091477,0.999910167898702,24,321,"transcription cis-regulatory region binding","MF",0.227896849222094
+"372","GO:0140110",0.00038584564351769,0.999801276111858,42,710,"transcription regulator activity","MF",0.299861425881479
+"373","GO:0001228",0.00045183210295582,0.999853191572733,16,189,"DNA-binding transcription activator activity, RNA polymerase II-specific","MF",0.33196375583211
+"374","GO:0000977",0.000460011143388057,0.999818880957408,22,298,"RNA polymerase II transcription regulatory region sequence-specific DNA binding","MF",0.33196375583211
+"375","GO:0016491",0.000659326144546615,0.999683355002344,32,528,"oxidoreductase activity","MF",0.403707396263906
+"376","GO:1990837",0.000920244421416096,0.999600889178169,24,353,"sequence-specific double-stranded DNA binding","MF",0.47678099433676
+"377","GO:0001227",0.00101606609088182,0.999748007394016,10,95,"DNA-binding transcription repressor activity, RNA polymerase II-specific","MF",0.506030842535361
+"378","GO:0008480",0.00107687450405922,1,2,2,"sarcosine dehydrogenase activity","MF",0.506030842535361
+"379","GO:0016628",0.00170952933292022,0.999792672525581,5,27,"oxidoreductase activity, acting on the CH-CH group of donors, NAD or NADP as acceptor","MF",0.639680550018258
+"380","GO:0004753",0.0017574469475465,0.99992675639525,3,8,"saccharopine dehydrogenase activity","MF",0.645654054947721
+"381","GO:0046982",0.00199195016350287,0.999117947239871,22,327,"protein heterodimerization activity","MF",0.706128859714718
+"382","GO:0016646",0.00208897908793212,0.999817181230448,4,17,"oxidoreductase activity, acting on the CH-NH group of donors, NAD or NADP as acceptor","MF",0.715422227978921
+"383","GO:0001067",0.00241073501847766,0.99887315940222,24,378,"transcription regulatory region nucleic acid binding","MF",0.749469720028171
+"384","GO:0016838",0.00249876101338965,0.999975320011823,2,3,"carbon-oxygen lyase activity, acting on phosphates","MF",0.749469720028171
+"385","GO:0016627",0.00285799955860814,0.999404735950303,7,58,"oxidoreductase activity, acting on the CH-CH group of donors","MF",0.802065820572723
+"386","GO:0019842",0.00440469940427454,0.999003257793941,7,62,"vitamin binding","MF",1
+"387","GO:0003697",0.00597610623733478,0.998233022842257,9,93,"single-stranded DNA binding","MF",1
+"388","GO:0008453",0.00612649124471953,0.999864419311496,2,4,"alanine-glyoxylate transaminase activity","MF",1
+"389","GO:0031996",0.00881967970680042,0.998767115044862,4,26,"thioesterase binding","MF",1
+"390","GO:0008336",0.0096630376715566,0.999685681757304,2,5,"gamma-butyrobetaine dioxygenase activity","MF",1
+"391","GO:0000987",0.0102015290181468,0.995709661131546,14,205,"cis-regulatory region sequence-specific DNA binding","MF",1
+"392","GO:0003988",0.0104866372161645,0.999643902570361,2,5,"acetyl-CoA C-acyltransferase activity","MF",1
+"393","GO:0005164",0.0134976708242966,0.99784673786506,4,28,"tumor necrosis factor receptor binding","MF",1
+"394","GO:0004796",0.0171960452293682,0.998021739249507,3,17,"thromboxane-A synthase activity","MF",1
+"395","GO:0036134",0.0171960452293682,0.998021739249507,3,17,"12-hydroxyheptadecatrienoic acid synthase activity","MF",1
+"396","GO:0000978",0.0176363797578835,0.992323747530884,13,198,"RNA polymerase II cis-regulatory region sequence-specific DNA binding","MF",1
+"397","GO:0003682",0.018581453365313,0.99010807173482,21,350,"chromatin binding","MF",1
+"398","GO:0004754",0.0186777308304666,0.999014411616733,2,7,"saccharopine dehydrogenase (NAD+, L-lysine-forming) activity","MF",1
+"399","GO:0003676",0.0188352400425598,0.986940503788248,60,1340,"nucleic acid binding","MF",1
+"400","GO:0004722",0.02447009618931,0.994049367054863,5,49,"protein serine/threonine phosphatase activity","MF",1
+"401","GO:0004029",0.0265918444293572,0.998240803266373,2,8,"aldehyde dehydrogenase (NAD+) activity","MF",1
+"402","GO:0050113",0.0273956020855889,1,1,1,"inositol oxygenase activity","MF",1
+"403","GO:0008073",0.0288375189533823,1,1,1,"ornithine decarboxylase inhibitor activity","MF",1
+"404","GO:0042979",0.0288375189533823,1,1,1,"ornithine decarboxylase regulator activity","MF",1
+"405","GO:0035259",0.029046449687623,0.997984509197219,2,8,"nuclear glucocorticoid receptor binding","MF",1
+"406","GO:0003858",0.0291842778573872,1,1,1,"3-hydroxybutyrate dehydrogenase activity","MF",1
+"407","GO:0031750",0.0294850042740261,1,1,1,"D3 dopamine receptor binding","MF",1
+"408","GO:0031751",0.0294850042740261,1,1,1,"D4 dopamine receptor binding","MF",1
+"409","GO:0017065",0.0296235780708557,1,1,1,"single-strand selective uracil DNA N-glycosylase activity","MF",1
+"410","GO:0004342",0.0300896770219441,1,1,1,"glucosamine-6-phosphate deaminase activity","MF",1
+"411","GO:0017077",0.0302984145258413,1,1,1,"oxidative phosphorylation uncoupler activity","MF",1
+"412","GO:0004756",0.0303360229225431,1,1,1,"selenide, water dikinase activity","MF",1
+"413","GO:0016781",0.0303360229225431,1,1,1,"phosphotransferase activity, paired acceptors","MF",1
+"414","GO:0004965",0.0310074593039635,0.997850381209137,2,7,"G protein-coupled GABA receptor activity","MF",1
+"415","GO:0004830",0.032112158708863,1,1,1,"tryptophan-tRNA ligase activity","MF",1
+"416","GO:0016860",0.032351966369495,0.991485957867531,5,55,"intramolecular oxidoreductase activity","MF",1
+"417","GO:0003846",0.0325779061603253,1,1,1,"2-acylglycerol O-acyltransferase activity","MF",1
+"418","GO:0004144",0.0325779061603253,1,1,1,"diacylglycerol O-acyltransferase activity","MF",1
+"419","GO:0070699",0.0327929322493282,1,1,1,"type II activin receptor binding","MF",1
+"420","GO:0004569",0.0329473203786459,1,1,1,"glycoprotein endo-alpha-1,2-mannosidase activity","MF",1
+"421","GO:0050459",0.0330443683180494,1,1,1,"ethanolamine-phosphate phospho-lyase activity","MF",1
+"422","GO:0004043",0.0335742259617662,1,1,1,"L-aminoadipate-semialdehyde dehydrogenase activity","MF",1
+"423","GO:0008802",0.0335742259617662,1,1,1,"betaine-aldehyde dehydrogenase activity","MF",1
+"424","GO:0004742",0.0337087979577567,1,1,1,"dihydrolipoyllysine-residue acetyltransferase activity","MF",1
+"425","GO:0016418",0.0337087979577567,1,1,1,"S-acetyltransferase activity","MF",1
+"426","GO:0051880",0.0337595769565414,0.997548509924176,2,7,"G-quadruplex DNA binding","MF",1
+"427","GO:0003912",0.03404686549713,1,1,1,"DNA nucleotidylexotransferase activity","MF",1
+"428","GO:0016362",0.0342526517631518,1,1,1,"activin receptor activity, type II","MF",1
+"429","GO:0005223",0.0347347618406921,1,1,1,"intracellular cGMP-activated cation channel activity","MF",1
+"430","GO:0004634",0.0350177923546378,1,1,1,"phosphopyruvate hydratase activity","MF",1
+"431","GO:0016835",0.0358777226200959,0.990271655665158,5,58,"carbon-oxygen lyase activity","MF",1
+"432","GO:0008327",0.03660983234128,0.997040705919628,2,9,"methyl-CpG binding","MF",1
+"433","GO:0008488",0.0370739215944075,1,1,1,"gamma-glutamyl carboxylase activity","MF",1
+"434","GO:0019903",0.0397101385873189,0.984746451224239,8,105,"protein phosphatase binding","MF",1
+"435","GO:0032813",0.0415546105373037,0.990429955159059,4,38,"tumor necrosis factor receptor superfamily binding","MF",1
+"436","GO:0016155",0.0427022857449546,1,1,1,"formyltetrahydrofolate dehydrogenase activity","MF",1
+"437","GO:0047130",0.0432076534095466,1,1,1,"saccharopine dehydrogenase (NADP+, L-lysine-forming) activity","MF",1
+"438","GO:0047131",0.0432076534095466,1,1,1,"saccharopine dehydrogenase (NAD+, L-glutamate-forming) activity","MF",1
+"439","GO:0016701",0.044132665514984,0.992479292072772,3,22,"oxidoreductase activity, acting on single donors with incorporation of molecular oxygen","MF",1
+"440","GO:0031626",0.0444928652604437,1,1,1,"beta-endorphin binding","MF",1
+"441","GO:0070463",0.0450311636151684,1,1,1,"tubulin-dependent ATPase activity","MF",1
+"442","GO:0035035",0.0460205870409628,0.992025885721343,3,22,"histone acetyltransferase binding","MF",1
+"443","GO:0072341",0.0476252306653308,0.986050078371049,5,59,"modified amino acid binding","MF",1
+"444","GO:0004622",0.0483586773088542,0.991359115174352,3,25,"lysophospholipase activity","MF",1
+"445","GO:0008179",0.0486942882254715,0.995300179153015,2,10,"adenylate cyclase binding","MF",1
+"446","GO:0044106",0.000236852114899731,0.99995198297355,10,77,NA,NA,0.227896849222094
+"447","GO:0001012",0.000511186872557992,0.999797076737803,22,300,NA,NA,0.356173860238165
+"448","GO:0001158",0.000589096986997261,0.999892474021711,8,60,NA,NA,0.383977216750537
+"449","GO:0001078",0.00115204100430195,0.999798267703053,7,49,NA,NA,0.529048648475574
+"450","GO:0035326",0.00131268918863162,0.999726413614364,8,67,NA,NA,0.560634474356294
+"451","GO:0000982",0.00132890774755223,0.999538660497004,15,188,NA,NA,0.560634474356294
+"452","GO:0044212",0.00223431158232974,0.998961926093845,24,376,NA,NA,0.742510326058015
+"453","GO:0055114",0.00266371285129962,0.998531702099548,37,688,NA,NA,0.768899741048001
+"454","GO:0044427",0.00355137444896372,0.998060422568229,34,581,NA,NA,0.956787628210147
+"455","GO:0000980",0.00505530602615122,0.998992843081814,6,50,NA,NA,1
+"456","GO:0003705",0.00506957838334663,0.998667744510835,8,83,NA,NA,1
+"457","GO:0000726",0.00568866062968923,0.998655751329732,7,58,NA,NA,1
+"458","GO:0017144",0.00626855984045102,0.99665054543122,28,506,NA,NA,1
+"459","GO:0001077",0.00818508449678458,0.997075462726227,11,146,NA,NA,1
+"460","GO:0042737",0.0134283941181137,0.995801320002665,8,94,NA,NA,1
+"461","GO:0001206",0.025443594019527,0.998311312595966,2,9,NA,NA,1
+"462","GO:0045072",0.0327929322493282,1,1,1,NA,NA,1
+"463","GO:0045077",0.0327929322493282,1,1,1,NA,NA,1
+"464","GO:0006295",0.034127233806096,0.997415169711191,2,8,NA,NA,1
+"465","GO:0009109",0.0361922875890409,0.997032339108434,2,10,NA,NA,1
+"466","GO:0008022",0.0428053068415064,0.981229402713433,10,146,NA,NA,1

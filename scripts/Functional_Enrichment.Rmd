@@ -28,6 +28,7 @@ library("clusterProfiler")
 library("DataCombine")
 library("VennDiagram")
 library(rtracklayer)
+library(ggridges)
 #library(rrvgo)
 library(GO.db)
 library(tidyr)
@@ -36,6 +37,7 @@ library(wesanderson)
 library(GSEABase)
 library(directlabels)
 library(ggrepel)
+library(DOSE)
 
 #devtools::install_github("krlmlr/ulimit")
 #library(ulimit)
@@ -43,7 +45,7 @@ library(ggrepel)
 #ulimit::memory_limit(7970592)
 ```
 
-Read in all expressed genes (poverA = 0.75, 5)
+Read in all expressed genes
 ```{r}
 filt_counts <- read.csv("../output/DEG/filtered_counts.csv")
 colnames(filt_counts)[1] <- "gene_id"
@@ -84,88 +86,111 @@ length_merge <- merge(length, filt_counts, by = "gene_id")
 str(length_merge)
 ```
 
-GOseq requires a vector of all genes, all differentially expressed genes, and gene lengths. Make vectors 
+Read in annotation file 
 ```{r}
-# Make DEG vector
-DEG <- length_merge[length_merge$gene_id %in% degs$gene_id, ]
-DEG_names <- as.vector(DEG$gene_id)
-gene_vector <- as.integer(length_merge$gene_id%in%DEG_names)
-names(gene_vector) <- length_merge$gene_id
+annot <- read.delim("../Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T) %>%
+    rename(gene_id = X.query)
 
-# Make ID vector
-ID_vector <- as.vector(length_merge$gene_id)
-
-# Make length vector
-length_vector <- as.numeric(length_merge$length)
+names(annot)
 ```
 
-Calculate probability weighting function 
-```{r}
-DEG.pwf <- nullp(gene_vector, ID_vector, bias.data = length_vector)
+This functional annotation has 16,784 genes. There are 33,370 predicted protein-coding genes in the Pacuta genome, according to [Stephens et al. 2022](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755). Therefore, the annotated protein coding genes represent approximately 50% of the total predicted protein coding genes described in the publication. 
 
-str(DEG.pwf)
+Match up genes in filtered gene count list to annotation file
+```{r}
+probes <- filt_counts$gene_id
+
+# Match genes in filtered count data to genes in annotation file 
+probes2annot <- match(probes, annot$gene_id)
+
+# The following is the number of probes without annotation
+sum(is.na(probes2annot))
+row_nas<-which(is.na(probes2annot))
+
+# View expressed genes that do not have a match in the annotation file 
+missing<-as.data.frame(probes[row_nas])
 ```
 
-Code above giving me this warning: Warning: initial point very close to some inequality constraintsWarning: collapsing to unique 'x' values
+There are 9,887 genes that were expressed in our data that are not present in the annotation file. That is ~41% of the total genes expressed. 
 
-Read in GO annotation information
+Reduce annotation file to only contain genes detected in our dataset
 ```{r}
-annot <- read.delim("../Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T)
+filtered_annot <- annot[annot$gene_id %in% probes, ]
+dim(filtered_annot)
 ```
 
-This annot file has GO, Kegg, eggNog and Pfam annotation information. I'm going to start analyzing the GO terms first.
+The annotation file now only contains genes that were detected in our dataset that have annotation information. This is 14298 genes out of the 24185 expressed genes in our dataset. 
 
-Select GO columns and split so that there is only one GO term per row
+Add in length to the annotation file 
 ```{r}
-annot_GO <- annot %>%
-  dplyr::select(X.query, GOs) %>%
+filtered_annot <- filtered_annot %>%
+  inner_join(length, by = "gene_id")
+
+which(is.na(filtered_annot$length)) #all genes have lengths 
+```
+
+All genes have length information. 
+
+Format GO terms to remove 
+```{r}
+filtered_annot_go <- filtered_annot %>%
+  dplyr::select(gene_id, GOs) %>%
   mutate_all(~if_else(. == "-", NA_character_, .)) %>%
-  separate_rows(GOs, sep = ",") %>%
-  rename(gene_id = X.query,
-         GO.ID = GOs)
+  separate_rows(GOs, sep = ",")
 
 # Remove leading and trailing whitespaces
-annot_GO$GO.ID <- trimws(annot_GO$GO.ID)
+filtered_annot_go$GOs <- trimws(filtered_annot_go$GOs)
 
-# Replace NAs with unknown
-annot_GO$GO.ID <- replace_na(annot_GO$GO.ID, "unknown")
+sum(is.na(filtered_annot_go$GOs)) # some genes have NAs 
 
-# Set gene and go ids as factors 
-annot_GO$gene_id <- as.factor(annot_GO$gene_id)
-annot_GO$GO.ID <- as.factor(annot_GO$GO.ID)
-
-# Select only unique rows
-annot_GO <- unique(annot_GO)
-
-# Look at unique gene and go ids 
-length(unique(annot_GO$gene_id))
-length(unique(annot_GO$GO.ID))
-
-# Remove rows with unknowns
-# annot_GO <- annot_GO %>%
-#   filter(GO.ID != "unknown")
+# Convert filtered_annot_go from tibble to df 
+filtered_annot_go <-as.data.frame(filtered_annot_go)
 ```
 
-Remove the annotation information for genes not present in our data 
+GOseq requires a vector of all expressed genes, all differentially expressed genes, and gene lengths. Make vectors 
 ```{r}
-filt_annot_GO <- subset(annot_GO, gene_id %in% filt_counts$gene_id)
+# Generate vector with names of all expressed genes detected in our dataset 
+ALL.vector <- c(filtered_annot$gene_id)
 
-str(filt_annot_GO)
+# Generate length vector with names of all expressed genes detected in our dataset 
+LENGTH.vector <- as.integer(filtered_annot$length)
 
-# Convert filt_annot_GO from tibble to df 
-filt_annot_GO <-as.data.frame(filt_annot_GO)
+# Generate DEG vector 
+DEG.vector <- c(degs$gene_id)
+
+# Construct list of genes with 1 for genes in contrast and 0 for genes not in the contrast
+gene.vector=as.integer(ALL.vector %in% DEG.vector) 
+names(gene.vector)<-ALL.vector#set names
 ```
 
-
-Perform GOSeq
+Calculate probability weighting function. Ie weight gene vector by bias for length of gene: load in the gene.vector(a list of all genes with 1 indicating it is a DEG in the group of interest and 0 meaning it is not a DEG) and bias.data (list of lengths for all genes)
 ```{r}
-GO.wall<-goseq::goseq(DEG.pwf, ID_vector, gene2cat=filt_annot_GO, method="Wallenius", use_genes_without_cat=T)
+pwf <- nullp(gene.vector, bias.data = LENGTH.vector)
+```
+
+Run goseq using Wallenius method for all categories of GO terms: load in the pwf object (gene name, a 1 or 0 to indicate DEG, the length, and the pwf function; generated from pwf above), and the list of GO terms for all genes
+```{r}
+GO.wall<-goseq(pwf, gene2cat=filtered_annot_go, method="Wallenius", use_genes_without_cat=TRUE)
 
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+
 write.csv(GO, file = "../output/functional_enrichment/GOSeq_GO_all.csv")
 ```
 
-Worked! 
+Adjust pvalues for multiple hypotheses testing 
+```{r}
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method = "BH")
+```
+
+Filter by significantly enriched GO terms (adjusted p < 0.05)
+```{r}
+GO_05_bh <- GO %>%
+  dplyr::filter(bh_adjust<0.05) %>%
+  dplyr::arrange(., ontology, over_represented_pvalue)
+```
+
+When filtering by the adjusted pvalue, no GO terms are significantly enriched. 
 
 Filter by significantly enriched GO terms (p < 0.05)
 ```{r}
@@ -296,10 +321,10 @@ ggsave("../output/functional_enrichment/GOSeq_GO_05_MF.png", GO_05_plot_MF, widt
 
 Merge significant GO terms and annot list together 
 ```{r}
-GO_genes <- annot_GO %>%
-  inner_join(GO_05, by = c("GO.ID" = "category"))
+GO_genes <- filtered_annot_go %>%
+  inner_join(GO_05, by = c("GOs" = "GOterm"))
 
-length(unique(GO_genes$gene_id)) # 3786 genes with over-represented GO terms 
+length(unique(GO_genes$gene_id)) # 5931 genes with over-represented GO terms 
 ```
 
 Read in DEGs and merge that data with significant GO terms 
@@ -412,6 +437,275 @@ ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", 
 ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
 ```
 
+
+```{r}
+# Calculate the number of upregulated and downregulated genes for each term
+GO_h_v_c <- GO_h_v_c %>%
+  mutate(
+    upregulated = ifelse(log2FoldChange > 0, 1, 0),
+    downregulated = ifelse(log2FoldChange < 0, 1, 0)
+  )
+
+# Summarize the data to get the proportions
+GO_summary <- GO_h_v_c %>%
+  group_by(term, numDEInCat) %>%
+  summarize(
+    num_upregulated = sum(upregulated),
+    num_downregulated = sum(downregulated)
+  )
+
+# Calculate proportions
+GO_summary <- GO_summary %>%
+  mutate(
+    prop_upregulated = num_upregulated / numDEInCat,
+    prop_downregulated = num_downregulated / numDEInCat
+  )
+
+# Melt the data frame for plotting
+library(reshape2)
+GO_summary_melted <- melt(GO_summary, id.vars = c("term", "numDEInCat"), measure.vars = c("prop_upregulated", "prop_downregulated"))
+
+test<-ggplot(GO_summary_melted, aes(x = numDEInCat, y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "fill", width = 0.7) +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Proportion of Upregulated vs Downregulated Genes for Each GO Term",
+    x = "Number of DE Genes",
+    y = "Proportion",
+    fill = "Regulation Type"
+  ) +
+  theme(axis.text.y = element_text(size = 10)) +
+  scale_fill_manual(values = c("prop_upregulated" = "blue", "prop_downregulated" = "red"))
+
+ggsave("../output/functional_enrichment/test.pdf", test, width = 50, height = 30, limitsize = F)
+
+```
+
+bleh need to come back to this...aka making a stacked bar chart like this: https://www.researchgate.net/publication/227340630_Transcriptomic_analysis_of_the_stress_response_to_weaning_at_housing_in_bovine_leukocytes_using_RNA-seq_technology/figures?lo=1 
+
+
+
+
+
+
+
+
+```{r}
+
+# Filter out rows without log2FoldChange
+GO_h_v_c <- GO_h_v_c %>%
+  filter(!is.na(log2FoldChange))
+
+GO_h_v_c_ordered <- GO_h_v_c %>%
+  arrange(term)
+
+# Create a summary dataframe with the maximum absolute log2FoldChange for each GO term
+GO_h_v_c_max <- GO_h_v_c_ordered %>%
+  group_by(term, ontology) %>%
+  mutate(max_abs_log2FoldChange = max(abs(log2FoldChange)), .groups = 'drop') %>%
+  mutate(max_log2FoldChange = ifelse(any(log2FoldChange == max_abs_log2FoldChange), 
+                                     max_abs_log2FoldChange, 
+                                     -max_abs_log2FoldChange))
+
+# Merge with the original dataframe to ensure consistent ordering of terms
+GO_h_v_c_ordered <- GO_h_v_c_ordered %>%
+  inner_join(GO_h_v_c_max %>% 
+  dplyr::select(term, ontology, max_log2FoldChange), by = c("term", "ontology"))
+
+# Create the plot
+blah <- ggplot() +
+  # Plot bars for the maximum absolute log2FoldChange
+  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = reorder(term, ontology), fill = ontology), width = 0.1, alpha = 0.7) +
+  # Plot points for all log2FoldChange values
+  geom_point(data = GO_h_v_c_ordered, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), color = "black", shape = 21, fill = "white") +
+  theme_minimal() +
+  labs(
+    title = "GO Terms Log2 Fold Change Plot",
+    x = "Log2 Fold Change",
+    y = "GO Term",
+    fill = "Ontology",
+    size = "P-value (-log10)"
+  ) +
+  theme(axis.text.y = element_text(size = 10))
+ggsave("../output/functional_enrichment/blah.pdf", blah, width = 50, height = 30, limitsize = F)
+
+
+
+
+
+
+
+
+# Create a summary dataframe with the maximum log2FoldChange for each GO term
+GO_h_v_c_max <- GO_h_v_c %>%
+  dplyr::filter(ontology == "BP") %>%
+  group_by(term) %>%
+  summarize(max_log2FoldChange = max(log2FoldChange), .groups = 'drop')
+
+
+
+
+blah1 <- ggplot() +
+  # Plot bars for the maximum log2FoldChange
+  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = term), width = 0.1, alpha = 0.7) +
+  # Plot points for all log2FoldChange values
+  geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
+  theme_minimal() +
+  labs(
+    title = "GO Terms Log2 Fold Change Plot",
+    x = "Log2 Fold Change",
+    y = "GO Term",
+    fill = "Ontology",
+    size = "P-value (-log10)"
+  ) +
+  theme(axis.text.y = element_text(size = 10))
+
+
+blah2 <- GO_h_v_c %>%
+  dplyr::filter(ontology == "BP") %>%
+  #top_n(50, wt=padj) %>% 
+ggplot(aes(x = log2FoldChange, y = term)) +
+  geom_col(width = 0.1, alpha = 0.7) +
+  #geom_point(aes(size = -log10(over_represented_pvalue)), shape = 21) +
+    geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
+  theme_minimal() +
+  labs(
+    title = "GO Terms Log2 Fold Change Plot",
+    x = "Log2 Fold Change",
+    y = "GO Term",
+    fill = "Ontology",
+    size = "P-value (-log10)"
+  ) +
+  theme(axis.text.y = element_text(size = 10))
+
+ggsave("../output/functional_enrichment/test1.pdf", blah1, width = 50, height = 30, limitsize = F)
+
+ggsave("../output/functional_enrichment/test2.pdf", blah2, width = 50, height = 30, limitsize = F)
+
+
+```
+
+Take a subset so I can mess with the code 
+```{r}
+sub <- GO_h_v_c[c(1:25,3150:3192),]
+
+# Create a summary dataframe with the maximum log2FoldChange for each GO term
+sub_max <- sub %>%
+  #dplyr::filter(ontology == "BP") %>%
+  group_by(term, ontology) %>%
+  summarize(max_log2FoldChange = max(log2FoldChange), .groups = 'drop') # only one gene lol 
+
+blah1 <- ggplot() +
+  # Plot bars for the maximum log2FoldChange
+  geom_col(data = sub_max, aes(x = max_log2FoldChange, y = term), width = 0.1, alpha = 0.7) +
+  # Plot points for all log2FoldChange values
+  geom_point(data = sub, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
+  theme_minimal() +
+  labs(
+    title = "GO Terms Log2 Fold Change Plot",
+    x = "Log2 Fold Change",
+    y = "GO Term",
+    fill = "Ontology",
+    size = "P-value (-log10)"
+  ) +
+  theme(axis.text.y = element_text(size = 10))
+
+ggsave("../output/functional_enrichment/test1_sub.pdf", blah1, width = 50, height = 30, limitsize = F)
+
+
+```
+
+
+```{r}
+# Sample data
+GO_h_v_c <- data.frame(
+  gene_id = rep("Pocillopora_acuta_HIv2___RNAseq.g8481.t1", 6),
+  baseMean = rep(65.34058, 6),
+  log2FoldChange = c(-8.822176, 5.5, -6.3, 7.1, -4.8, 6.7),
+  lfcSE = rep(2.599817, 6),
+  stat = rep(-3.393384, 6),
+  pvalue = rep(0.0006903489, 6),
+  padj = rep(0.03204127, 6),
+  over_represented_pvalue = c(9.497092e-03, 2.293882e-04, 4.600111e-04, 4.429764e-05, 2.410735e-03, 1.016066e-03),
+  term = c("negative regulation of transcription by RNA polymerase II", 
+           "transcription cis-regulatory region binding", 
+           "RNA polymerase II transcription regulatory region sequence-specific DNA binding", 
+           "DNA-binding transcription factor activity, RNA polymerase II-specific", 
+           "transcription regulatory region nucleic acid binding", 
+           "DNA-binding transcription repressor activity, RNA polymerase II-specific"),
+  ontology = c("BP", "MF", "MF", "MF", "MF", "MF")
+)
+
+# Filter out rows without log2FoldChange
+GO_h_v_c <- GO_h_v_c %>%
+  filter(!is.na(log2FoldChange))
+
+# Create a summary dataframe with the maximum absolute log2FoldChange for each GO term
+GO_h_v_c_max <- GO_h_v_c %>%
+  group_by(term, ontology) %>%
+  summarize(max_abs_log2FoldChange = max(abs(log2FoldChange)), .groups = 'drop') %>%
+  mutate(max_log2FoldChange = ifelse(any(log2FoldChange == max_abs_log2FoldChange), 
+                                     max_abs_log2FoldChange, 
+                                     -max_abs_log2FoldChange))
+
+# Merge with the original dataframe to ensure consistent ordering of terms
+GO_h_v_c <- GO_h_v_c %>%
+  inner_join(GO_h_v_c_max %>% select(term, ontology, max_log2FoldChange), by = c("term", "ontology"))
+
+# Create the plot
+ggplot() +
+  # Plot bars for the maximum absolute log2FoldChange
+  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = reorder(term, ontology), fill = ontology), width = 0.1, alpha = 0.7) +
+  # Plot points for all log2FoldChange values
+  geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), color = "black", shape = 21, fill = "white") +
+  theme_minimal() +
+  labs(
+    title = "GO Terms Log2 Fold Change Plot",
+    x = "Log2 Fold Change",
+    y = "GO Term",
+    fill = "Ontology",
+    size = "P-value (-log10)"
+  ) +
+  theme(axis.text.y = element_text(size = 10))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Visualize so that number of genes is on the x-axis, GO term is on the y-axis, p-value is the size and L2F is the color. 
+```{r}
+test <- GO_h_v_c %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "BP") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    #top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=log2FoldChange, 
+               size=over_represented_pvalue)) +
+        geom_point() +
+        expand_limits(x=0) #+
+        #labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); test
+test
+```
+
+
+
+
+
+
 Mid v Control. Positive LFC means that the genes are upregulated in the mid treatment. Mid v Control only shares 1 gene with GO terms and all GO terms are BP. 
 ```{r}
 GO_BP_Mid_v_Control <- GO_m_v_c %>% 
@@ -522,13 +816,18 @@ isect$`A:B`
 ```
 
 Filter the GO dfs so that we only have the shared genes. 
-
 ```{r}
+# High v control
 GO_h_v_c_filt <- GO_h_v_c %>%
   dplyr::filter(gene_id %in% isect$`A:B`)
+GO_h_v_c_filt <- GO_h_v_c_filt[order(GO_h_v_c_filt$log2FoldChange),] # order from least to greatest 
+unique(GO_h_v_c_filt$gene_id)
 
+# High v mid 
 GO_h_v_m_filt <- GO_h_v_m %>%
   dplyr::filter(gene_id %in% isect$`A:B`)
+GO_h_v_m_filt <- GO_h_v_m_filt[order(GO_h_v_m_filt$log2FoldChange),] # order from least to greatest 
+unique(GO_h_v_m_filt$gene_id)
 
 # Check to see if gene_id columns are identical
 identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not 
@@ -536,29 +835,71 @@ identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not
 
 *NOTE*: the genes below are only those that are shared between h v c and h v m comparisons 
 
+Read in DEGs and filter by them 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Plot GO terms of shared genes 
+```{r}
+blah <- GO_h_v_c_filt %>% 
+    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
+    dplyr::filter(ontology == "MF") %>%
+    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
+    #top_n(50, wt=over_represented_pvalue) %>% 
+    ggplot(aes(x=numDEInCat, 
+               y=term, 
+               colour=log2FoldChange, 
+               size=over_represented_pvalue)) +
+        geom_point() +
+        expand_limits(x=0) +
+        labs(x="Number of DEGs", y="GO term", colour="LFC", size="overrepresented pvalue"); blah
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 The top 5 genes that are most DOWNregulated in the high treatment compared to the control treatment are:
 
 - Pocillopora_acuta_HIv2___RNAseq.g8481.t1 (LFC -8.8221765)
 - Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -8.446681)
 - Pocillopora_acuta_HIv2___RNAseq.22237_t (LFC -7.667258)
+- Pocillopora_acuta_HIv2___RNAseq.g11960.t1 (LFC -6.917192)
 - Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.6686604)
-- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.1565947)
 
 The top 5 genes that are most DOWNregulated in the high treatment compared to the mid treatment are:
 
 - Pocillopora_acuta_HIv2___RNAseq.g8481.t1 (LFC -8.396540)
 - Pocillopora_acuta_HIv2___RNAseq.g12512.t1 (LFC -7.753341)
 - Pocillopora_acuta_HIv2___RNAseq.22237_t (LFC -7.162973)
+- Pocillopora_acuta_HIv2___RNAseq.g11960.t1 (LFC -6.860989)
 - Pocillopora_acuta_HIv2___RNAseq.g24121.t1 (LFC -5.554880)
-- Pocillopora_acuta_HIv2___RNAseq.g13974.t1 (LFC -4.392526)
 
 The top 5 genes that are most UPregulated in the high treatment compared to the control treatment are:
 
 - Pocillopora_acuta_HIv2___RNAseq.g22884.t1 (LFC 4.549559)
 - Pocillopora_acuta_HIv2___TS.g23786.t1 (LFC 3.653126)
+- Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 3.505418)
 - Pocillopora_acuta_HIv2___RNAseq.3335_t (LFC 3.001841)
 - Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 2.848650)
-- Pocillopora_acuta_HIv2___RNAseq.g19484.t2 (LFC 2.744931)
 
 The top 5 genes that are most UPregulated in the high treatment compared to the mid treatment are:
 
@@ -568,9 +909,9 @@ The top 5 genes that are most UPregulated in the high treatment compared to the 
 - Pocillopora_acuta_HIv2___RNAseq.g19477.t1 (LFC 3.373083)
 - Pocillopora_acuta_HIv2___TS.g26760.t1 (LFC 2.893989)
 
-Compared to mid and control corals, high corals strongly downregulated `Pocillopora_acuta_HIv2___RNAseq.g8481.t1`, `Pocillopora_acuta_HIv2___RNAseq.g12512.t1`, `Pocillopora_acuta_HIv2___RNAseq.22237_t`, `Pocillopora_acuta_HIv2___RNAseq.g24121.t1`, and `Pocillopora_acuta_HIv2___RNAseq.g13974.t1`. 
+Compared to mid and control corals, high corals strongly downregulated `Pocillopora_acuta_HIv2___RNAseq.g8481.t1`, `Pocillopora_acuta_HIv2___RNAseq.g12512.t1`, `Pocillopora_acuta_HIv2___RNAseq.22237_t`, `Pocillopora_acuta_HIv2___RNAseq.g11960.t1`, and `Pocillopora_acuta_HIv2___RNAseq.g24121.t1`.
 
-Compared to mid and control corals, high corals strongly upregulated `Pocillopora_acuta_HIv2___RNAseq.g22884.t1`, `Pocillopora_acuta_HIv2___TS.g23786.t1`, `Pocillopora_acuta_HIv2___RNAseq.g19477.t1`, and `Pocillopora_acuta_HIv2___RNAseq.3335_t`.
+Compared to mid and control corals, high corals strongly upregulated `Pocillopora_acuta_HIv2___RNAseq.g22884.t1`, `Pocillopora_acuta_HIv2___TS.g23786.t1`, `Pocillopora_acuta_HIv2___RNAseq.g19477.t1`, `Pocillopora_acuta_HIv2___RNAseq.3335_t`, and `Pocillopora_acuta_HIv2___TS.g26760.t1`. 
 
 Given these genes have the greatest LFC in the comparisons, I think we should investigate them further. 
 
@@ -581,7 +922,7 @@ deg_go <- read.csv("../output/functional_enrichment/DEG_GO.csv")
 
 Filter by downregulated genes of interest 
 ```{r}
-down <- c("Pocillopora_acuta_HIv2___RNAseq.g8481.t1", "Pocillopora_acuta_HIv2___RNAseq.g12512.t1", "Pocillopora_acuta_HIv2___RNAseq.22237_t", "Pocillopora_acuta_HIv2___RNAseq.g24121.t1", "Pocillopora_acuta_HIv2___RNAseq.g13974.t1")
+down <- c("Pocillopora_acuta_HIv2___RNAseq.g8481.t1", "Pocillopora_acuta_HIv2___RNAseq.g12512.t1", "Pocillopora_acuta_HIv2___RNAseq.22237_t", "Pocillopora_acuta_HIv2___RNAseq.g11960.t1", "Pocillopora_acuta_HIv2___RNAseq.g24121.t1")
 
 # Select genes of interest 
 down_filt <- deg_go %>% 
@@ -608,7 +949,7 @@ down_deg_go <- down_filt %>%
 
 Filter by upregulated genes of interest 
 ```{r}
-up <- c("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1", "Pocillopora_acuta_HIv2___RNAseq.3335_t")
+up <- c("Pocillopora_acuta_HIv2___RNAseq.g22884.t1", "Pocillopora_acuta_HIv2___TS.g23786.t1", "Pocillopora_acuta_HIv2___RNAseq.g19477.t1", "Pocillopora_acuta_HIv2___RNAseq.3335_t", "Pocillopora_acuta_HIv2___TS.g26760.t1")
 
 # Select genes of interest 
 up_filt <- deg_go %>% 
@@ -641,7 +982,7 @@ GOslim <- read_csv("~/Desktop/PutnamLab/Repositories/SedimentStress/SedimentStre
 Merge GO slim info and log p-value
 ```{r}
 down_filt_slim <- down_filt %>%
-  inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
+  inner_join(GOslim, by = c("GOs" = "GO_ID"))
 
 # Log the overrepresented pvalue 
 down_filt_slim <- down_filt_slim %>%
@@ -699,7 +1040,7 @@ ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.png", 
 Merge GO slim info and log p-value
 ```{r}
 up_filt_slim <- up_filt %>%
-  inner_join(GOslim, by = c("GO.ID" = "GO_ID"))
+  inner_join(GOslim, by = c("GOs" = "GO_ID"))
 
 # Log the overrepresented pvalue 
 up_filt_slim <- up_filt_slim %>%
@@ -710,7 +1051,7 @@ up_filt_slim <- up_filt_slim %>%
   arrange(GOSlim_bin, log_over_represented_pvalue)
 
 # Save csv with slim info for these genes 
-#write.csv(up_filt_slim, file = "../output/functional_enrichment/Up_filt_genes_GOslim.csv")
+write.csv(up_filt_slim, file = "../output/functional_enrichment/Up_filt_genes_GOslim.csv")
 ```
 
 Plot
@@ -754,6 +1095,25 @@ ggsave("../output/functional_enrichment/Upregulated_shared_genes_GOSlim.png", up
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+Trying out ridgeplot
+```{r}
+data("geneList")
+x <- gseDO(geneList)
+ridgeplot(x) + labs(x = "enrichment distribution")
+
+```
 
 
 
