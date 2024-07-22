@@ -1,0 +1,65 @@
+---
+title: "topGO"
+author: "Jill Ashey"
+date: "2024-07-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load the necessary packages.
+```{r load_libraries, include = TRUE}
+#BiocManager::install("topGO")
+#BiocManager::install("clusterProfiler")
+#BiocManager::install("GOSemSim")
+
+library(tidyverse)
+library(clusterProfiler)
+library(GOSemSim)
+library(topGO)
+library(lintr)
+library(lattice)
+library(dplyr)
+library(rtracklayer)
+library(ggplot2)
+library(scales)
+```
+
+Read in gene lengths 
+```{r}
+length <- read.csv("../output/DEG/gene_length.txt", header = F)
+
+length <- length %>%
+  separate(V1, into = c("gene_id", "length"), sep = " ", remove = FALSE) %>%
+  dplyr::select(-V1)
+
+dim(length)
+```
+
+Read in eggnog annotation file 
+```{r}
+egg <- read.delim("../Metadata/Pocillopora_acuta_HIv2.genes.EggNog_results.txt", header = T) %>%
+    dplyr::rename(gene_id = X.query)
+names(egg)
+```
+
+Merge length and annot information 
+```{r}
+gogene <- merge(length, egg, by=c("gene_id"), all=T)
+head(gogene,2)
+dim(gogene)
+```
+
+Read in DEGs
+```{r}
+degs <- read.csv("../output/DEG/Unique_DEGs.csv")
+colnames(degs)[1] <- "gene_id"
+
+str(degs)
+```
+
+
+
+

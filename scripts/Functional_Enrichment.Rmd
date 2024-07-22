@@ -183,14 +183,7 @@ Adjust pvalues for multiple hypotheses testing
 GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method = "BH")
 ```
 
-Filter by significantly enriched GO terms (adjusted p < 0.05)
-```{r}
-GO_05_bh <- GO %>%
-  dplyr::filter(bh_adjust<0.05) %>%
-  dplyr::arrange(., ontology, over_represented_pvalue)
-```
-
-When filtering by the adjusted pvalue, no GO terms are significantly enriched. 
+When applying multiple hypotheses testing, all GO terms are not significant. I am going to move forward with the filtering using the non-adjusted pvalue, as I do not think that MHT is necessarily needed here if we are not doing a 1:1 test. 
 
 Filter by significantly enriched GO terms (p < 0.05)
 ```{r}
@@ -437,275 +430,6 @@ ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.pdf", 
 ggsave("../output/functional_enrichment/GO_MF_High_v_Control_top50_pvalue.png", GO_MF_High_v_Control, width = 30, height = 10)
 ```
 
-
-```{r}
-# Calculate the number of upregulated and downregulated genes for each term
-GO_h_v_c <- GO_h_v_c %>%
-  mutate(
-    upregulated = ifelse(log2FoldChange > 0, 1, 0),
-    downregulated = ifelse(log2FoldChange < 0, 1, 0)
-  )
-
-# Summarize the data to get the proportions
-GO_summary <- GO_h_v_c %>%
-  group_by(term, numDEInCat) %>%
-  summarize(
-    num_upregulated = sum(upregulated),
-    num_downregulated = sum(downregulated)
-  )
-
-# Calculate proportions
-GO_summary <- GO_summary %>%
-  mutate(
-    prop_upregulated = num_upregulated / numDEInCat,
-    prop_downregulated = num_downregulated / numDEInCat
-  )
-
-# Melt the data frame for plotting
-library(reshape2)
-GO_summary_melted <- melt(GO_summary, id.vars = c("term", "numDEInCat"), measure.vars = c("prop_upregulated", "prop_downregulated"))
-
-test<-ggplot(GO_summary_melted, aes(x = numDEInCat, y = value, fill = variable)) +
-  geom_bar(stat = "identity", position = "fill", width = 0.7) +
-  coord_flip() +
-  theme_minimal() +
-  labs(
-    title = "Proportion of Upregulated vs Downregulated Genes for Each GO Term",
-    x = "Number of DE Genes",
-    y = "Proportion",
-    fill = "Regulation Type"
-  ) +
-  theme(axis.text.y = element_text(size = 10)) +
-  scale_fill_manual(values = c("prop_upregulated" = "blue", "prop_downregulated" = "red"))
-
-ggsave("../output/functional_enrichment/test.pdf", test, width = 50, height = 30, limitsize = F)
-
-```
-
-bleh need to come back to this...aka making a stacked bar chart like this: https://www.researchgate.net/publication/227340630_Transcriptomic_analysis_of_the_stress_response_to_weaning_at_housing_in_bovine_leukocytes_using_RNA-seq_technology/figures?lo=1 
-
-
-
-
-
-
-
-
-```{r}
-
-# Filter out rows without log2FoldChange
-GO_h_v_c <- GO_h_v_c %>%
-  filter(!is.na(log2FoldChange))
-
-GO_h_v_c_ordered <- GO_h_v_c %>%
-  arrange(term)
-
-# Create a summary dataframe with the maximum absolute log2FoldChange for each GO term
-GO_h_v_c_max <- GO_h_v_c_ordered %>%
-  group_by(term, ontology) %>%
-  mutate(max_abs_log2FoldChange = max(abs(log2FoldChange)), .groups = 'drop') %>%
-  mutate(max_log2FoldChange = ifelse(any(log2FoldChange == max_abs_log2FoldChange), 
-                                     max_abs_log2FoldChange, 
-                                     -max_abs_log2FoldChange))
-
-# Merge with the original dataframe to ensure consistent ordering of terms
-GO_h_v_c_ordered <- GO_h_v_c_ordered %>%
-  inner_join(GO_h_v_c_max %>% 
-  dplyr::select(term, ontology, max_log2FoldChange), by = c("term", "ontology"))
-
-# Create the plot
-blah <- ggplot() +
-  # Plot bars for the maximum absolute log2FoldChange
-  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = reorder(term, ontology), fill = ontology), width = 0.1, alpha = 0.7) +
-  # Plot points for all log2FoldChange values
-  geom_point(data = GO_h_v_c_ordered, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), color = "black", shape = 21, fill = "white") +
-  theme_minimal() +
-  labs(
-    title = "GO Terms Log2 Fold Change Plot",
-    x = "Log2 Fold Change",
-    y = "GO Term",
-    fill = "Ontology",
-    size = "P-value (-log10)"
-  ) +
-  theme(axis.text.y = element_text(size = 10))
-ggsave("../output/functional_enrichment/blah.pdf", blah, width = 50, height = 30, limitsize = F)
-
-
-
-
-
-
-
-
-# Create a summary dataframe with the maximum log2FoldChange for each GO term
-GO_h_v_c_max <- GO_h_v_c %>%
-  dplyr::filter(ontology == "BP") %>%
-  group_by(term) %>%
-  summarize(max_log2FoldChange = max(log2FoldChange), .groups = 'drop')
-
-
-
-
-blah1 <- ggplot() +
-  # Plot bars for the maximum log2FoldChange
-  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = term), width = 0.1, alpha = 0.7) +
-  # Plot points for all log2FoldChange values
-  geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
-  theme_minimal() +
-  labs(
-    title = "GO Terms Log2 Fold Change Plot",
-    x = "Log2 Fold Change",
-    y = "GO Term",
-    fill = "Ontology",
-    size = "P-value (-log10)"
-  ) +
-  theme(axis.text.y = element_text(size = 10))
-
-
-blah2 <- GO_h_v_c %>%
-  dplyr::filter(ontology == "BP") %>%
-  #top_n(50, wt=padj) %>% 
-ggplot(aes(x = log2FoldChange, y = term)) +
-  geom_col(width = 0.1, alpha = 0.7) +
-  #geom_point(aes(size = -log10(over_represented_pvalue)), shape = 21) +
-    geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
-  theme_minimal() +
-  labs(
-    title = "GO Terms Log2 Fold Change Plot",
-    x = "Log2 Fold Change",
-    y = "GO Term",
-    fill = "Ontology",
-    size = "P-value (-log10)"
-  ) +
-  theme(axis.text.y = element_text(size = 10))
-
-ggsave("../output/functional_enrichment/test1.pdf", blah1, width = 50, height = 30, limitsize = F)
-
-ggsave("../output/functional_enrichment/test2.pdf", blah2, width = 50, height = 30, limitsize = F)
-
-
-```
-
-Take a subset so I can mess with the code 
-```{r}
-sub <- GO_h_v_c[c(1:25,3150:3192),]
-
-# Create a summary dataframe with the maximum log2FoldChange for each GO term
-sub_max <- sub %>%
-  #dplyr::filter(ontology == "BP") %>%
-  group_by(term, ontology) %>%
-  summarize(max_log2FoldChange = max(log2FoldChange), .groups = 'drop') # only one gene lol 
-
-blah1 <- ggplot() +
-  # Plot bars for the maximum log2FoldChange
-  geom_col(data = sub_max, aes(x = max_log2FoldChange, y = term), width = 0.1, alpha = 0.7) +
-  # Plot points for all log2FoldChange values
-  geom_point(data = sub, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), shape = 21) +
-  theme_minimal() +
-  labs(
-    title = "GO Terms Log2 Fold Change Plot",
-    x = "Log2 Fold Change",
-    y = "GO Term",
-    fill = "Ontology",
-    size = "P-value (-log10)"
-  ) +
-  theme(axis.text.y = element_text(size = 10))
-
-ggsave("../output/functional_enrichment/test1_sub.pdf", blah1, width = 50, height = 30, limitsize = F)
-
-
-```
-
-
-```{r}
-# Sample data
-GO_h_v_c <- data.frame(
-  gene_id = rep("Pocillopora_acuta_HIv2___RNAseq.g8481.t1", 6),
-  baseMean = rep(65.34058, 6),
-  log2FoldChange = c(-8.822176, 5.5, -6.3, 7.1, -4.8, 6.7),
-  lfcSE = rep(2.599817, 6),
-  stat = rep(-3.393384, 6),
-  pvalue = rep(0.0006903489, 6),
-  padj = rep(0.03204127, 6),
-  over_represented_pvalue = c(9.497092e-03, 2.293882e-04, 4.600111e-04, 4.429764e-05, 2.410735e-03, 1.016066e-03),
-  term = c("negative regulation of transcription by RNA polymerase II", 
-           "transcription cis-regulatory region binding", 
-           "RNA polymerase II transcription regulatory region sequence-specific DNA binding", 
-           "DNA-binding transcription factor activity, RNA polymerase II-specific", 
-           "transcription regulatory region nucleic acid binding", 
-           "DNA-binding transcription repressor activity, RNA polymerase II-specific"),
-  ontology = c("BP", "MF", "MF", "MF", "MF", "MF")
-)
-
-# Filter out rows without log2FoldChange
-GO_h_v_c <- GO_h_v_c %>%
-  filter(!is.na(log2FoldChange))
-
-# Create a summary dataframe with the maximum absolute log2FoldChange for each GO term
-GO_h_v_c_max <- GO_h_v_c %>%
-  group_by(term, ontology) %>%
-  summarize(max_abs_log2FoldChange = max(abs(log2FoldChange)), .groups = 'drop') %>%
-  mutate(max_log2FoldChange = ifelse(any(log2FoldChange == max_abs_log2FoldChange), 
-                                     max_abs_log2FoldChange, 
-                                     -max_abs_log2FoldChange))
-
-# Merge with the original dataframe to ensure consistent ordering of terms
-GO_h_v_c <- GO_h_v_c %>%
-  inner_join(GO_h_v_c_max %>% select(term, ontology, max_log2FoldChange), by = c("term", "ontology"))
-
-# Create the plot
-ggplot() +
-  # Plot bars for the maximum absolute log2FoldChange
-  geom_col(data = GO_h_v_c_max, aes(x = max_log2FoldChange, y = reorder(term, ontology), fill = ontology), width = 0.1, alpha = 0.7) +
-  # Plot points for all log2FoldChange values
-  geom_point(data = GO_h_v_c, aes(x = log2FoldChange, y = term, size = -log10(over_represented_pvalue)), color = "black", shape = 21, fill = "white") +
-  theme_minimal() +
-  labs(
-    title = "GO Terms Log2 Fold Change Plot",
-    x = "Log2 Fold Change",
-    y = "GO Term",
-    fill = "Ontology",
-    size = "P-value (-log10)"
-  ) +
-  theme(axis.text.y = element_text(size = 10))
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Visualize so that number of genes is on the x-axis, GO term is on the y-axis, p-value is the size and L2F is the color. 
-```{r}
-test <- GO_h_v_c %>% 
-    #mutate(hitsPerc=numDEInCat*100/numInCat) %>% 
-    dplyr::filter(ontology == "BP") %>%
-    dplyr::  filter(log2FoldChange > 2 | log2FoldChange < -2) %>%
-    #top_n(50, wt=over_represented_pvalue) %>% 
-    ggplot(aes(x=numDEInCat, 
-               y=term, 
-               colour=log2FoldChange, 
-               size=over_represented_pvalue)) +
-        geom_point() +
-        expand_limits(x=0) #+
-        #labs(x="Number of DEGs", y="GO term", colour="p value", size="L2FC"); test
-test
-```
-
-
-
-
-
-
 Mid v Control. Positive LFC means that the genes are upregulated in the mid treatment. Mid v Control only shares 1 gene with GO terms and all GO terms are BP. 
 ```{r}
 GO_BP_Mid_v_Control <- GO_m_v_c %>% 
@@ -835,20 +559,6 @@ identical(GO_h_v_c_filt$gene_id, GO_h_v_m_filt$gene_id) # they are not
 
 *NOTE*: the genes below are only those that are shared between h v c and h v m comparisons 
 
-Read in DEGs and filter by them 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Plot GO terms of shared genes 
 ```{r}
 blah <- GO_h_v_c_filt %>% 
@@ -864,18 +574,6 @@ blah <- GO_h_v_c_filt %>%
         expand_limits(x=0) +
         labs(x="Number of DEGs", y="GO term", colour="LFC", size="overrepresented pvalue"); blah
 ```
-
-
-
-
-
-
-
-
-
-
-
-
 
 The top 5 genes that are most DOWNregulated in the high treatment compared to the control treatment are:
 
@@ -979,7 +677,7 @@ Add slim terms to dataset
 GOslim <- read_csv("~/Desktop/PutnamLab/Repositories/SedimentStress/SedimentStress/Output/GOSeq/GO-GOslim.csv")
 ```
 
-Merge GO slim info and log p-value
+Merge GO slim info and log p-value for downreg genes
 ```{r}
 down_filt_slim <- down_filt %>%
   inner_join(GOslim, by = c("GOs" = "GO_ID"))
@@ -1037,7 +735,7 @@ ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.pdf", 
 ggsave("../output/functional_enrichment/Downregulated_shared_genes_GOSlim.png", down_filt_slim_plot, width = 35, height = 25)
 ```
 
-Merge GO slim info and log p-value
+Merge GO slim info and log p-value for upreg genes 
 ```{r}
 up_filt_slim <- up_filt %>%
   inner_join(GOslim, by = c("GOs" = "GO_ID"))

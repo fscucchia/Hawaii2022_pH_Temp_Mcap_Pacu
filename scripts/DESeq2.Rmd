@@ -101,6 +101,7 @@ Look at mid v control contrast
 ```{r}
 m_v_c <- results(DEG.int, contrast = c("Treatment", "Mid", "Control"))
 head(m_v_c)
+write.csv(m_v_c, file = "../output/DEG/Mid_v_Control_All.csv")
 ma_plot <- plotMA(m_v_c); ma_plot
 sum(m_v_c$padj <0.05, na.rm = T)
 m_v_c.sig <- subset(m_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
@@ -138,6 +139,7 @@ Look at high v control contrast
 ```{r}
 h_v_c <- results(DEG.int, contrast = c("Treatment", "High", "Control"))
 head(h_v_c)
+write.csv(h_v_c, file = "../output/DEG/High_v_Control_All.csv")
 ma_plot <- plotMA(h_v_c); ma_plot
 sum(h_v_c$padj <0.05, na.rm=T)
 h_v_c.sig <- subset(h_v_c, padj<0.05,) #identify signficant pvalues with 5%FDR
@@ -174,6 +176,7 @@ Look at high v mid contrast
 ```{r}
 h_v_m <- results(DEG.int, contrast = c("Treatment", "High", "Mid"))
 head(h_v_m)
+write.csv(h_v_m, file = "../output/DEG/High_v_Mid_All.csv")
 plotMA(h_v_m)
 sum(h_v_m$padj <0.05, na.rm=T)
 h_v_m.sig <- subset(h_v_m, padj<0.05,) #identify signficant pvalues with 5%FDR
