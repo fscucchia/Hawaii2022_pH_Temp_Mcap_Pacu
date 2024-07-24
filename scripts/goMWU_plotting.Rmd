@@ -1,0 +1,338 @@
+---
+title: "GO MWU plotting"
+author: "Jill Ashey"
+date: "2024-07-23"
+output: html_document
+---
+
+This script will plot the outputs from GO MWU. Specifically, I'm interested in plotting the delta rank of shared GO terms of each treatment comparison against one another. This will tell us if the GO terms that are shared across treatment comparisons have similar expression patterns. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggrepel)
+library(cowplot)
+```
+
+### Delta rank of the shared GO terms between High v Control and High v Mid. 
+
+#### Biological Processes 
+
+#### Cellular Components 
+
+Read in CC data. 
+```{r}
+cc_hvc=read.table("GO_MWU/MWU_CC_DE_High_v_Control_LFC.csv",header=T)
+cc_hvm=read.table("GO_MWU/MWU_CC_DE_High_v_Mid_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+cc_good <- intersect(cc_hvc$term, cc_hvm$term)
+
+# Filter sets
+cc_hvc_filt <- cc_hvc[cc_hvc$term %in% cc_good,]
+cc_hvm_filt <- cc_hvm[cc_hvm$term %in% cc_good,]
+```
+
+There are 804 shared GO terms between the High v Control and High v Mid comparisons
+
+Combine sets 
+```{r}
+ress <- merge(cc_hvc_filt, cc_hvm_filt, by = "term")
+```
+
+The x is High v Control and the y is High v Mid. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+49 shared CC GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared CC GO terms
+```{r}
+cc_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (High v. Mid)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); cc_plot
+```
+
+#### Molecular Function 
+
+Read in MF data. 
+```{r}
+mf_hvc=read.table("GO_MWU/MWU_MF_DE_High_v_Control_LFC.csv",header=T)
+mf_hvm=read.table("GO_MWU/MWU_MF_DE_High_v_Mid_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+mf_good <- intersect(mf_hvc$term, mf_hvm$term)
+
+# Filter sets
+mf_hvc_filt <- mf_hvc[mf_hvc$term %in% mf_good,]
+mf_hvm_filt <- mf_hvm[mf_hvm$term %in% mf_good,]
+```
+
+There are 1105 shared GO terms between the High v Control and High v Mid comparisons
+
+Combine sets 
+```{r}
+ress <- merge(mf_hvc_filt, mf_hvm_filt, by = "term")
+```
+
+The x is High v Control and the y is High v Mid. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+30 shared MF GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared MF GO terms
+```{r}
+mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (High v. Mid)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); mf_plot
+```
+
+Make plots into one figure and save 
+```{r}
+plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+
+ggsave("../output/GO_MWU/HighvControl_HighvMid_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
+ggsave("../output/GO_MWU/HighvControl_HighvMid_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
+```
+
+
+### Delta rank of the shared GO terms between High v Control and Mid v Control. 
+
+#### Biological Processes 
+
+#### Cellular Components 
+
+Read in CC data. 
+```{r}
+cc_hvc=read.table("GO_MWU/MWU_CC_DE_High_v_Control_LFC.csv",header=T)
+cc_mvc=read.table("GO_MWU/MWU_CC_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+cc_good <- intersect(cc_hvc$term, cc_mvc$term)
+
+# Filter sets
+cc_hvc_filt <- cc_hvc[cc_hvc$term %in% cc_good,]
+cc_mvc_filt <- cc_mvc[cc_mvc$term %in% cc_good,]
+```
+
+There are 802 shared GO terms between the High v Control and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(cc_hvc_filt, cc_mvc_filt, by = "term")
+```
+
+The x is High v Control and the y is Mid v Control. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+51 shared CC GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared CC GO terms
+```{r}
+cc_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); cc_plot
+```
+
+#### Molecular Function 
+
+Read in MF data. 
+```{r}
+mf_hvc=read.table("GO_MWU/MWU_MF_DE_High_v_Control_LFC.csv",header=T)
+mf_mvc=read.table("GO_MWU/MWU_MF_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+mf_good <- intersect(mf_hvc$term, mf_mvc$term)
+
+# Filter sets
+mf_hvc_filt <- mf_hvc[mf_hvc$term %in% mf_good,]
+mf_mvc_filt <- mf_mvc[mf_mvc$term %in% mf_good,]
+```
+
+There are 1107 shared GO terms between the High v Control and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(mf_hvc_filt, mf_mvc_filt, by = "term")
+```
+
+The x is High v Control and the y is Mid v Control  
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+23 shared MF GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared MF GO terms
+```{r}
+mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); mf_plot
+```
+
+Make plots into one figure and save 
+```{r}
+plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+
+ggsave("../output/GO_MWU/HighvControl_MidvControl_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
+ggsave("../output/GO_MWU/HighvControl_MidvControl_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
+```
+
+
+
+### Delta rank of the shared GO terms between High v Mid and Mid v Control. 
+
+#### Biological Processes 
+
+#### Cellular Components 
+
+Read in CC data. 
+```{r}
+cc_hvm=read.table("GO_MWU/MWU_CC_DE_High_v_Mid_LFC.csv",header=T)
+cc_mvc=read.table("GO_MWU/MWU_CC_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+cc_good <- intersect(cc_hvm$term, cc_mvc$term)
+
+# Filter sets
+cc_hvm_filt <- cc_hvm[cc_hvm$term %in% cc_good,]
+cc_mvc_filt <- cc_mvc[cc_mvc$term %in% cc_good,]
+```
+
+There are 809 shared GO terms between the High v Mid and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(cc_hvm_filt, cc_mvc_filt, by = "term")
+```
+
+The x is High v Mid and the y is Mid v Control. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+26 shared CC GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared CC GO terms
+```{r}
+cc_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Mid)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); cc_plot
+```
+
+#### Molecular Function 
+
+Read in MF data. 
+```{r}
+mf_hvm=read.table("GO_MWU/MWU_MF_DE_High_v_Mid_LFC.csv",header=T)
+mf_mvc=read.table("GO_MWU/MWU_MF_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+mf_good <- intersect(mf_hvm$term, mf_mvc$term)
+
+# Filter sets
+mf_hvm_filt <- mf_hvm[mf_hvm$term %in% mf_good,]
+mf_mvc_filt <- mf_mvc[mf_mvc$term %in% mf_good,]
+```
+
+There are 1143 shared GO terms between the High v Mid and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(mf_hvm_filt, mf_mvc_filt, by = "term")
+```
+
+The x is High v Mid and the y is Mid v Control. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01)
+```
+
+19 shared MF GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared CC GO terms
+```{r}
+mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Mid)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); mf_plot
+```
+
+Make plots into one figure and save 
+```{r}
+plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+
+ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
+ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
+```
+

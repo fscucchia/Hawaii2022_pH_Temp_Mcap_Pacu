@@ -20,10 +20,10 @@ getwd()
 setwd("scripts/GO_MWU")
 
 # Edit these to match your data file names: 
-input="DE_Treatment.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
-goAnnotations="gene_to_go_JA.tab" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
+input="DE_Mid_v_Control_LFC.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+goAnnotations="Mid_v_Control_gene_to_go.tab" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
-goDivision="CC" # either MF, or BP, or CC
+goDivision="MF" # either MF, or BP, or CC
 source("gomwu.functions.R")
 
 # ------------- Calculating stats
@@ -44,23 +44,25 @@ gomwuStats(input, goDatabase, goAnnotations, goDivision,
 # ----------- Plotting results
 
 #quartz()
-png(filename = paste0(goDivision, "_", input, "_plot.png"), width = 800, height = 800)
+#png(filename = paste0(goDivision, "_", input, "_plot.png"), width = 600, height = 900, res = 300)
 results=gomwuPlot(input,goAnnotations,goDivision,
- 	absValue=0.001,  # genes with the measure value exceeding this will be counted as "good genes". This setting is for signed log-pvalues. Specify absValue=0.001 if you are doing Fisher's exact test for standard GO enrichment or analyzing a WGCNA module (all non-zero genes = "good genes").
- #	absValue=1, # un-remark this if you are using log2-fold changes
- 	level1=0.1, # FDR threshold for plotting. Specify level1=1 to plot all GO categories containing genes exceeding the absValue.
- 	level2=0.05, # FDR cutoff to print in regular (not italic) font.
- 	level3=0.01, # FDR cutoff to print in large bold font.
- 	txtsize=1.2,    # decrease to fit more on one page, or increase (after rescaling the plot so the tree fits the text) for better "word cloud" effect
- 	treeHeight=0.5, # height of the hierarchical clustering tree
+ 	#absValue=0.001,  # genes with the measure value exceeding this will be counted as "good genes". This setting is for signed log-pvalues. Specify absValue=0.001 if you are doing Fisher's exact test for standard GO enrichment or analyzing a WGCNA module (all non-zero genes = "good genes").
+  absValue=1, # un-remark this if you are using log2-fold changes
+ 	level1=0.05, # FDR threshold for plotting. Specify level1=1 to plot all GO categories containing genes exceeding the absValue.
+ 	level2=0.01, # FDR cutoff to print in regular (not italic) font.
+ 	level3=0.001, # FDR cutoff to print in large bold font.
+ 	txtsize=0.95,    # decrease to fit more on one page, or increase (after rescaling the plot so the tree fits the text) for better "word cloud" effect
+ 	treeHeight=0.85, # height of the hierarchical clustering tree
  #	colors=c("dodgerblue2","firebrick1","skyblue2","lightcoral") # these are default colors, un-remar and change if needed
  )
-dev.off()
+#dev.off()
  # manually rescale the plot so the tree matches the text 
  # if there are too many categories displayed, try make it more stringent with level1=0.05,level2=0.01,level3=0.001.  
  
- # text representation of results, with actual adjusted p-values
- results[[1]]
+# text representation of results, with actual adjusted p-values
+results[[1]]
+ 
+######NOTE: Save plots directly from R viewer - better quality. Export as pdf as US letterhead format (8x11in)
 
 
 # ------- extracting representative GOs
