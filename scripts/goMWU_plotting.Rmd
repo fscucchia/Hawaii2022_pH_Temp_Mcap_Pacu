@@ -49,10 +49,11 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
-49 shared CC GO terms are < 0.01.
+42 shared CC GO terms are < 0.01.
 
 Plot to assess delta rank correlation between shared CC GO terms
 ```{r}
@@ -96,10 +97,11 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
-30 shared MF GO terms are < 0.01.
+28 shared MF GO terms are < 0.01.
 
 Plot to assess delta rank correlation between shared MF GO terms
 ```{r}
@@ -156,16 +158,17 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
-51 shared CC GO terms are < 0.01.
+43 shared CC GO terms are < 0.01.
 
 Plot to assess delta rank correlation between shared CC GO terms
 ```{r}
 cc_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
   geom_point(size = 2.5, show.legend = F) +
-  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 11) +
   scale_size("size") +
   labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
@@ -203,7 +206,8 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
 23 shared MF GO terms are < 0.01.
@@ -212,7 +216,7 @@ Plot to assess delta rank correlation between shared MF GO terms
 ```{r}
 mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
   geom_point(size = 2.5, show.legend = F) +
-  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 13) +
   scale_size("size") +
   labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
@@ -264,10 +268,11 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
-26 shared CC GO terms are < 0.01.
+23 shared CC GO terms are < 0.01.
 
 Plot to assess delta rank correlation between shared CC GO terms
 ```{r}
@@ -311,7 +316,8 @@ Filter so that only p.adj < 0.01 for both sets
 ```{r}
 ress_filt <- ress %>%
   dplyr::filter(p.adj.x < 0.01) %>%
-  dplyr::filter(p.adj.y < 0.01)
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
 ```
 
 19 shared MF GO terms are < 0.01.
