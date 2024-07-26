@@ -28,6 +28,9 @@ sessionInfo() #list of packages after library-ing these packages
 
 I'm going to isolate comparisons and then use fold change as input to GO MWU rather than a binary of 1 (DE) or 0 (not DE). 
 
+Read in annotation file that will be used for all comparisons. 
+
+
 #### High v Control 
 
 Read in High v Control DESeq2 results for expressed genes 
