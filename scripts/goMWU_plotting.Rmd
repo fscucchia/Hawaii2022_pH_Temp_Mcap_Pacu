@@ -19,6 +19,52 @@ library(cowplot)
 
 #### Biological Processes 
 
+Read in BP data. 
+```{r}
+bp_hvc=read.table("GO_MWU/MWU_BP_DE_High_v_Control_LFC.csv",header=T)
+bp_hvm=read.table("GO_MWU/MWU_BP_DE_High_v_Mid_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+bp_good <- intersect(bp_hvc$term, bp_hvm$term)
+
+# Filter sets
+bp_hvc_filt <- bp_hvc[bp_hvc$term %in% bp_good,]
+bp_hvm_filt <- bp_hvm[bp_hvm$term %in% bp_good,]
+```
+
+There are 5751 shared GO terms between the High v Control and High v Mid comparisons
+
+Combine sets 
+```{r}
+ress <- merge(bp_hvc_filt, bp_hvm_filt, by = "term")
+```
+
+The x is High v Control and the y is High v Mid. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
+```
+
+106 shared BP GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared BP GO terms
+```{r}
+bp_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (High v. Mid)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); bp_plot
+```
+
 #### Cellular Components 
 
 Read in CC data. 
@@ -107,7 +153,7 @@ Plot to assess delta rank correlation between shared MF GO terms
 ```{r}
 mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
   geom_point(size = 2.5, show.legend = F) +
-  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
   scale_size("size") +
   labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (High v. Mid)") +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
@@ -117,7 +163,7 @@ mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
 
 Make plots into one figure and save 
 ```{r}
-plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+plot <- plot_grid(bp_plot, mf_plot, labels = c('A', 'B'))
 
 ggsave("../output/GO_MWU/HighvControl_HighvMid_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
 ggsave("../output/GO_MWU/HighvControl_HighvMid_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
@@ -127,6 +173,52 @@ ggsave("../output/GO_MWU/HighvControl_HighvMid_DeltaRank.png", plot = last_plot(
 ### Delta rank of the shared GO terms between High v Control and Mid v Control. 
 
 #### Biological Processes 
+
+Read in BP data. 
+```{r}
+bp_hvc=read.table("GO_MWU/MWU_BP_DE_High_v_Control_LFC.csv",header=T)
+bp_mvc=read.table("GO_MWU/MWU_BP_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+bp_good <- intersect(bp_hvc$term, bp_mvc$term)
+
+# Filter sets
+bp_hvc_filt <- bp_hvc[bp_hvc$term %in% bp_good,]
+bp_mvc_filt <- bp_mvc[bp_mvc$term %in% bp_good,]
+```
+
+There are 5729 shared GO terms between the High v Control and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(bp_hvc_filt, bp_mvc_filt, by = "term")
+```
+
+The x is High v Control and the y is Mid v Control.
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
+```
+
+99 shared BP GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared BP GO terms
+```{r}
+bp_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); bp_plot
+```
 
 #### Cellular Components 
 
@@ -216,7 +308,7 @@ Plot to assess delta rank correlation between shared MF GO terms
 ```{r}
 mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
   geom_point(size = 2.5, show.legend = F) +
-  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 13) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
   scale_size("size") +
   labs(x = "Delta Rank (High v. Control)", y = "Delta Rank (Mid v. Control)") +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
@@ -226,7 +318,7 @@ mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
 
 Make plots into one figure and save 
 ```{r}
-plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+plot <- plot_grid(bp_plot, mf_plot, labels = c('A', 'B'))
 
 ggsave("../output/GO_MWU/HighvControl_MidvControl_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
 ggsave("../output/GO_MWU/HighvControl_MidvControl_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
@@ -237,6 +329,53 @@ ggsave("../output/GO_MWU/HighvControl_MidvControl_DeltaRank.png", plot = last_pl
 ### Delta rank of the shared GO terms between High v Mid and Mid v Control. 
 
 #### Biological Processes 
+
+Read in BP data. 
+```{r}
+bp_hvm=read.table("GO_MWU/MWU_BP_DE_High_v_Mid_LFC.csv",header=T)
+bp_mvc=read.table("GO_MWU/MWU_BP_DE_Mid_v_Control_LFC.csv",header=T)
+```
+
+Find terms in both sets and filter both sets by shared terms. 
+```{r}
+bp_good <- intersect(bp_hvm$term, bp_mvc$term)
+
+# Filter sets
+bp_hvm_filt <- bp_hvm[bp_hvm$term %in% bp_good,]
+bp_mvc_filt <- bp_mvc[bp_mvc$term %in% bp_good,]
+```
+
+There are 5853 shared GO terms between the High v Mid and Mid v Control comparisons
+
+Combine sets 
+```{r}
+ress <- merge(bp_hvm_filt, bp_mvc_filt, by = "term")
+```
+
+The x is High v Mid and the y is Mid v Control. 
+
+Filter so that only p.adj < 0.01 for both sets
+```{r}
+ress_filt <- ress %>%
+  dplyr::filter(p.adj.x < 0.01) %>%
+  dplyr::filter(p.adj.y < 0.01) %>%
+  dplyr::filter(!grepl("obsolete", name.x))
+```
+
+52 shared BP GO terms are < 0.01.
+
+Plot to assess delta rank correlation between shared BP GO terms
+```{r}
+bp_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
+  geom_point(size = 2.5, show.legend = F) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
+  scale_size("size") +
+  labs(x = "Delta Rank (High v. Mid)", y = "Delta Rank (Mid v. Control)") +
+  geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.75) +
+  theme_cowplot(); bp_plot
+```
+
 
 #### Cellular Components 
 
@@ -326,7 +465,7 @@ Plot to assess delta rank correlation between shared CC GO terms
 ```{r}
 mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
   geom_point(size = 2.5, show.legend = F) +
-  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 10) +
+  geom_text_repel(data = ress_filt, aes(), segment.alpha = 1, box.padding = 0.7, direction = "both", max.overlaps = 15) +
   scale_size("size") +
   labs(x = "Delta Rank (High v. Mid)", y = "Delta Rank (Mid v. Control)") +
   geom_vline(xintercept = 0, linetype = 2, alpha = 0.75) +
@@ -336,7 +475,7 @@ mf_plot <- ggplot(ress_filt, aes(delta.rank.x, delta.rank.y, label = name.y)) +
 
 Make plots into one figure and save 
 ```{r}
-plot <- plot_grid(cc_plot, mf_plot, labels = c('A', 'B'))
+plot <- plot_grid(bp_plot, mf_plot, labels = c('A', 'B'))
 
 ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
 ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
