@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggrepel)
 library(cowplot)
+library(kableExtra)
 ```
 
 ### Delta rank of the shared GO terms between High v Control and High v Mid. 
@@ -480,4 +481,25 @@ plot <- plot_grid(bp_plot, mf_plot, labels = c('A', 'B'))
 ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.pdf", plot = last_plot(), width = 40, height = 20, units = "cm")
 ggsave("../output/GO_MWU/HighvMid_MidvControl_DeltaRank.png", plot = last_plot(), width = 40, height = 20, units = "cm")
 ```
+
+Make plot with comparisons for manuscript
+```{r}
+comparisons_table <- data.frame(
+  Comparisons = c("High v. Control", "High v. Mid", "Mid v. Control"),
+  "BiologicalProcesses" = c(583, 366, 551),
+  "MolecularFunctions" = c(117, 96, 104)
+)
+
+# Set column names 
+colnames(comparisons_table) <- c("Comparisons", "Biological Processes", "Molecular Functions")
+
+# Create a formatted table using kable
+kbl(comparisons_table) %>%
+  kable_styling(full_width = F, position = "left") %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  column_spec(1, bold = T) %>%
+  row_spec(0, bold = T) #%>%
+  #save_kable("../output/GO_MWU/comparison_table.pdf")
+```
+
 
