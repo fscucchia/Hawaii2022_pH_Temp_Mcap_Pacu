@@ -615,6 +615,34 @@ data <- data %>%
 data$Treatment <- factor(data$Treatment, levels = c("Control", "Mid", "High"))
 ```
 
+Look at min and max values for each parameter per treatment
+```{r}
+result <- data %>%
+  group_by(Treatment) %>% # Group by Treatment
+  summarize(
+    min_Salinity = min(Salinity, na.rm = TRUE),
+    max_Salinity = max(Salinity, na.rm = TRUE),
+    min_Temperature = min(Temperature, na.rm = TRUE),
+    max_Temperature = max(Temperature, na.rm = TRUE),
+    min_pH_Total = min(pH.Total, na.rm = TRUE),
+    max_pH_Total = max(pH.Total, na.rm = TRUE),
+    min_CO2 = min(CO2, na.rm = TRUE),
+    max_CO2 = max(CO2, na.rm = TRUE),
+    min_pCO2 = min(pCO2, na.rm = TRUE),
+    max_pCO2 = max(pCO2, na.rm = TRUE),
+    min_HCO3 = min(HCO3, na.rm = TRUE),
+    max_HCO3 = max(HCO3, na.rm = TRUE),
+    min_CO3 = min(CO3, na.rm = TRUE),
+    max_CO3 = max(CO3, na.rm = TRUE),
+    min_DIC = min(DIC, na.rm = TRUE),
+    max_DIC = max(DIC, na.rm = TRUE),
+    min_TA = min(TA, na.rm = TRUE),
+    max_TA = max(TA, na.rm = TRUE),
+    min_AragSat = min(AragSat, na.rm = TRUE),
+    max_AragSat = max(AragSat, na.rm = TRUE)
+  )
+```
+
 Plot data and do stats for all parameters
 
 Temperature 
